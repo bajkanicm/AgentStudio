@@ -69,12 +69,14 @@ code changes** — except payments, which needs a Stripe integration.
      (`DEMO_USE_REAL_AI=true`) — recommended **only after** adding rate
      limiting (P1), otherwise leave it on the mock.
 
-3. **Legal pages** *(not yet implemented — required for EU/German hosting)*
-   - Privacy policy, Terms of Service, Impressum, cookie note (Clerk sets
-     auth cookies).
-   - Ship as three static pages under `src/app/(marketing)/legal/…` and
-     link them in the footer. A template service or lawyer wording is your
-     call; the code slot is trivial — ask and it's a 30-minute change.
+3. **Legal pages** *(✅ built 2026-07-27 — needs your company details)*
+   - `/legal/privacy`, `/legal/terms`, `/legal/imprint` exist and are linked
+     in the footer.
+   - **Action required:** fill in the real company name, address,
+     representative, register/VAT entries in `src/lib/company.ts` (single
+     file, bracketed placeholders render on the live pages until you do),
+     then redeploy. Have the wording reviewed by a lawyer — it is a sensible
+     template, not legal advice.
 
 4. **Working email addresses**
    - The UI references `sales@agentstudio.tech`. Create the mailbox (or an
@@ -85,8 +87,13 @@ code changes** — except payments, which needs a Stripe integration.
 
 ### P1 — first weeks with real users
 
-6. **DFY request notifications** — right now you must poll the DB (§4).
-   Add an email (Resend/SMTP) or Slack webhook on new `CustomRequest` rows.
+6. **DFY request notifications** *(✅ built 2026-07-27 — needs credentials)*
+   — every new done-for-you request now emails the team automatically once
+   you set either `RESEND_API_KEY` **or** `SMTP_HOST`/`SMTP_PORT`/
+   `SMTP_USER`/`SMTP_PASS` in `/opt/agentstudio/.env` (recipient:
+   `NOTIFY_EMAIL_TO`, default sales@agentstudio.tech), then
+   `docker compose up -d --build`. Until then requests are stored in the DB
+   only (§4) and the app logs a "email not configured" line.
 7. **Rate limiting** on `/api/demo-chat` (per-IP) before pointing real AI
    at anonymous traffic.
 8. **Analytics** — Plausible or Umami (self-hostable on the same VPS) for

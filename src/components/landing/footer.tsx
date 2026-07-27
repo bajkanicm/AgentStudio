@@ -64,9 +64,21 @@ export function Footer() {
           <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} AgentStudio · agentstudio.tech
           </p>
-          <p className="text-xs text-muted-foreground">
-            Built for teams who want AI that actually ships work.
-          </p>
+          <div className="flex gap-5">
+            {[
+              { label: "Privacy", href: "/legal/privacy" },
+              { label: "Terms", href: "/legal/terms" },
+              { label: "Imprint", href: "/legal/imprint" },
+            ].map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </footer>

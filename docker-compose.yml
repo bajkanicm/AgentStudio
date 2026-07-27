@@ -38,6 +38,13 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
       DEMO_USE_REAL_AI: ${DEMO_USE_REAL_AI:-false}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      NOTIFY_EMAIL_TO: ${NOTIFY_EMAIL_TO:-sales@agentstudio.tech}
+      NOTIFY_EMAIL_FROM: ${NOTIFY_EMAIL_FROM:-AgentStudio <notifications@agentstudio.tech>}
     ports:
       # Only exposed to localhost — Nginx terminates TLS and proxies here.
       - "127.0.0.1:3000:3000"

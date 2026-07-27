@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { getUserId } from "@/lib/auth";
+import { notifyTeam } from "@/lib/notify";
 
 const requestSchema = z.object({
   name: z.string().min(1, "Your name is required").max(120),
@@ -41,6 +42,27 @@ export async function POST(req: NextRequest) {
   const request = await db.customRequest.create({
     data: { ...parsed.data, userId },
   });
+
+  const d = parsed.data;
+  await notifyTeam(
+    `New custom agent request — ${d.name}${d.company ? ` (${d.company})` : ""}`,
+    [
+      `A new done-for-you request just arrived:`,
+      ``,
+      `Name:       ${d.name}`,
+      `Email:      ${d.email}`,
+      `Company:    ${d.company || "—"}`,
+      `Agent type: ${d.agentType || "—"}`,
+      `Budget:     ${d.budget || "—"}`,
+      `Timeline:   ${d.timeline || "—"}`,
+      ``,
+      `Description:`,
+      d.description,
+      ``,
+      `Request ID: ${request.id}`,
+      `Reply to the requester within one business day.`,
+    ].join("\n")
+  );
 
   return NextResponse.json({ ok: true, id: request.id }, { status: 201 });
 }
