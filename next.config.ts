@@ -5,7 +5,18 @@ const nextConfig: NextConfig = {
   output: "standalone",
   // Keep OCR/PDF libs as regular node_modules so their worker files and
   // WASM assets survive standalone output tracing.
-  serverExternalPackages: ["tesseract.js", "pdf-parse"],
+  serverExternalPackages: ["tesseract.js", "pdf-parse", "@napi-rs/canvas"],
+  // Output tracing misses files loaded by worker threads / dynamic requires —
+  // force-include the complete packages for the upload route.
+  outputFileTracingIncludes: {
+    "/api/documents/upload": [
+      "./node_modules/tesseract.js/**/*",
+      "./node_modules/tesseract.js-core/**/*",
+      "./node_modules/pdf-parse/**/*",
+      "./node_modules/pdfjs-dist/**/*",
+      "./node_modules/@napi-rs/canvas/**/*",
+    ],
+  },
   async redirects() {
     return [
       // Pre-hey247 route, kept for old links
