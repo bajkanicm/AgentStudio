@@ -9,11 +9,12 @@ import { Bell, Search } from "lucide-react";
 
 const NAV = [
   { href: "/dashboard", label: "Übersicht", exact: true },
+  { href: "/dashboard/anrufe", label: "Anrufe" },
   { href: "/dashboard/chat", label: "KI-Chat" },
   { href: "/dashboard/dokumente", label: "Dokumente" },
   { href: "/dashboard/agents", label: "KI-Mitarbeiter" },
-  { href: "/dashboard/templates", label: "Vorlagen" },
-  { href: "/dashboard/usage", label: "Nutzung" },
+  { href: "/dashboard/kalender", label: "Kalender" },
+  { href: "/dashboard/auftraege", label: "Aufträge" },
   { href: "/dashboard/billing", label: "Kosten" },
 ];
 

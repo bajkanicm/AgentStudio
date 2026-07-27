@@ -22,6 +22,60 @@ model User {
   conversations  Conversation[]
   customRequests CustomRequest[]
   documents      Document[]
+  callNotes      CallNote[]
+  auftraege      Auftrag[]
+  termine        Termin[]
+}
+
+// Anrufe (Telefonassistent-Notizen): eine strukturierte Notiz pro Anruf.
+model CallNote {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  callerName  String
+  callerPhone String   @default("")
+  summary     String // Zusammenfassung des Anrufs
+  noteItems   String   @default("") // "Notiert für dich", eine Zeile pro Punkt
+  durationSec Int      @default(0)
+  urgency     String   @default("normal") // normal | dringend
+  status      String   @default("neu") // neu | erledigt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// Aufträge & Anfragen (Board): jede Kundenanfrage wird ein Vorgang.
+model Auftrag {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  customer  String   @default("")
+  note      String   @default("")
+  status    String   @default("neu") // neu | in_arbeit | wartet_kunde | erledigt
+  priority  String   @default("normal") // normal | dringend
+  source    String   @default("manuell") // telefon | mail | webformular | manuell
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// Kalender (Welle 2, lokale Termine; externe Sync folgt).
+model Termin {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  location    String   @default("")
+  start       DateTime
+  durationMin Int      @default(60)
+  kind        String   @default("termin") // termin | wartung | notfall | intern
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId, start])
 }
 
 // Ablage (Welle 1): text-based documents; file upload/OCR comes later.

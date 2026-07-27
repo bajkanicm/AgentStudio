@@ -12,7 +12,7 @@ import {
   Bot,
   Coins,
   FileText,
-  MessagesSquare,
+  PhoneIncoming,
   Plus,
   Handshake,
 } from "lucide-react";
@@ -23,7 +23,7 @@ export default async function DashboardPage() {
   const user = await requireDbUser();
   if (!user) redirect("/sign-in");
 
-  const [usage, agents, docCount, docsOpen] = await Promise.all([
+  const [usage, agents, docCount, docsOpen, callCount, callsNew] = await Promise.all([
     getUsage(user.id, user.plan),
     db.agent.findMany({
       where: { userId: user.id },
@@ -33,6 +33,8 @@ export default async function DashboardPage() {
     }),
     db.document.count({ where: { userId: user.id } }),
     db.document.count({ where: { userId: user.id, status: "wartet_freigabe" } }),
+    db.callNote.count({ where: { userId: user.id } }),
+    db.callNote.count({ where: { userId: user.id, status: "neu" } }),
   ]);
 
   const firstName = user.name?.split(" ")[0] ?? "Chef";
@@ -65,12 +67,12 @@ export default async function DashboardPage() {
       {/* Stats (mockup-style cards) */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <MockCard
-          icon={<MessagesSquare className="size-4.5" />}
+          icon={<PhoneIncoming className="size-4.5" />}
           circle="bg-[#fdeadf] text-[#e8590c]"
-          title="Gespräche"
-          value={usage.conversations.toLocaleString("de-DE")}
-          unit="diesen Monat"
-          sub={`${usage.messagesUsed.toLocaleString("de-DE")} Nachrichten`}
+          title="Angenommene Anrufe"
+          value={callCount.toLocaleString("de-DE")}
+          unit="notiert"
+          sub={callsNew === 0 ? "Keine offenen Rückrufe" : `${callsNew} offene${callsNew === 1 ? "r" : ""} Rückruf${callsNew === 1 ? "" : "e"}`}
         />
         <MockCard
           icon={<FileText className="size-4.5" />}

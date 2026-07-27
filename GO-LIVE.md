@@ -30,7 +30,10 @@ paying pilot businesses on the platform**.
 | KI-Chat über die Ablage | ✅ Working (v1) | "Frag deine Ablage": grounded answers with cited sources, saved Verläufe, mail drafting. Uses mock retrieval until AI keys are set. |
 | App shell | ✅ Redesigned | Matches the mobile mockups: dark frame, pale-green panel, pill navigation, mockup stat cards. |
 | PWA | ✅ Installable | Service worker with offline fallback + static caching, Apple web-app meta. "Add to Home Screen" works on iOS/Android. |
-| Deck modules Welle 2/3 | ❌ Marketing only | OCR/file upload, Kalender & Mail, Anfragenboard, Marketing-Modul remain roadmap. |
+| Anrufe (Rückruf-Notizen) | ✅ Working (v1) | Mockup-faithful call log: Letzte Anrufe, Zusammenfassung, "Notiert für dich", Rückruf planen (creates a Kalender entry), erledigt workflow. Real telephony still Welle 2. |
+| Aufträge & Anfragen | ✅ Working (v1) | Board with Neu / In Arbeit / Wartet auf Kunde / Erledigt, priorities, sources, create dialog, samples. |
+| Kalender | ✅ Working (v1) | Week view (KW navigation, kind-colored entries), local appointments + create dialog. External calendar sync (IMAP/CalDAV) still Welle 2. |
+| Deck modules noch offen | ❌ Roadmap | OCR/file upload, Mail-Postfach-Anbindung, echte Telefonie, Marketing-Modul. |
 | Deployment | ✅ Production | Docker + Postgres + Nginx + HTTPS on the VPS, auto-restart, schema auto-sync. |
 
 ---
@@ -90,9 +93,9 @@ except payments and the Welle-2/3 modules, which need development.
 ### P2 — after pilot validation
 
 11. **Stripe checkout** for Basis/KI-Mitarbeiter (env slots prepared).
-12. **Welle 2 modules**: file upload + OCR for the Ablage (text version is
-    live), Kalender & Mail integration (IMAP), then Welle 3 (Anfragenboard,
-    Marketing).
+12. **Welle 2 integrations**: file upload + OCR for the Ablage, mail inbox
+    (IMAP) + external calendar sync — the local Kalender/Aufträge/Anrufe
+    screens are live and ready to receive that data.
 13. **Real phone integration** for the Telefonassistent (today it's a
     chat-based demo; production needs telephony, e.g. SIP/Twilio-style
     voice + STT/TTS with a German provider).
