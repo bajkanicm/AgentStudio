@@ -51,11 +51,10 @@ except payments and the Welle-2/3 modules, which need development.
 
 ### P0 — before pitching pilot businesses
 
-1. **Fill in the Impressum** — real flexC GmbH address, Geschäftsführung,
-   Register/USt-Id in `src/lib/company.ts` (single file; bracketed values
-   render on /legal/imprint until you do), then redeploy. Required by § 5
-   TMG. Have Datenschutz/AGB wording reviewed by a lawyer — it's a solid
-   template, not legal advice.
+1. **Impressum** *(✅ done 2026-07-27)* — real flexC GmbH data (Mannheim,
+   HRB 735477, USt-Id, Geschäftsführer) is live on /legal/imprint, taken
+   from flexc.de/impressum. Still recommended: have Datenschutz/AGB
+   wording reviewed by a lawyer — it's a solid template, not legal advice.
 2. **Create the hey247.de mailboxes** referenced in the UI:
    `pilot@hey247.de` (CTAs, notifications), `hallo@hey247.de`,
    `datenschutz@hey247.de`. Until they exist, mailto links go nowhere.
