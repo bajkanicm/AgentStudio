@@ -1,26 +1,204 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* AgentStudio is dark-first: :root and .dark share the same professional
+   dark palette (deep blue-black surfaces, violet primary). */
+:root,
+.dark {
+  --background: oklch(0.145 0.012 275);
+  --foreground: oklch(0.965 0.005 270);
+  --card: oklch(0.185 0.014 275);
+  --card-foreground: oklch(0.965 0.005 270);
+  --popover: oklch(0.19 0.014 275);
+  --popover-foreground: oklch(0.965 0.005 270);
+  --primary: oklch(0.585 0.215 285);
+  --primary-foreground: oklch(0.985 0.005 270);
+  --secondary: oklch(0.24 0.018 275);
+  --secondary-foreground: oklch(0.965 0.005 270);
+  --muted: oklch(0.235 0.016 275);
+  --muted-foreground: oklch(0.68 0.015 275);
+  --accent: oklch(0.26 0.02 280);
+  --accent-foreground: oklch(0.975 0.005 270);
+  --destructive: oklch(0.65 0.2 24);
+  --border: oklch(0.98 0.005 270 / 10%);
+  --input: oklch(0.98 0.005 270 / 14%);
+  --ring: oklch(0.585 0.215 285 / 60%);
+  --chart-1: oklch(0.62 0.21 285);
+  --chart-2: oklch(0.7 0.15 200);
+  --chart-3: oklch(0.75 0.16 155);
+  --chart-4: oklch(0.8 0.14 85);
+  --chart-5: oklch(0.66 0.2 330);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.165 0.013 275);
+  --sidebar-foreground: oklch(0.965 0.005 270);
+  --sidebar-primary: oklch(0.585 0.215 285);
+  --sidebar-primary-foreground: oklch(0.985 0.005 270);
+  --sidebar-accent: oklch(0.24 0.018 275);
+  --sidebar-accent-foreground: oklch(0.975 0.005 270);
+  --sidebar-border: oklch(0.98 0.005 270 / 8%);
+  --sidebar-ring: oklch(0.585 0.215 285 / 60%);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  html {
+    @apply font-sans scroll-smooth;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  /* Gradient headline text */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(
+      100deg,
+      oklch(0.97 0.01 270) 20%,
+      oklch(0.75 0.15 285) 55%,
+      oklch(0.68 0.19 310) 80%
+    );
+  }
+  .text-gradient-accent {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(
+      95deg,
+      oklch(0.72 0.19 285),
+      oklch(0.7 0.17 320)
+    );
+  }
+
+  /* Soft violet glow behind hero elements */
+  .glow-primary {
+    box-shadow:
+      0 0 40px oklch(0.585 0.215 285 / 25%),
+      0 0 120px oklch(0.585 0.215 285 / 12%);
+  }
+  .glow-ring {
+    box-shadow: inset 0 1px 0 oklch(1 0 0 / 8%);
+  }
+
+  /* Faint blueprint grid for hero / section backgrounds */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, oklch(0.98 0.005 270 / 4%) 1px, transparent 1px),
+      linear-gradient(to bottom, oklch(0.98 0.005 270 / 4%) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+  .bg-grid-fade {
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+  }
+
+  /* Frosted panel */
+  .glass {
+    background: oklch(0.2 0.014 275 / 60%);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Marquee for logo strip */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 36s linear infinite;
+}
+
+/* Slow aurora drift for hero background blobs */
+@keyframes aurora {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(4%, -6%) scale(1.08); }
+  66% { transform: translate(-5%, 4%) scale(0.96); }
+}
+.animate-aurora {
+  animation: aurora 18s ease-in-out infinite;
+}
+
+/* Typing dots in chat */
+@keyframes typing-dot {
+  0%, 60%, 100% { opacity: 0.25; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-3px); }
+}
+.typing-dot {
+  animation: typing-dot 1.2s ease-in-out infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.15s; }
+.typing-dot:nth-child(3) { animation-delay: 0.3s; }
+
+/* Fade-up entrance used by scroll reveals */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Blinking cursor for streamed text */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.animate-blink {
+  animation: blink 1s step-end infinite;
 }

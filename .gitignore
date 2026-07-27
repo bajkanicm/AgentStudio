@@ -39,3 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local databases
+prisma/dev.db
+*.db-journal
+
+# keep the env template
+!.env.example
+
+# local Claude Code settings
+.claude/settings.local.json

@@ -1,0 +1,88 @@
+// AgentStudio — development schema (SQLite).
+// Production uses prisma/schema.postgres.prisma (identical models, postgresql
+// provider); the Docker build copies it over this file. Keep both in sync
+// with scripts/sync-schemas.sh.
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String          @id // Clerk user id (or "demo-user" in demo mode)
+  email          String?
+  name           String?
+  plan           String          @default("starter") // starter | growth | enterprise
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  agents         Agent[]
+  conversations  Conversation[]
+  customRequests CustomRequest[]
+}
+
+model Agent {
+  id            String         @id @default(cuid())
+  userId        String
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  templateSlug  String // sales | support | content | data
+  name          String
+  description   String         @default("")
+  systemPrompt  String
+  tone          String         @default("professional")
+  temperature   Float          @default(0.7)
+  knowledgeBase String         @default("")
+  model         String         @default("auto") // auto | gpt | claude
+  conversations Conversation[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([userId])
+}
+
+model Conversation {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agentId    String?
+  agent      Agent?    @relation(fields: [agentId], references: [id], onDelete: SetNull)
+  title      String    @default("New conversation")
+  tokensUsed Int       @default(0)
+  messages   Message[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([agentId])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           String // user | assistant
+  content        String
+  tokens         Int          @default(0)
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId])
+}
+
+model CustomRequest {
+  id          String   @id @default(cuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  name        String
+  email       String
+  company     String   @default("")
+  agentType   String   @default("")
+  budget      String   @default("")
+  timeline    String   @default("")
+  description String
+  status      String   @default("new") // new | contacted | in_progress | delivered
+  createdAt   DateTime @default(now())
+}
