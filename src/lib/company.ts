@@ -1,26 +1,27 @@
 /**
- * Company details used by the legal pages (Impressum, Privacy, Terms).
+ * Company details used by the legal pages (Impressum, Datenschutz, AGB)
+ * and contact CTAs.
  *
- * ⚠️ FILL THESE IN before announcing the site to real customers — the
- * bracketed values render as-is on /legal/* pages. This is the only file
- * you need to edit.
+ * ⚠️ FILL IN the bracketed values before announcing the site — they render
+ * as-is on /legal/*. This is the only file you need to edit.
  */
 export const COMPANY = {
-  legalName: "[Your Company Legal Name]",
+  brand: "hey247",
+  legalName: "flexC GmbH",
   address: {
-    street: "[Street and Number]",
-    zipCity: "[ZIP City]",
-    country: "[Country]",
+    street: "[Straße und Hausnummer]",
+    zipCity: "[PLZ Ort]",
+    country: "Deutschland",
   },
-  representative: "[Full Name of Managing Director / Owner]",
-  email: "hello@agentstudio.tech",
-  salesEmail: "sales@agentstudio.tech",
-  privacyEmail: "privacy@agentstudio.tech",
-  /** Commercial register entry, e.g. "HRB 12345, Amtsgericht Berlin" — or "" if none */
+  representative: "[Name der Geschäftsführung]",
+  email: "hallo@hey247.de",
+  pilotEmail: "pilot@hey247.de",
+  privacyEmail: "datenschutz@hey247.de",
+  /** Handelsregister, z. B. "HRB 12345, Amtsgericht Berlin" — oder "" */
   register: "",
-  /** VAT ID (USt-IdNr.), e.g. "DE123456789" — or "" if none */
+  /** USt-IdNr., z. B. "DE123456789" — oder "" */
   vatId: "",
   website: "https://agentstudio.tech",
 } as const;
 
-export const LEGAL_LAST_UPDATED = "July 27, 2026";
+export const LEGAL_LAST_UPDATED = "27. Juli 2026";

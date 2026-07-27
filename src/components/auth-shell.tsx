@@ -20,10 +20,9 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
 export function DemoModeCard({ label }: { label: string }) {
   return (
     <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 text-center">
-      <h1 className="text-xl font-semibold">Demo mode</h1>
+      <h1 className="text-xl font-semibold">Demo-Modus</h1>
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-        Clerk keys aren&apos;t configured, so {label} is disabled and the app runs
-        with a shared demo workspace. Add{" "}
+        Es sind keine Clerk-Keys hinterlegt — {label} ist deaktiviert und die App läuft mit einem gemeinsamen Demo-Workspace. Hinterlege{" "}
         <code className="rounded bg-secondary px-1.5 py-0.5 text-xs">
           NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
         </code>{" "}
@@ -31,11 +30,11 @@ export function DemoModeCard({ label }: { label: string }) {
         <code className="rounded bg-secondary px-1.5 py-0.5 text-xs">
           CLERK_SECRET_KEY
         </code>{" "}
-        to enable real accounts.
+        , um echte Konten zu aktivieren.
       </p>
       <Button className="mt-6 w-full" asChild>
         <Link href="/dashboard">
-          Enter demo dashboard
+          Demo-Dashboard öffnen
           <ArrowRight className="size-4" />
         </Link>
       </Button>

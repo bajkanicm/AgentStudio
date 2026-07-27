@@ -68,7 +68,7 @@ export function AgentWorkspace({ agent }: { agent: SerializedAgent }) {
 
   const save = async () => {
     if (!settings.name.trim() || !settings.systemPrompt.trim()) {
-      toast.error("Your agent needs a name and a system prompt.");
+      toast.error("Dein KI-Mitarbeiter braucht einen Namen und einen System-Prompt.");
       return;
     }
     setSaving(true);
@@ -79,9 +79,9 @@ export function AgentWorkspace({ agent }: { agent: SerializedAgent }) {
         body: JSON.stringify(settings),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Failed to save");
+      if (!res.ok) throw new Error(data.error ?? "Speichern fehlgeschlagen");
       setSaved(settings);
-      toast.success("Agent saved");
+      toast.success("Gespeichert");
       router.refresh();
     } catch (err) {
       toast.error((err as Error).message);
@@ -96,9 +96,9 @@ export function AgentWorkspace({ agent }: { agent: SerializedAgent }) {
       const res = await fetch(`/api/agents/${agent.id}`, { method: "DELETE" });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
-        throw new Error(data?.error ?? "Failed to delete");
+        throw new Error(data?.error ?? "Löschen fehlgeschlagen");
       }
-      toast.success("Agent deleted");
+      toast.success("KI-Mitarbeiter gelöscht");
       router.push("/dashboard/agents");
       router.refresh();
     } catch (err) {
@@ -113,7 +113,7 @@ export function AgentWorkspace({ agent }: { agent: SerializedAgent }) {
       {/* Header */}
       <div className="flex items-center gap-3 border-b border-border px-4 py-3 sm:px-6">
         <Button variant="ghost" size="icon" className="shrink-0" asChild>
-          <Link href="/dashboard/agents" aria-label="Back to agents">
+          <Link href="/dashboard/agents" aria-label="Zurück zur Übersicht">
             <ArrowLeft className="size-4" />
           </Link>
         </Button>
@@ -124,21 +124,21 @@ export function AgentWorkspace({ agent }: { agent: SerializedAgent }) {
           <h1 className="truncate font-medium leading-tight">{settings.name}</h1>
           <p className="hidden truncate text-xs text-muted-foreground sm:block">
             {template?.name ?? agent.templateSlug}
-            {dirty && " · unsaved changes"}
+            {dirty && " · ungespeicherte Änderungen"}
           </p>
         </div>
         <Badge
           variant="outline"
           className="hidden shrink-0 text-[10px] uppercase md:inline-flex"
         >
-          {settings.model === "auto" ? "auto model" : settings.model}
+          {settings.model === "auto" ? "Auto-Modell" : settings.model}
         </Badge>
         <Button
           variant="ghost"
           size="icon"
           className="shrink-0 text-muted-foreground hover:text-destructive"
           onClick={() => setConfirmDelete(true)}
-          aria-label="Delete agent"
+          aria-label="KI-Mitarbeiter löschen"
         >
           <Trash2 className="size-4" />
         </Button>
@@ -149,7 +149,7 @@ export function AgentWorkspace({ agent }: { agent: SerializedAgent }) {
           className={cn("shrink-0", dirty && "glow-primary")}
         >
           {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
-          <span className="hidden sm:inline">{dirty ? "Save changes" : "Saved"}</span>
+          <span className="hidden sm:inline">{dirty ? "Speichern" : "Gespeichert"}</span>
         </Button>
       </div>
 
@@ -158,7 +158,7 @@ export function AgentWorkspace({ agent }: { agent: SerializedAgent }) {
         {(
           [
             { key: "chat", label: "Playground", icon: MessageSquare },
-            { key: "settings", label: "Customize", icon: Settings2 },
+            { key: "settings", label: "Anpassen", icon: Settings2 },
           ] as const
         ).map((t) => (
           <button
@@ -214,10 +214,10 @@ export function AgentWorkspace({ agent }: { agent: SerializedAgent }) {
           <div className="mb-5 hidden lg:block">
             <h2 className="flex items-center gap-2 font-medium">
               <Settings2 className="size-4 text-primary" />
-              Customize
+              Anpassen
             </h2>
             <p className="mt-1 text-xs text-muted-foreground">
-              Changes apply to the playground instantly — hit save to keep them.
+              Änderungen gelten sofort im Playground — Speichern macht sie dauerhaft.
             </p>
           </div>
           <AgentSettingsForm value={settings} onChange={setSettings} compact />
@@ -228,19 +228,18 @@ export function AgentWorkspace({ agent }: { agent: SerializedAgent }) {
       <Dialog open={confirmDelete} onOpenChange={setConfirmDelete}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete “{settings.name}”?</DialogTitle>
+            <DialogTitle>„{settings.name}“ löschen?</DialogTitle>
             <DialogDescription>
-              This permanently removes the agent and its conversation history.
-              This can&apos;t be undone.
+              Das entfernt den KI-Mitarbeiter und seine Gesprächshistorie dauerhaft. Das lässt sich nicht rückgängig machen.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setConfirmDelete(false)} disabled={deleting}>
-              Cancel
+              Abbrechen
             </Button>
             <Button variant="destructive" onClick={remove} disabled={deleting}>
               {deleting && <Loader2 className="size-4 animate-spin" />}
-              Delete agent
+              Endgültig löschen
             </Button>
           </DialogFooter>
         </DialogContent>

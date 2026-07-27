@@ -43,8 +43,8 @@ services:
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASS: ${SMTP_PASS:-}
-      NOTIFY_EMAIL_TO: ${NOTIFY_EMAIL_TO:-sales@agentstudio.tech}
-      NOTIFY_EMAIL_FROM: ${NOTIFY_EMAIL_FROM:-AgentStudio <notifications@agentstudio.tech>}
+      NOTIFY_EMAIL_TO: ${NOTIFY_EMAIL_TO:-pilot@hey247.de}
+      NOTIFY_EMAIL_FROM: ${NOTIFY_EMAIL_FROM:-hey247 <notifications@hey247.de>}
     ports:
       # Only exposed to localhost — Nginx terminates TLS and proxies here.
       - "127.0.0.1:3000:3000"

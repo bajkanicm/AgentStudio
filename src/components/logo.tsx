@@ -1,22 +1,24 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
+/** hey247 wordmark: "hey" + orange "24" + "7" (deck branding). */
 export function Logo({ className, href = "/" }: { className?: string; href?: string }) {
   return (
     <Link
       href={href}
-      className={cn("group inline-flex items-center gap-2.5 font-semibold", className)}
+      className={cn(
+        "inline-flex items-baseline font-logo text-2xl font-bold tracking-tight",
+        className
+      )}
     >
-      <span className="glow-primary relative flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white">
-        <BotMark className="size-4.5" />
-      </span>
-      <span className="text-lg tracking-tight">
-        Agent<span className="text-gradient-accent">Studio</span>
-      </span>
+      <span>hey</span>
+      <span className="text-primary">24</span>
+      <span>7</span>
     </Link>
   );
 }
 
+/** Small phone-bot mark used in chat headers and the favicon-style badge. */
 export function BotMark({ className }: { className?: string }) {
   return (
     <svg

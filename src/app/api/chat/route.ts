@@ -39,25 +39,25 @@ const bodySchema = z.object({
 export async function POST(req: NextRequest) {
   const user = await requireDbUser();
   if (!user) {
-    return NextResponse.json({ error: "Sign in to chat" }, { status: 401 });
+    return NextResponse.json({ error: "Bitte melde dich an, um zu chatten" }, { status: 401 });
   }
 
   const parsed = bodySchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    return NextResponse.json({ error: "Ungültige Anfrage" }, { status: 400 });
   }
   const { messages, config, conversationId } = parsed.data;
 
   const template = getTemplate(config.templateSlug);
   if (!template) {
-    return NextResponse.json({ error: "Unknown agent template" }, { status: 400 });
+    return NextResponse.json({ error: "Unbekannte Vorlage" }, { status: 400 });
   }
 
   const usage = await getUsage(user.id, user.plan);
   if (overMessageLimit(usage)) {
     return NextResponse.json(
       {
-        error: `You've used all ${usage.messagesLimit} messages on the ${usage.planName} plan this month. Upgrade to keep chatting.`,
+        error: `Du hast alle ${usage.messagesLimit} Nachrichten deines Plans „${usage.planName}" für diesen Monat verbraucht.`,
       },
       { status: 429 }
     );
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
       where: { id: config.agentId, userId: user.id },
     });
     if (!agent) {
-      return NextResponse.json({ error: "Agent not found" }, { status: 404 });
+      return NextResponse.json({ error: "KI-Mitarbeiter nicht gefunden" }, { status: 404 });
     }
   }
 

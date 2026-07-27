@@ -20,11 +20,11 @@ import {
 } from "lucide-react";
 
 const NAV = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
-  { href: "/dashboard/templates", label: "Templates", icon: Blocks },
-  { href: "/dashboard/agents", label: "My Agents", icon: Bot },
-  { href: "/dashboard/usage", label: "Usage", icon: Gauge },
-  { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
+  { href: "/dashboard", label: "Übersicht", icon: LayoutDashboard, exact: true },
+  { href: "/dashboard/templates", label: "Vorlagen", icon: Blocks },
+  { href: "/dashboard/agents", label: "KI-Mitarbeiter", icon: Bot },
+  { href: "/dashboard/usage", label: "Nutzung", icon: Gauge },
+  { href: "/dashboard/billing", label: "Abrechnung", icon: CreditCard },
 ];
 
 export interface ShellUser {
@@ -63,7 +63,7 @@ export function DashboardShell({
         <button
           onClick={() => setMobileOpen((v) => !v)}
           className="rounded-md p-2 text-muted-foreground hover:text-foreground"
-          aria-label="Toggle navigation"
+          aria-label="Navigation umschalten"
           aria-expanded={mobileOpen}
         >
           {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
@@ -84,7 +84,7 @@ export function DashboardShell({
               <button
                 onClick={() => setMobileOpen(false)}
                 className="rounded-md p-2 text-muted-foreground"
-                aria-label="Close navigation"
+                aria-label="Navigation schließen"
               >
                 <X className="size-5" />
               </button>
@@ -137,20 +137,20 @@ function SidebarContent({
 
         <div className="pt-4">
           <Link
-            href="/done-for-you"
+            href="/pilot"
             className="flex items-center gap-3 rounded-lg border border-fuchsia-500/30 bg-fuchsia-500/5 px-3 py-2.5 text-sm text-fuchsia-300 transition-colors hover:bg-fuchsia-500/10"
           >
             <Handshake className="size-4.5" />
-            Get a Custom Agent
+            Pilotprogramm
             <ArrowUpRight className="ml-auto size-3.5" />
           </Link>
         </div>
       </nav>
 
       <div className="border-t border-sidebar-border p-4">
-        {user.plan === "starter" && (
+        {user.plan === "pilot" && (
           <Button size="sm" className="glow-primary mb-4 w-full" asChild>
-            <Link href="/dashboard/billing">Upgrade to Growth</Link>
+            <Link href="/dashboard/billing">Pläne ansehen</Link>
           </Button>
         )}
         <div className="flex items-center gap-3">
@@ -171,7 +171,7 @@ function SidebarContent({
         </div>
         {user.isDemo && (
           <p className="mt-3 rounded-md border border-amber-500/30 bg-amber-500/10 px-2.5 py-1.5 text-[11px] leading-snug text-amber-300">
-            Demo mode — add Clerk keys for real accounts.
+            Demo-Modus — Clerk-Keys aktivieren echte Konten.
           </p>
         )}
       </div>

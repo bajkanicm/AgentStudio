@@ -6,7 +6,7 @@ import { CreateAgentForm } from "@/components/agents/create-agent-form";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
-export const metadata = { title: "New agent" };
+export const metadata = { title: "Neuer KI-Mitarbeiter" };
 
 export default async function NewAgentPage({
   searchParams,
@@ -22,12 +22,12 @@ export default async function NewAgentPage({
       <Button variant="ghost" size="sm" className="-ml-2 text-muted-foreground" asChild>
         <Link href="/dashboard/templates">
           <ArrowLeft className="size-4" />
-          Back to templates
+          Zurück zu den Vorlagen
         </Link>
       </Button>
       <PageHeader
-        title={`New ${template.name}`}
-        description="Tune every detail now, or save with the defaults and refine later — the playground opens next."
+        title={`Neuer ${template.name}`}
+        description="Stell jetzt alles ein oder speichere mit den Voreinstellungen — danach öffnet sich der Playground."
       />
       <CreateAgentForm template={template} />
     </div>

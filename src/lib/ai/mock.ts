@@ -1,10 +1,10 @@
 import type { GenerateOptions } from "./index";
 
 /**
- * Built-in mock model. Produces believable, template-aware responses and
- * streams them word-by-word so the product is fully demoable with zero API
- * keys. Swapped out automatically as soon as OPENAI_API_KEY or
- * ANTHROPIC_API_KEY is configured.
+ * Eingebautes Mock-Modell: liefert glaubwürdige, template-spezifische
+ * deutsche Antworten und streamt sie Wort für Wort, damit das Produkt ohne
+ * API-Keys voll demonstrierbar ist. Sobald ANTHROPIC_API_KEY oder
+ * OPENAI_API_KEY gesetzt ist, übernimmt automatisch das echte Modell.
  */
 export async function* mockCompletionStream(
   opts: GenerateOptions
@@ -13,7 +13,6 @@ export async function* mockCompletionStream(
     [...opts.messages].reverse().find((m) => m.role === "user")?.content ?? "";
   const reply = composeReply(opts.templateSlug ?? inferSlug(opts.system), lastUser, opts);
 
-  // Stream in small word groups with a natural cadence.
   const words = reply.split(/(\s+)/);
   for (let i = 0; i < words.length; i += 2) {
     yield words.slice(i, i + 2).join("");
@@ -27,10 +26,10 @@ function sleep(ms: number) {
 
 function inferSlug(system: string): string {
   const s = system.toLowerCase();
-  if (s.includes("sales") || s.includes("bant")) return "sales";
-  if (s.includes("support")) return "support";
-  if (s.includes("content") || s.includes("copywriter")) return "content";
-  if (s.includes("analyst") || s.includes("data")) return "data";
+  if (s.includes("telefon")) return "telefon";
+  if (s.includes("rechnungs-mitarbeiter") || s.includes("rechnung")) return "rechnung";
+  if (s.includes("buchhaltung")) return "buchhaltung";
+  if (s.includes("angebot")) return "angebot";
   return "general";
 }
 
@@ -38,60 +37,57 @@ function composeReply(slug: string, userText: string, opts: GenerateOptions): st
   const t = userText.toLowerCase();
   const kb = extractKb(opts.system);
   const kbNote = kb
-    ? `\n\n_(Grounded in your knowledge base: "${kb.slice(0, 120)}${kb.length > 120 ? "…" : ""}")_`
+    ? `\n\n_(Aus deiner Wissensbasis: "${kb.slice(0, 110)}${kb.length > 110 ? "…" : ""}")_`
     : "";
 
   switch (slug) {
-    case "sales":
-      if (t.includes("pricing") || t.includes("price") || t.includes("cost")) {
-        return `Great question — pricing depends a lot on team size and usage, so let me make sure I point you to the right plan.\n\nA few quick questions:\n1. Roughly how many people would be using this?\n2. Is this replacing an existing tool, or a new initiative?\n3. Do you have a timeline in mind for rolling it out?\n\nOnce I know that, I can tell you whether Starter, Growth, or a custom Enterprise plan fits best — and if it makes sense, get you 15 minutes with our team.${kbNote}`;
+    case "telefon":
+      if (t.includes("dringend") || t.includes("wasserschaden") || t.includes("notfall") || t.includes("gas")) {
+        if (t.includes("gas")) {
+          return `Das nehme ich sehr ernst. **Bei Gasgeruch gilt: sofort Fenster öffnen, keine Schalter betätigen, Gebäude verlassen und den Notruf bzw. den Netzbetreiber anrufen** — das geht vor.\n\nSobald das erledigt ist: Ich habe Ihren Fall als **DRINGEND** markiert. Unter welcher Nummer erreichen wir Sie für den Rückruf?`;
+        }
+        return `Verstanden — das klingt dringend, das nehme ich sofort auf.\n\nIch habe Folgendes notiert:\n- **Anliegen:** Wasserschaden, dringend\n- **Priorität:** DRINGEND — Rückruf schnellstmöglich\n\nUnter welcher Nummer erreichen wir Sie am besten, und ist der Haupthahn schon zugedreht? Falls nicht: bitte zuerst den Haupthahn schließen.`;
       }
-      if (t.includes("competitor") || t.includes("comparing") || t.includes("vs")) {
-        return `Totally fair — you should compare. Here's the honest version:\n\n- **Where we win:** speed to value. You can customize an agent and put it to work today, or have our team build it for you end-to-end.\n- **Where others may fit better:** if you need on-prem deployment on day one, that's an Enterprise conversation.\n\nWhat's the #1 thing you're evaluating on — price, capability, or time to launch? That'll tell me quickly if we're a fit.`;
+      if (t.includes("angebot")) {
+        return `Gern schaue ich nach. Damit ich Sie richtig zuordne: Wie ist Ihr Name, und um welches Projekt ging es bei dem Angebot?\n\nIch trage das als Rückrufwunsch ein — das Team meldet sich heute noch bei Ihnen. Unter welcher Nummer sind Sie am besten erreichbar?${kbNote}`;
       }
-      return `Thanks for sharing that — sounds like there's a real need here. To make sure I'm useful, mind if I ask a couple of quick questions?\n\n1. What's the main outcome you're hoping for (more leads, faster response times, less manual work)?\n2. Who else would be involved in a decision like this?\n3. Any rough timeline?\n\nBased on your answers, I'll either point you to the right plan or set up a short call with our team.${kbNote}`;
+      return `Das kriegen wir hin. Ich trage das als Rückrufwunsch ein — das Team ist heute auf der Baustelle, meldet sich aber verlässlich zurück.\n\nIch habe notiert:\n- **Anliegen:** ${userText.slice(0, 90)}${userText.length > 90 ? "…" : ""}\n\nZwei kurze Fragen: Wie ist Ihr Name, und unter welcher Nummer erreichen wir Sie heute Nachmittag?${kbNote}`;
 
-    case "support":
-      if (t.includes("log") || t.includes("password") || t.includes("token")) {
-        return `Sorry you're hitting that — login issues are frustrating. Let's fix it step by step:\n\n1. Clear your browser cache, or try an incognito window.\n2. Request a fresh sign-in link/reset — expired tokens are the #1 cause of "invalid token" errors.\n3. Check that your system clock is set automatically (a skewed clock invalidates tokens).\n\nDid step 2 get you back in? If not, tell me what error you see now and I'll escalate with everything we've tried so far.${kbNote}`;
+    case "rechnung":
+      if (t.includes("€") || t.includes("eur") || t.match(/\d+[.,]\d{2}/)) {
+        return `Alles klar, die nehme ich auf. Aus deinen Angaben lese ich:\n\n- **Lieferant:** ${t.includes("krüger") ? "Baustoffe Krüger" : "[aus Rechnung übernehmen]"}\n- **Betrag (brutto):** ${userText.match(/\d[\d.,]*\s*€/)?.[0] ?? "[Betrag]"}\n- **Kategorie (Vorschlag):** Material\n- **Ablage:** Eingangsrechnungen → ${new Date().getFullYear()}\n\nDamit die Erfassung vollständig ist, brauche ich noch: **Rechnungsnummer, Rechnungsdatum und Fälligkeit**. Steht auf der Rechnung ein Skonto?${kbNote}`;
       }
-      if (t.includes("charge") || t.includes("refund") || t.includes("billing")) {
-        return `I completely understand — unexpected charges are upsetting, and I'll help you get this sorted.\n\nHere's what I can do right now:\n1. I've flagged the duplicate charge for review.\n2. Duplicate charges are typically reversed within 3–5 business days once confirmed.\n3. I'm escalating this to our billing team with priority, including the details you've shared.\n\nCould you confirm the last 4 digits of the invoice number (or the charge date)? That's all I need to finish the escalation.${kbNote}`;
+      if (t.includes("e-rechnung") || t.includes("pflicht")) {
+        return `Kurz und ohne Amtsdeutsch:\n\n1. **Seit 2025** müssen Betriebe im B2B-Geschäft E-Rechnungen **empfangen** können — ein PDF reicht dafür formal nicht mehr, gemeint sind strukturierte Formate wie **XRechnung** oder **ZUGFeRD**.\n2. Für das **Versenden** gelten Übergangsfristen, die schrittweise auslaufen.\n3. Praktisch heißt das: Dein Postfach bekommt XML-Anhänge — genau die lese ich automatisch aus und lege sie strukturiert ab.\n\nWillst du, dass ich dir zeige, wie eine erkannte E-Rechnung bei mir in der Ablage aussieht?`;
       }
-      if (t.includes("export")) {
-        return `Absolutely — exporting your data takes about a minute:\n\n1. Go to **Settings → Data & Privacy**.\n2. Click **Export data** and choose CSV or JSON.\n3. You'll get an email with a secure download link (valid for 24 hours).\n\nWant me to also walk you through importing that export into another tool?${kbNote}`;
-      }
-      return `Thanks for reaching out — I'm on it. To route this correctly, could you tell me:\n\n1. What you were trying to do,\n2. What happened instead (exact error text helps a lot),\n3. When it started.\n\nIf it's urgent, say the word and I'll escalate straight to a human with a full summary of this conversation.${kbNote}`;
+      return `Gern. Am schnellsten geht es so: Wirf mir den Rechnungstext einfach in den Chat (oder später die Mail direkt ins angebundene Postfach). Ich extrahiere dann **Lieferant, Nummer, Datum, Betrag und Fälligkeit** und schlage Kategorie plus Ablageort vor.\n\nFür den Steuerberater gilt die Faustregel: **ein Beleg, ein Ort, ein Schlagwort-Satz** — genau so lege ich ab, ausgerichtet an GoBD.${kbNote}`;
 
-    case "content":
-      if (t.includes("tweet") || t.includes("thread") || t.includes("social")) {
-        return `Here's a launch thread with a strong hook — three options for tweet #1, then the spine of the thread:\n\n**Hook options:**\n1. "We just shipped the feature our users threatened to build themselves."\n2. "Your analytics shouldn't need an analyst. As of today, they don't."\n3. "6 months. 14 prototypes. 1 launch. Here's what we built →"\n\n**Thread spine:**\n2/ The problem — one concrete, painful example.\n3/ What we built — one sentence, one screenshot.\n4/ How it works — 3 bullets max.\n5/ Early result or customer quote.\n6/ CTA with link + a reason to click *today*.\n\n**Strategic intent:** lead with tension, prove with specifics, close with urgency. Want me to write the full thread from option 1?${kbNote}`;
+    case "buchhaltung":
+      if (t.includes("monatsabschluss") || t.includes("steuerberater")) {
+        return `Hier ist deine Übergabe-Checkliste für den Monatsabschluss:\n\n1. **Bankumsätze** vollständig? (alle Konten, auch PayPal/Kreditkarte)\n2. **Belege zugeordnet** — ich matche Beträge und Daten automatisch und zeige dir nur die Fälle, bei denen ich unsicher bin.\n3. **Offene Posten**: unbezahlte Ausgangsrechnungen markiert.\n4. **Bar-Belege** fotografiert und kategorisiert.\n5. **Export** ans Steuerbüro — DATEV-üblich, dein Steuerberater bekommt alles vorbereitet.\n\nErfahrungswert: Wenn wir das wöchentlich 10 Minuten pflegen, ist der Abschluss am Monatsende in einer Viertelstunde durch — statt einem ganzen Abend.${kbNote}`;
       }
-      if (t.includes("email") || t.includes("sequence")) {
-        return `Here's a 4-touch cold sequence for SaaS founders — short, specific, no fluff:\n\n**Email 1 (Day 1) — The problem:** 2 sentences on the pain, 1 sentence on what you do, soft CTA ("worth a look?").\n**Email 2 (Day 3) — Proof:** one customer result with a real number. CTA: 15-min call.\n**Email 3 (Day 7) — The objection:** preempt the top objection ("too busy to switch tools") and dissolve it.\n**Email 4 (Day 12) — The breakup:** short, warm, easy out. Highest reply rate of the sequence.\n\n**Subject line options:** "quick question about {{company}}'s support load" · "how {{peer company}} cut response time 60%" · "closing the loop".\n\nWant me to draft the full copy for all four?${kbNote}`;
+      if (t.includes("bewirtung")) {
+        return `Bei Bewirtungsbelegen gilt:\n\n1. **Anlass und Teilnehmer** müssen auf dem Beleg stehen (direkt draufschreiben reicht).\n2. **70/30-Regel:** 70 % der Kosten sind als Betriebsausgabe abziehbar, die Vorsteuer dafür zu 100 %.\n3. Der Beleg muss **maschinell erstellt** sein (Registrierkasse), handschriftliche Quittungen reichen bei Restaurants nicht.\n\nMein Tipp: Foto direkt nach dem Essen machen und mir schicken — ich lege es richtig ab und erinnere dich an Anlass/Teilnehmer, solange du es noch weißt.\n\n_(Für den Einzelfall bitte den Steuerberater fragen — ich bereite vor, er entscheidet.)_`;
       }
-      return `Love it — here are 5 angles that could actually rank and convert:\n\n1. **"AI agents vs chatbots: what actually changed"** — definitional posts earn links.\n2. **"We let an AI agent run our support queue for 30 days"** — narrative + data = shares.\n3. **"The 4 agent types every SaaS team deploys first"** — maps to search intent, product-adjacent.\n4. **"How to write a system prompt that doesn't embarrass you"** — practical, low competition.\n5. **"Build vs buy: the real cost of DIY AI agents"** — bottom-of-funnel, sales-ready.\n\nMy pick: start with #3 — it matches how buyers search and showcases your product naturally. Want an outline?${kbNote}`;
+      return `Das sortieren wir. Am schnellsten: Sag mir, was du vor dir hast — Belege (Papier/Foto/Mail?) und den Bankumsatz-Zeitraum. Ich schlage dann pro Umsatz den passenden Beleg und eine Kategorie vor (Material, Fahrzeug, Werkzeug, Büro …).\n\nDu bestätigst nur noch — **du behältst das letzte Wort**, ich mache die Fleißarbeit. Und am Monatsende geht alles vorbereitet an den Steuerberater.${kbNote}`;
 
-    case "data":
-      if (t.includes("sql")) {
-        return `Here's the query:\n\n\`\`\`sql\nSELECT c.name,\n       SUM(i.amount) AS total_revenue\nFROM customers c\nJOIN invoices i ON i.customer_id = c.id\nWHERE i.status = 'paid'\n  AND i.paid_at >= NOW() - INTERVAL '12 months'\nGROUP BY c.name\nORDER BY total_revenue DESC\nLIMIT 10;\n\`\`\`\n\nIn one sentence: it sums paid invoices per customer over the trailing 12 months and returns the top 10.\n\n⚠️ One thing to verify: whether refunds live in \`invoices\` (as negative amounts) or a separate table — that changes the join.${kbNote}`;
+    case "angebot":
+      if (t.includes("aufmaß") || t.includes("wc") || t.includes("fliesen") || t.includes("bad")) {
+        return `Hier ist dein Angebotsentwurf:\n\n**Angebot — Sanierung Gäste-WC**\n\n1. **Demontage** Bestand (Waschtisch, Altfliesen im Arbeitsbereich) — 1 psch — [Preis]\n2. **Fliesenarbeiten** ca. 4 m², Wand/Boden, inkl. Kleber und Fugmasse — 4 m² — [Preis]\n3. **Waschtisch liefern und montieren**, inkl. Anschluss an Bestand — 1 St — [Preis]\n4. **Silikonfugen** sanitär, dauerelastisch — 1 psch — [Preis]\n5. **An-/Abfahrt, Entsorgung** Bauschutt — 1 psch — [Preis]\n\n_Eventualposition:_ Austausch Eckventile bei Verschleiß — 2 St — [Preis]\n\n**Vor dem Versand prüfen:** Materialqualität (Fliesenpreisklasse?), aktueller Stundensatz, Anfahrtspauschale. Sobald du mir deine Preise nennst oder sie in der Wissensbasis stehen, setze ich sie direkt ein.${kbNote}`;
       }
-      if (t.includes("churn")) {
-        return `Let's define it first: churn spike = monthly logo churn meaningfully above your trailing 6-month average.\n\n**Most likely causes, in order of how often I see them:**\n1. **A cohort effect** — a big acquisition month 11–12 months ago hitting annual renewal.\n2. **A pricing or packaging change** — check if churned accounts skew toward one plan.\n3. **A product regression** — overlay churn dates with your deploy/incident log.\n4. **One large multi-seat account** — logo churn vs revenue churn can tell different stories.\n\n**Analysis plan:** cut churned accounts by signup cohort, plan, and seat count; compare against the prior 6 months. If cut #1 lights up, it's renewal timing, not product.\n\nShare the numbers and I'll narrate what they say.${kbNote}`;
+      if (t.includes("nachfass") || t.includes("mail") || t.includes("follow")) {
+        return `Gern — hier ein Entwurf:\n\n**Betreff:** Kurze Nachfrage zu unserem Angebot\n\nGuten Tag [Name],\n\nvor zwei Wochen haben wir Ihnen unser Angebot für [Projekt] geschickt. Ich wollte kurz nachhören, ob noch Fragen offen sind — etwa zu einzelnen Positionen oder zum Zeitplan.\n\nWenn Sie mögen, reservieren wir Ihnen unverbindlich einen Termin im [Monat] — die Auftragsbücher füllen sich gerade.\n\nMit freundlichen Grüßen\n[Dein Name]\n\n**Warum so:** freundlich, konkret, mit sanftem Terminanreiz — ohne Druck. Soll ich eine kürzere Variante für WhatsApp machen?`;
       }
-      if (t.includes("mrr") || t.includes("arr")) {
-        return `Sure — the new-hire version:\n\n**MRR (Monthly Recurring Revenue):** what your subscriptions earn in a month. A $1,200/year customer = $100 MRR.\n\n**ARR (Annual Recurring Revenue):** MRR × 12. Same money, annual lens — used for planning and valuation.\n\n**The catch:** both exclude one-time revenue (setup fees, services). If someone quotes "revenue," ask *recurring or total?* — that question makes you look senior on day one.\n\nWant me to explain expansion vs contraction MRR next? That's the pair that usually follows.${kbNote}`;
-      }
-      return `Good question. Before I answer, let me restate it as something measurable — that's how we avoid vibes-based analysis.\n\n1. **Metric definition:** what exactly are we measuring, over what window, for which segment?\n2. **Data needed:** which tables/exports hold it, and how fresh are they?\n3. **Confounders:** seasonality, pricing changes, one big account.\n\nPaste some numbers or describe the tables you have, and I'll turn this into a concrete analysis with a headline finding.${kbNote}`;
+      return `Pack mir einfach deine Stichpunkte hin — Räume, Maße, Material, Arbeitsschritte — und ich mache daraus saubere Angebotspositionen mit Beschreibung, Menge und Einheit. Preise setze ich nur ein, wenn du sie mir nennst; sonst bekommst du [Preis]-Platzhalter zum Ausfüllen.\n\nFaustregel für gute Angebote: **klare Positionen, Eventualpositionen gekennzeichnet, kurze verständliche Beschreibungen.** Den Feinschliff machst du — du prüfst, du entscheidest.${kbNote}`;
 
     default:
-      return `Here's my take:\n\n${userText ? `On "${userText.slice(0, 80)}${userText.length > 80 ? "…" : ""}" — ` : ""}I'd break this into three parts: what we know, what we need to find out, and the next concrete step. Tell me a bit more about your context and I'll get specific.${kbNote}`;
+      return `Verstanden. Lass uns das in drei Schritten angehen: Was wissen wir, was fehlt noch, und was ist der nächste konkrete Schritt? Erzähl mir kurz mehr über deinen Betrieb und dein Anliegen — dann werde ich konkret.${kbNote}`;
   }
 }
 
 function extractKb(system: string): string | null {
-  const match = system.match(/--- KNOWLEDGE BASE ---\n([\s\S]*?)\n--- END KNOWLEDGE BASE ---/);
+  const match = system.match(/--- WISSENSBASIS ---\n([\s\S]*?)\n--- ENDE WISSENSBASIS ---/);
   if (!match) return null;
-  const kb = match[1].replace(/^Use the following[^\n]*\n/, "").trim();
+  const kb = match[1].replace(/^Nutze das folgende[^\n]*\n/, "").trim();
   return kb || null;
 }

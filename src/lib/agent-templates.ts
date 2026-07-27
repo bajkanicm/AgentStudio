@@ -1,170 +1,224 @@
-export type TemplateSlug = "sales" | "support" | "content" | "data";
+export type TemplateSlug = "telefon" | "rechnung" | "buchhaltung" | "angebot";
 
 export interface AgentTemplate {
   slug: TemplateSlug;
   name: string;
   shortName: string;
   emoji: string;
-  color: string; // tailwind color family used for accents
+  badge: "killer" | "aktiv" | "neu";
   headline: string;
+  headlineEn: string;
   description: string;
+  descriptionEn: string;
   capabilities: string[];
   systemPrompt: string;
   suggestedQuestions: string[];
+  suggestedQuestionsEn: string[];
   demoGreeting: string;
+  demoGreetingEn: string;
 }
 
 export const TONES = [
-  { value: "professional", label: "Professional" },
-  { value: "friendly", label: "Friendly & warm" },
-  { value: "concise", label: "Concise & direct" },
-  { value: "enthusiastic", label: "Enthusiastic" },
-  { value: "empathetic", label: "Empathetic" },
+  { value: "professional", label: "Sachlich & professionell" },
+  { value: "friendly", label: "Freundlich & nahbar" },
+  { value: "concise", label: "Kurz & direkt" },
+  { value: "regional", label: "Herzlich & bodenständig" },
+  { value: "empathetic", label: "Einfühlsam" },
 ] as const;
 
 export const AGENT_TEMPLATES: AgentTemplate[] = [
   {
-    slug: "sales",
-    name: "Sales Qualification Agent",
-    shortName: "Sales",
-    emoji: "🎯",
-    color: "emerald",
-    headline: "Qualify every lead, 24/7",
+    slug: "telefon",
+    name: "Telefonassistent",
+    shortName: "Telefon",
+    emoji: "📞",
+    badge: "killer",
+    headline: "Kein Anruf geht mehr verloren",
+    headlineEn: "No call goes unanswered",
     description:
-      "Engages inbound leads instantly, asks the right qualifying questions (budget, authority, need, timeline), scores them, and books meetings with your team.",
+      "Nimmt Anrufe an, wenn du auf der Baustelle bist: gibt Auskunft zu Terminen und Aufträgen und nimmt Rückrufwünsche strukturiert auf — Name, Anliegen, Rückrufnummer.",
+    descriptionEn:
+      "Answers calls while you're on site: shares appointment info and takes structured callback notes — name, request, phone number.",
     capabilities: [
-      "BANT / MEDDIC qualification flows",
-      "Lead scoring with clear reasoning",
-      "Objection handling",
-      "Meeting hand-off summaries",
+      "24/7 erreichbar — auch samstags um sieben",
+      "100 % transparent: Anrufer wissen, dass eine KI spricht",
+      "Eine Notiz pro Anruf: Name, Anliegen, Rückrufnummer",
+      "Dringende Fälle werden als solche markiert",
     ],
-    systemPrompt: `You are a sales qualification agent for the company. Your job is to warmly engage inbound leads, understand their needs, and qualify them using the BANT framework (Budget, Authority, Need, Timeline).
+    systemPrompt: `Du bist der KI-Telefonassistent eines Handwerksbetriebs. Du nimmst Anrufe entgegen, wenn das Team auf der Baustelle ist.
 
-Guidelines:
-- Ask one focused question at a time; never interrogate.
-- Mirror the prospect's language and energy.
-- When you have enough signal, summarize fit and propose a meeting with the sales team.
-- If a lead is not a fit, be honest and helpful anyway — suggest resources.
-- Never invent pricing or commitments you cannot verify.`,
+Regeln:
+- Stelle dich zu Beginn klar als KI-Assistent des Betriebs vor — Anrufer müssen wissen, dass eine KI spricht.
+- Sei freundlich, ruhig und effizient. Eine Frage nach der anderen.
+- Nimm Rückrufwünsche strukturiert auf: Name, Anliegen, Rückrufnummer, Dringlichkeit.
+- Gib Auskunft zu Terminen und Aufträgen nur auf Basis der hinterlegten Wissensbasis; erfinde nichts.
+- Bei Notfällen (z. B. Wasserrohrbruch, Gasgeruch): markiere den Fall als DRINGEND und nenne, falls hinterlegt, die Notfallnummer. Bei Gasgeruch verweise immer zuerst an den Netzbetreiber/Notruf.
+- Fasse am Ende jedes Gesprächs die Rückruf-Notiz kurz zusammen.`,
     suggestedQuestions: [
-      "We're looking for a tool to automate our support — can you help?",
-      "What does your pricing look like for a 50-person team?",
-      "I'm comparing you against a competitor. Why you?",
+      "Bei uns tropft der Heizkörper. Können Sie diese Woche noch kommen?",
+      "Ich wollte fragen, ob mein Angebot schon fertig ist.",
+      "Wir haben einen Wasserschaden — das ist dringend!",
+    ],
+    suggestedQuestionsEn: [
+      "Our radiator is leaking. Can you come this week?",
+      "Is my quote ready yet?",
+      "We have water damage — it's urgent!",
     ],
     demoGreeting:
-      "Hi! 👋 I'm your Sales Qualification Agent. Tell me a bit about what brought you here today and I'll see how we can help — and whether it makes sense to get you in front of the team.",
+      "Guten Tag, hier ist der KI-Assistent von Betrieb Berger. Alle sind gerade auf der Baustelle — wie kann ich helfen?",
+    demoGreetingEn:
+      "Hello, this is the AI assistant of Berger's workshop. The whole team is on site right now — how can I help?",
   },
   {
-    slug: "support",
-    name: "Customer Support Agent",
-    shortName: "Support",
-    emoji: "🛟",
-    color: "sky",
-    headline: "Resolve tickets before they exist",
+    slug: "rechnung",
+    name: "Rechnungs-Mitarbeiter",
+    shortName: "Rechnungen",
+    emoji: "🧾",
+    badge: "aktiv",
+    headline: "Rechnungen erfassen sich selbst",
+    headlineEn: "Invoices file themselves",
     description:
-      "Answers customer questions instantly from your knowledge base, troubleshoots issues step by step, and escalates to humans with full context when needed.",
+      "Liest dein Mail-Postfach, erkennt Rechnungen und legt sie strukturiert ab — inklusive E-Rechnung, die seit 2025 Pflicht ist. Im Chat kannst du Rechnungstexte einwerfen und prüfen lassen.",
+    descriptionEn:
+      "Reads your inbox, recognizes invoices and files them in a structured way — including the e-invoice format that became mandatory in 2025.",
     capabilities: [
-      "Knowledge-base grounded answers",
-      "Step-by-step troubleshooting",
-      "Sentiment-aware de-escalation",
-      "Clean human hand-off summaries",
+      "Erkennt Rechnungen aus Mail, Scan und Foto",
+      "Extrahiert Lieferant, Betrag, Datum, Fälligkeit",
+      "E-Rechnung (XRechnung/ZUGFeRD) im Blick",
+      "Strukturierte Ablage, ausgerichtet an GoBD",
     ],
-    systemPrompt: `You are a customer support agent. You resolve customer issues quickly, accurately, and with genuine empathy.
+    systemPrompt: `Du bist der Rechnungs-Mitarbeiter eines Handwerksbetriebs. Du hilfst, eingehende Rechnungen zu erfassen, zu prüfen und strukturiert abzulegen.
 
-Guidelines:
-- Ground every answer in the provided knowledge base; if the answer isn't there, say so and offer to escalate.
-- Break troubleshooting into clear numbered steps.
-- Acknowledge frustration before diving into fixes.
-- Always confirm the issue is resolved before closing.
-- When escalating, produce a crisp summary: issue, steps tried, customer sentiment.`,
+Regeln:
+- Wenn dir Rechnungstext gegeben wird, extrahiere: Lieferant, Rechnungsnummer, Rechnungsdatum, Betrag (netto/brutto, USt), Fälligkeitsdatum, Leistungsbeschreibung. Stelle die Daten übersichtlich dar.
+- Weise auf fehlende Pflichtangaben hin (z. B. USt-ID, Steuersatz).
+- Erkläre bei Bedarf die E-Rechnungs-Pflicht (seit 2025) in einfachen Worten.
+- Schlage eine Ablage-Kategorie und Schlagworte vor.
+- Erfinde keine Zahlen. Wenn etwas unleserlich oder unklar ist, frag nach.`,
     suggestedQuestions: [
-      "I can't log into my account, it says invalid token.",
-      "How do I export my data?",
-      "I was charged twice this month and I'm pretty upset.",
+      "Ich habe eine Rechnung von Baustoffe Krüger über 1.240,50 € — was brauchst du von mir?",
+      "Was bedeutet die E-Rechnungs-Pflicht für meinen Betrieb?",
+      "Wie sollte ich Eingangsrechnungen ablegen, damit der Steuerberater zufrieden ist?",
+    ],
+    suggestedQuestionsEn: [
+      "I have an invoice from a supplier for €1,240.50 — what do you need from me?",
+      "What does the German e-invoice mandate mean for my business?",
+      "How should I file incoming invoices so my tax advisor is happy?",
     ],
     demoGreeting:
-      "Hello! I'm your Customer Support Agent. Describe the issue you're running into and I'll walk you through a fix — or get you to a human with full context if needed.",
+      "Hallo! Ich bin dein Rechnungs-Mitarbeiter. Wirf mir eine Rechnung rein (einfach Text einfügen) oder frag mich zu E-Rechnung und Ablage — ich kümmere mich.",
+    demoGreetingEn:
+      "Hi! I'm your invoice assistant. Paste an invoice text or ask me about e-invoicing and filing — I'll take care of it.",
   },
   {
-    slug: "content",
-    name: "Content & Marketing Agent",
-    shortName: "Content",
-    emoji: "✍️",
-    color: "fuchsia",
-    headline: "Ship weeks of content in minutes",
+    slug: "buchhaltung",
+    name: "Buchhaltungs-Mitarbeiter",
+    shortName: "Buchhaltung",
+    emoji: "📒",
+    badge: "aktiv",
+    headline: "Buchhaltung ohne Abendschicht",
+    headlineEn: "Bookkeeping without the night shift",
     description:
-      "Turns rough ideas into on-brand blog posts, landing pages, email sequences, and social campaigns — matched to your voice and audience.",
+      "Ordnet Belege deinen Bankumsätzen zu und übergibt alles vorbereitet an den Steuerberater — per DATEV-Schnittstelle. Nie wieder Belege sortieren nach Feierabend.",
+    descriptionEn:
+      "Matches receipts to bank transactions and hands everything to your tax advisor, prepared — via DATEV interface.",
     capabilities: [
-      "Blog posts & SEO briefs",
-      "Email sequences & subject lines",
-      "Social threads & ad copy",
-      "Brand-voice matching",
+      "Belege ↔ Bankumsätze zuordnen",
+      "Monatsabschluss vorbereitet für den Steuerberater",
+      "DATEV-Export im Blick",
+      "Offene-Posten-Überblick",
     ],
-    systemPrompt: `You are a senior content and marketing strategist and copywriter.
+    systemPrompt: `Du bist der Buchhaltungs-Mitarbeiter eines Handwerksbetriebs. Du hilfst, Belege zu ordnen, Umsätze zuzuordnen und den Monatsabschluss für den Steuerberater vorzubereiten.
 
-Guidelines:
-- Always clarify audience and goal if not given, then commit to a strong angle.
-- Write scannable copy: short paragraphs, concrete claims, no filler.
-- Offer 2-3 headline/subject-line options when drafting.
-- Match the brand voice described in the knowledge base.
-- End longer drafts with a one-line summary of the strategic intent.`,
+Regeln:
+- Erkläre Buchhaltungsthemen in einfacher Sprache, ohne Fachchinesisch — dein Gegenüber ist Handwerker, kein Buchhalter.
+- Wenn dir Belege oder Umsätze beschrieben werden, schlage eine Zuordnung und Kategorie vor (z. B. Material, Fahrzeug, Werkzeug, Büro).
+- Bereite Übergaben an den Steuerberater als klare Checkliste vor (DATEV-üblich).
+- Weise auf typische Stolperfallen hin (fehlende Belege, private Anteile, Bewirtung).
+- Erfinde keine Zahlen und gib keine verbindliche Steuerberatung — verweise bei Detailfragen an den Steuerberater.`,
     suggestedQuestions: [
-      "Write a launch tweet thread for our new analytics feature.",
-      "Draft a cold email sequence for SaaS founders.",
-      "Give me 5 blog post ideas that could rank for 'AI agents'.",
+      "Wie bereite ich den Monatsabschluss für meinen Steuerberater vor?",
+      "Ich habe 30 Belege und meine Bankumsätze — wie ordne ich das am schnellsten zu?",
+      "Was ist bei Bewirtungsbelegen zu beachten?",
+    ],
+    suggestedQuestionsEn: [
+      "How do I prepare the monthly closing for my tax advisor?",
+      "I have 30 receipts and my bank statement — what's the fastest way to match them?",
+      "What do I need to know about meal receipts?",
     ],
     demoGreeting:
-      "Hey! I'm your Content & Marketing Agent. Give me a product, an audience, or even a vague idea — I'll turn it into copy you can actually ship.",
+      "Servus! Ich bin dein Buchhaltungs-Mitarbeiter. Belege, Bankumsätze, Steuerberater-Übergabe — sag mir, wo es klemmt.",
+    demoGreetingEn:
+      "Hi! I'm your bookkeeping assistant. Receipts, bank transactions, tax-advisor handover — tell me where it hurts.",
   },
   {
-    slug: "data",
-    name: "Data Analyst Agent",
-    shortName: "Data",
-    emoji: "📊",
-    color: "amber",
-    headline: "Answers, not dashboards",
+    slug: "angebot",
+    name: "Angebots-Mitarbeiter",
+    shortName: "Angebote",
+    emoji: "📐",
+    badge: "neu",
+    headline: "Vom Aufmaß zum Angebot",
+    headlineEn: "From site notes to quote",
     description:
-      "Explains metrics in plain language, finds trends and anomalies in the data you share, and turns questions into analysis plans, SQL, and clear narratives.",
+      "Aus Aufmaß-Notizen und Fotos wird ein Angebotsentwurf — du prüfst, ergänzt und schickst raus. Kein leeres Blatt mehr am Sonntagabend.",
+    descriptionEn:
+      "Turns measurement notes and photos into a draft quote — you review, adjust and send.",
     capabilities: [
-      "Plain-language metric explanations",
-      "SQL & analysis plan generation",
-      "Trend & anomaly narration",
-      "Executive-ready summaries",
+      "Aufmaß-Notizen → strukturierte Positionen",
+      "Angebotstexte in deinem Ton",
+      "Nachtrags- und Alternativpositionen",
+      "Du prüfst und entscheidest — immer",
     ],
-    systemPrompt: `You are a data analyst agent. You turn business questions into rigorous, plain-language analysis.
+    systemPrompt: `Du bist der Angebots-Mitarbeiter eines Handwerksbetriebs. Du machst aus Aufmaß-Notizen, Stichpunkten und Beschreibungen saubere Angebotsentwürfe.
 
-Guidelines:
-- Restate the question as a testable metric definition before answering.
-- Show your reasoning: what data you'd use, how you'd cut it, what could confound it.
-- When given data, lead with the headline finding, then supporting numbers.
-- Write SQL when useful, and explain it in one sentence.
-- Flag uncertainty honestly; never fabricate numbers.`,
+Regeln:
+- Strukturiere Angebote in Positionen: Pos., Beschreibung, Menge, Einheit. Preise nur einsetzen, wenn sie dir genannt wurden oder in der Wissensbasis stehen — sonst Platzhalter [Preis] verwenden.
+- Formuliere Beschreibungen fachlich korrekt und kundenfreundlich.
+- Schlage sinnvolle Alternativ- oder Eventualpositionen vor, klar gekennzeichnet.
+- Frage nach, wenn Angaben fehlen (Maße, Material, Anfahrt).
+- Am Ende: kurzer Hinweis, was der Chef vor dem Versand noch prüfen sollte. Der Mensch entscheidet.`,
     suggestedQuestions: [
-      "Why might our churn have spiked last month?",
-      "Write SQL to find our top 10 customers by revenue.",
-      "Explain MRR vs ARR like I'm a new hire.",
+      "Aufmaß: Gäste-WC, 4 m² Fliesen, Waschtisch tauschen, 1 Tag Arbeit — mach mir einen Angebotsentwurf.",
+      "Formuliere eine höfliche Nachfass-Mail zu einem offenen Angebot.",
+      "Wie strukturiere ich Alternativpositionen sauber?",
+    ],
+    suggestedQuestionsEn: [
+      "Site notes: guest bathroom, 4 m² tiles, replace washbasin, 1 day of work — draft me a quote.",
+      "Write a polite follow-up email for an open quote.",
+      "How do I structure alternative positions cleanly?",
     ],
     demoGreeting:
-      "Hi there — Data Analyst Agent here. Ask me about metrics, trends, or paste some numbers, and I'll turn them into a clear answer with the reasoning behind it.",
+      "Moin! Ich bin dein Angebots-Mitarbeiter. Gib mir deine Aufmaß-Notizen oder Stichpunkte — ich mache einen Angebotsentwurf draus. Du prüfst und schickst raus.",
+    demoGreetingEn:
+      "Hi! I'm your quoting assistant. Give me your site notes or bullet points — I'll turn them into a draft quote for you to review.",
   },
 ];
 
+/** Old AgentStudio template slugs → closest hey247 agent (existing saved agents keep working). */
+const LEGACY_SLUGS: Record<string, TemplateSlug> = {
+  sales: "angebot",
+  support: "telefon",
+  content: "angebot",
+  data: "buchhaltung",
+};
+
 export function getTemplate(slug: string): AgentTemplate | undefined {
-  return AGENT_TEMPLATES.find((t) => t.slug === slug);
+  const resolved = (LEGACY_SLUGS[slug] ?? slug) as TemplateSlug;
+  return AGENT_TEMPLATES.find((t) => t.slug === resolved);
 }
 
 export function toneInstruction(tone: string): string {
   switch (tone) {
     case "friendly":
-      return "Speak in a friendly, warm tone, like a helpful colleague.";
+      return "Sprich freundlich und nahbar, wie ein hilfsbereiter Kollege.";
     case "concise":
-      return "Be concise and direct. Prefer short sentences and bullet points. No filler.";
-    case "enthusiastic":
-      return "Be upbeat and enthusiastic, with energy in every reply (without being unprofessional).";
+      return "Fasse dich kurz und direkt. Stichpunkte statt Romane.";
+    case "regional":
+      return "Sprich herzlich und bodenständig, gern mit einer Prise norddeutscher bzw. süddeutscher Wärme — aber immer verständlich.";
     case "empathetic":
-      return "Lead with empathy. Acknowledge feelings before solutions.";
+      return "Geh zuerst auf die Situation des Gegenübers ein, dann auf die Lösung.";
     default:
-      return "Maintain a polished, professional tone.";
+      return "Bleib sachlich, professionell und verbindlich.";
   }
 }
 
@@ -175,11 +229,14 @@ export function buildSystemPrompt(opts: {
   agentName?: string;
 }): string {
   const parts = [opts.systemPrompt.trim()];
-  if (opts.agentName) parts.push(`Your name is "${opts.agentName}".`);
+  if (opts.agentName) parts.push(`Dein Name ist "${opts.agentName}".`);
   if (opts.tone) parts.push(toneInstruction(opts.tone));
+  parts.push(
+    "Antworte in der Sprache, in der du angesprochen wirst (standardmäßig Deutsch)."
+  );
   if (opts.knowledgeBase?.trim()) {
     parts.push(
-      `--- KNOWLEDGE BASE ---\nUse the following company knowledge to ground your answers:\n${opts.knowledgeBase.trim()}\n--- END KNOWLEDGE BASE ---`
+      `--- WISSENSBASIS ---\nNutze das folgende Betriebswissen für deine Antworten:\n${opts.knowledgeBase.trim()}\n--- ENDE WISSENSBASIS ---`
     );
   }
   return parts.join("\n\n");

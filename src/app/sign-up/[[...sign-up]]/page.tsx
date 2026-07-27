@@ -1,7 +1,7 @@
 import { clerkEnabled } from "@/lib/auth";
 import { AuthShell, DemoModeCard } from "@/components/auth-shell";
 
-export const metadata = { title: "Start free" };
+export const metadata = { title: "Registrieren" };
 
 export default async function SignUpPage() {
   if (clerkEnabled) {
@@ -14,7 +14,7 @@ export default async function SignUpPage() {
   }
   return (
     <AuthShell>
-      <DemoModeCard label="sign-up" />
+      <DemoModeCard label="die Registrierung" />
     </AuthShell>
   );
 }

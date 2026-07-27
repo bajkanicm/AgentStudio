@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { clerkEnabled, requireDbUser } from "@/lib/auth";
+import { getPlan } from "@/lib/plans";
 import { DashboardShell } from "@/components/dashboard/shell";
 
 export const dynamic = "force-dynamic";
@@ -23,7 +24,7 @@ export default async function DashboardLayout({
       user={{
         name: user.name,
         email: user.email,
-        plan: user.plan,
+        plan: getPlan(user.plan).id,
         isDemo: !clerkEnabled,
       }}
       userButton={userButton}

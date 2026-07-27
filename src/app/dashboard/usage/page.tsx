@@ -9,7 +9,7 @@ import { PageHeader } from "@/components/dashboard/page-header";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export const metadata = { title: "Usage" };
+export const metadata = { title: "Nutzung" };
 
 export default async function UsagePage() {
   const user = await requireDbUser();
@@ -31,28 +31,28 @@ export default async function UsagePage() {
 
   const rows = [
     {
-      label: "Messages",
+      label: "Nachrichten",
       used: usage.messagesUsed,
       limit: usage.messagesLimit,
-      note: "Assistant replies count toward your monthly limit.",
+      note: "Antworten der KI-Mitarbeiter zählen auf dein Monatslimit.",
     },
     {
-      label: "Saved agents",
+      label: "Gespeicherte KI-Mitarbeiter",
       used: usage.agentsUsed,
       limit: usage.agentsLimit,
-      note: "Custom agents saved from templates.",
+      note: "Aus Vorlagen angepasste und gespeicherte KI-Mitarbeiter.",
     },
   ];
 
   return (
     <div className="mx-auto max-w-6xl space-y-10 p-4 sm:p-6 lg:p-10">
       <PageHeader
-        title="Usage & limits"
-        description={`${plan.name} plan · counters reset ${nextResetLabel()}`}
+        title="Nutzung & Limits"
+        description={`Plan ${plan.name} · Zähler starten am ${nextResetLabel()} neu`}
         actions={
-          user.plan !== "enterprise" && (
+          getPlan(user.plan).id !== "komplett" && (
             <Button className="glow-primary" asChild>
-              <Link href="/dashboard/billing">Upgrade plan</Link>
+              <Link href="/dashboard/billing">Pläne ansehen</Link>
             </Button>
           )
         }
@@ -68,7 +68,7 @@ export default async function UsagePage() {
                 <h2 className="font-medium">{row.label}</h2>
                 <p className="text-sm text-muted-foreground">
                   {row.used.toLocaleString()}
-                  {row.limit === -1 ? " · unlimited" : ` / ${row.limit.toLocaleString()}`}
+                  {row.limit === -1 ? " · unbegrenzt" : ` / ${row.limit.toLocaleString()}`}
                 </p>
               </div>
               <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-secondary">
@@ -94,9 +94,9 @@ export default async function UsagePage() {
       <div className="rounded-2xl border border-border bg-card p-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h2 className="font-medium">Token consumption</h2>
+            <h2 className="font-medium">Token-Verbrauch</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Estimated tokens processed across all your agents this month.
+              Geschätzte Tokens über alle KI-Mitarbeiter diesen Monat.
             </p>
           </div>
           <p className="text-3xl font-semibold tracking-tight">
@@ -107,19 +107,19 @@ export default async function UsagePage() {
 
       {/* Recent conversations */}
       <section>
-        <h2 className="mb-4 text-lg font-semibold">Recent conversations</h2>
+        <h2 className="mb-4 text-lg font-semibold">Letzte Gespräche</h2>
         {recentConversations.length === 0 ? (
           <p className="rounded-2xl border border-dashed border-border bg-card/50 p-8 text-center text-sm text-muted-foreground">
-            No conversations yet — open an agent and start chatting.
+            Noch keine Gespräche — öffne einen KI-Mitarbeiter und leg los.
           </p>
         ) : (
           <div className="overflow-hidden rounded-2xl border border-border">
             <table className="w-full text-sm">
               <thead className="bg-secondary/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
                 <tr>
-                  <th className="px-4 py-3 font-medium">Conversation</th>
-                  <th className="hidden px-4 py-3 font-medium sm:table-cell">Agent</th>
-                  <th className="px-4 py-3 text-right font-medium">Messages</th>
+                  <th className="px-4 py-3 font-medium">Gespräch</th>
+                  <th className="hidden px-4 py-3 font-medium sm:table-cell">KI-Mitarbeiter</th>
+                  <th className="px-4 py-3 text-right font-medium">Nachrichten</th>
                   <th className="hidden px-4 py-3 text-right font-medium sm:table-cell">
                     Tokens
                   </th>
@@ -165,5 +165,5 @@ export default async function UsagePage() {
 function nextResetLabel(): string {
   const now = new Date();
   const next = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-  return next.toLocaleDateString("en-US", { month: "long", day: "numeric" });
+  return next.toLocaleDateString("de-DE", { day: "numeric", month: "long" });
 }

@@ -10,8 +10,8 @@
  * Recipient/sender via NOTIFY_EMAIL_TO / NOTIFY_EMAIL_FROM.
  */
 
-const TO = process.env.NOTIFY_EMAIL_TO ?? "sales@agentstudio.tech";
-const FROM = process.env.NOTIFY_EMAIL_FROM ?? "AgentStudio <notifications@agentstudio.tech>";
+const TO = process.env.NOTIFY_EMAIL_TO ?? "pilot@hey247.de";
+const FROM = process.env.NOTIFY_EMAIL_FROM ?? "hey247 <notifications@hey247.de>";
 
 export async function notifyTeam(subject: string, text: string): Promise<void> {
   try {

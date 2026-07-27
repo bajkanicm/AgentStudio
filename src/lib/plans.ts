@@ -1,4 +1,4 @@
-export type PlanId = "starter" | "growth" | "enterprise";
+export type PlanId = "pilot" | "basis" | "komplett";
 
 export interface Plan {
   id: PlanId;
@@ -6,77 +6,75 @@ export interface Plan {
   price: string;
   priceNote: string;
   tagline: string;
-  cta: string;
-  ctaHref: string;
-  highlighted?: boolean;
   limits: {
-    messagesPerMonth: number; // -1 = unlimited
-    agents: number; // -1 = unlimited
+    messagesPerMonth: number; // -1 = unbegrenzt
+    agents: number; // -1 = unbegrenzt
     knowledgeBaseChars: number;
   };
   features: string[];
 }
 
+/**
+ * App-interne Pläne (Nutzungslimits im Dashboard). Die Marketing-Preise
+ * (Basis 99 € / KI-Mitarbeiter ab 29 € / Einrichtung einmalig) leben in
+ * PricingCards; hier steht, was ein Workspace technisch darf.
+ */
 export const PLANS: Plan[] = [
   {
-    id: "starter",
-    name: "Starter",
-    price: "$0",
-    priceNote: "forever free",
-    tagline: "Everything you need to try AI agents on real work.",
-    cta: "Start Free",
-    ctaHref: "/sign-up",
-    limits: { messagesPerMonth: 200, agents: 3, knowledgeBaseChars: 20_000 },
+    id: "pilot",
+    name: "Pilotbetrieb",
+    price: "0 €",
+    priceNote: "während der Pilotphase",
+    tagline: "Voller Funktionsumfang — dein Feedback ist der Preis.",
+    limits: { messagesPerMonth: 1000, agents: 5, knowledgeBaseChars: 200_000 },
     features: [
-      "All 4 ready-made agent templates",
-      "200 messages / month",
-      "Up to 3 saved custom agents",
-      "Full customization panel",
-      "Chat playground with streaming",
-      "Community support",
+      "Alle 4 KI-Mitarbeiter",
+      "1.000 Nachrichten / Monat",
+      "Bis zu 5 gespeicherte KI-Mitarbeiter",
+      "Einrichtung und Datenübernahme durch uns",
+      "Direkter Draht zum Gründerteam",
     ],
   },
   {
-    id: "growth",
-    name: "Growth",
-    price: "$49",
-    priceNote: "per month",
-    tagline: "For teams putting agents in front of customers.",
-    cta: "Upgrade to Growth",
-    ctaHref: "/dashboard/billing",
-    highlighted: true,
-    limits: { messagesPerMonth: 5000, agents: -1, knowledgeBaseChars: 500_000 },
+    id: "basis",
+    name: "Basis",
+    price: "99 €",
+    priceNote: "pro Betrieb / Monat",
+    tagline: "Dashboard, Ablage und KI-Chat — das digitale Büro im Kern.",
+    limits: { messagesPerMonth: 2000, agents: 5, knowledgeBaseChars: 500_000 },
     features: [
-      "Everything in Starter",
-      "5,000 messages / month",
-      "Unlimited saved agents",
-      "GPT + Claude model routing",
-      "Larger knowledge bases (500k chars)",
-      "Priority email support",
-      "Usage analytics",
+      "Alle 4 KI-Mitarbeiter",
+      "2.000 Nachrichten / Monat",
+      "Bis zu 5 gespeicherte KI-Mitarbeiter",
+      "Claude + GPT Modell-Routing",
+      "E-Mail-Support",
     ],
   },
   {
-    id: "enterprise",
-    name: "Enterprise",
-    price: "Custom",
-    priceNote: "annual contract",
-    tagline: "Done-for-you agents, built and managed by our team.",
-    cta: "Book a Call",
-    ctaHref: "/done-for-you",
+    id: "komplett",
+    name: "Basis + KI-Mitarbeiter",
+    price: "ab 128 €",
+    priceNote: "pro Betrieb / Monat",
+    tagline: "Basis plus aktivierte KI-Mitarbeiter nach Bedarf.",
     limits: { messagesPerMonth: -1, agents: -1, knowledgeBaseChars: -1 },
     features: [
-      "Everything in Growth",
-      "Unlimited messages & agents",
-      "Custom agents built by our team",
-      "Private integrations (CRM, helpdesk, data)",
-      "Dedicated success manager",
-      "SLA & security review",
-      "White-label options",
+      "Unbegrenzte Nachrichten & KI-Mitarbeiter",
+      "Telefonassistent (79–149 €)",
+      "Buchhaltungs-Mitarbeiter (ab 29 €)",
+      "DATEV-Übergabe an den Steuerberater",
+      "Bevorzugter Support",
     ],
   },
 ];
 
+/** Alte AgentStudio-Plan-IDs → hey247-Pläne (bestehende Nutzer). */
+const LEGACY_PLAN_IDS: Record<string, PlanId> = {
+  starter: "pilot",
+  growth: "basis",
+  enterprise: "komplett",
+};
+
 export function getPlan(id: string): Plan {
-  return PLANS.find((p) => p.id === id) ?? PLANS[0];
+  const resolved = LEGACY_PLAN_IDS[id] ?? id;
+  return PLANS.find((p) => p.id === resolved) ?? PLANS[0];
 }

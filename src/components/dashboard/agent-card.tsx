@@ -39,7 +39,7 @@ export function AgentCard({
         {typeof conversationCount === "number" && (
           <span className="inline-flex items-center gap-1">
             <MessageSquare className="size-3.5" />
-            {conversationCount} chat{conversationCount === 1 ? "" : "s"}
+            {conversationCount} Gespräch{conversationCount === 1 ? "" : "e"}
           </span>
         )}
         <span className="ml-auto capitalize">{agent.tone}</span>

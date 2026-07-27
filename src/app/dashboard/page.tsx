@@ -18,7 +18,7 @@ import {
   Handshake,
 } from "lucide-react";
 
-export const metadata = { title: "Dashboard" };
+export const metadata = { title: "Übersicht" };
 
 export default async function DashboardPage() {
   const user = await requireDbUser();
@@ -34,27 +34,27 @@ export default async function DashboardPage() {
     }),
   ]);
 
-  const firstName = user.name?.split(" ")[0] ?? "there";
+  const firstName = user.name?.split(" ")[0] ?? "Chef";
   const msgPct =
     usage.messagesLimit === -1 ? 0 : usage.messagesUsed / usage.messagesLimit;
 
   return (
     <div className="mx-auto max-w-6xl space-y-10 p-4 sm:p-6 lg:p-10">
       <PageHeader
-        title={`Welcome back, ${firstName}`}
-        description="Here's what your agents have been up to this month."
+        title={`Willkommen zurück, ${firstName}`}
+        description="Das haben deine KI-Mitarbeiter diesen Monat geschafft."
         actions={
           <>
             <Button variant="outline" asChild>
-              <Link href="/done-for-you">
+              <Link href="/pilot">
                 <Handshake className="size-4" />
-                Contact Sales
+                Pilotprogramm
               </Link>
             </Button>
             <Button asChild>
               <Link href="/dashboard/templates">
                 <Plus className="size-4" />
-                New Agent
+                Neuer KI-Mitarbeiter
               </Link>
             </Button>
           </>
@@ -64,35 +64,35 @@ export default async function DashboardPage() {
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          label="Messages this month"
+          label="Nachrichten diesen Monat"
           value={usage.messagesUsed.toLocaleString()}
           hint={
             usage.messagesLimit === -1
-              ? "Unlimited on your plan"
-              : `of ${usage.messagesLimit.toLocaleString()} on ${usage.planName}`
+              ? "Unbegrenzt in deinem Plan"
+              : `von ${usage.messagesLimit.toLocaleString()} im Plan ${usage.planName}`
           }
           progress={usage.messagesLimit === -1 ? undefined : msgPct}
           icon={<MessageSquare className="size-4.5" />}
         />
         <StatCard
-          label="Conversations"
+          label="Gespräche"
           value={usage.conversations.toLocaleString()}
-          hint="Started this month"
+          hint="Diesen Monat gestartet"
           icon={<MessagesSquare className="size-4.5" />}
         />
         <StatCard
-          label="Tokens used"
+          label="Verbrauchte Tokens"
           value={formatTokens(usage.tokensUsed)}
-          hint="Estimated across all agents"
+          hint="Geschätzt über alle KI-Mitarbeiter"
           icon={<Coins className="size-4.5" />}
         />
         <StatCard
-          label="Saved agents"
+          label="KI-Mitarbeiter"
           value={String(usage.agentsUsed)}
           hint={
             usage.agentsLimit === -1
-              ? "Unlimited on your plan"
-              : `of ${usage.agentsLimit} available`
+              ? "Unbegrenzt in deinem Plan"
+              : `von ${usage.agentsLimit} verfügbar`
           }
           progress={
             usage.agentsLimit === -1 ? undefined : usage.agentsUsed / usage.agentsLimit
@@ -102,18 +102,18 @@ export default async function DashboardPage() {
       </div>
 
       {/* Upgrade banner for starter plan near limit */}
-      {usage.planId === "starter" && msgPct > 0.6 && (
+      {usage.planId === "pilot" && msgPct > 0.6 && (
         <div className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-primary/40 bg-primary/10 p-5 sm:flex-row sm:items-center">
           <div>
             <p className="font-medium">
-              You&apos;ve used {Math.round(msgPct * 100)}% of your free messages
+              Du hast {Math.round(msgPct * 100)} % deiner Nachrichten verbraucht
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Upgrade to Growth for 5,000 messages/month and unlimited agents.
+              Sprich mit uns über den passenden Plan für deinen Betrieb.
             </p>
           </div>
           <Button className="glow-primary shrink-0" asChild>
-            <Link href="/dashboard/billing">Upgrade now</Link>
+            <Link href="/dashboard/billing">Pläne ansehen</Link>
           </Button>
         </div>
       )}
@@ -121,11 +121,11 @@ export default async function DashboardPage() {
       {/* My agents */}
       <section>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Your agents</h2>
+          <h2 className="text-lg font-semibold">Deine KI-Mitarbeiter</h2>
           {agents.length > 0 && (
             <Button variant="ghost" size="sm" asChild>
               <Link href="/dashboard/agents">
-                View all
+                Alle ansehen
                 <ArrowRight className="size-3.5" />
               </Link>
             </Button>
@@ -134,10 +134,9 @@ export default async function DashboardPage() {
         {agents.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border bg-card/50 p-10 text-center">
             <Bot className="mx-auto size-10 text-muted-foreground/50" />
-            <p className="mt-4 font-medium">No agents yet</p>
+            <p className="mt-4 font-medium">Noch keine KI-Mitarbeiter</p>
             <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
-              Pick a template below and customize it — your first agent can be
-              live in under two minutes.
+              Wähle unten eine Vorlage und pass sie an — dein erster KI-Mitarbeiter ist in unter zwei Minuten startklar.
             </p>
           </div>
         ) : (
@@ -156,10 +155,10 @@ export default async function DashboardPage() {
       {/* Quick-start templates */}
       <section>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Start from a template</h2>
+          <h2 className="text-lg font-semibold">Mit einer Vorlage starten</h2>
           <Button variant="ghost" size="sm" asChild>
             <Link href="/dashboard/templates">
-              Browse all
+              Alle Vorlagen
               <ArrowRight className="size-3.5" />
             </Link>
           </Button>

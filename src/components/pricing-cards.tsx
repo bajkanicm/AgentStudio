@@ -1,52 +1,104 @@
-import Link from "next/link";
-import { PLANS } from "@/lib/plans";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Check } from "lucide-react";
-import { cn } from "@/lib/utils";
+import type { Locale } from "@/lib/locale";
 
-/** Pricing tier cards — shared by the landing section and /pricing page. */
-export function PricingCards() {
+const COPY = {
+  de: {
+    note: "Geplante Spannen — dein Feedback als Pilotbetrieb entscheidet mit.",
+    foerder:
+      "Digitalisierungsförderungen der Länder und des Bundes können die Kosten deutlich senken — wir helfen beim Antrag.",
+    cards: [
+      {
+        dark: true,
+        label: "Basis",
+        price: "99 €",
+        unit: "pro Betrieb / Monat",
+        text: "Dashboard, Ablage und KI-Chat — das digitale Büro im Kern.",
+      },
+      {
+        dark: false,
+        label: "KI-Mitarbeiter",
+        price: "ab 29 €",
+        unit: "pro Mitarbeiter / Monat",
+        text: "Buchhaltung ab 29 €, Telefonassistent 79–149 €. Nur zahlen, was du nutzt.",
+      },
+      {
+        dark: false,
+        label: "Einrichtung",
+        price: "einmalig",
+        unit: "Onboarding-Paket",
+        text: "Wir übernehmen deine Daten und richten alles ein — du fängst nicht bei null an.",
+      },
+    ],
+  },
+  en: {
+    note: "Planned ranges — your feedback as a pilot business shapes them.",
+    foerder:
+      "German federal and state digitalization grants can significantly lower the cost — we help with the application.",
+    cards: [
+      {
+        dark: true,
+        label: "Base",
+        price: "€99",
+        unit: "per business / month",
+        text: "Dashboard, filing and AI chat — the digital office at its core.",
+      },
+      {
+        dark: false,
+        label: "AI employees",
+        price: "from €29",
+        unit: "per employee / month",
+        text: "Bookkeeping from €29, phone assistant €79–149. Only pay for what you use.",
+      },
+      {
+        dark: false,
+        label: "Setup",
+        price: "one-time",
+        unit: "Onboarding package",
+        text: "We migrate your data and set everything up — you don't start from zero.",
+      },
+    ],
+  },
+} as const;
+
+/** Deck-style pricing: Basis / KI-Mitarbeiter / Einrichtung (cream section). */
+export function PricingCards({ locale = "de" }: { locale?: Locale }) {
+  const t = COPY[locale];
   return (
-    <div className="grid gap-6 lg:grid-cols-3">
-      {PLANS.map((plan) => (
-        <div
-          key={plan.id}
-          className={cn(
-            "relative flex flex-col rounded-2xl border p-7 sm:p-8",
-            plan.highlighted
-              ? "glow-primary border-primary/60 bg-gradient-to-b from-primary/10 to-card"
-              : "border-border bg-card"
-          )}
-        >
-          {plan.highlighted && (
-            <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground">
-              Most popular
-            </Badge>
-          )}
-          <h3 className="text-lg font-semibold">{plan.name}</h3>
-          <p className="mt-1 min-h-10 text-sm text-muted-foreground">{plan.tagline}</p>
-          <div className="mt-5 flex items-baseline gap-2">
-            <span className="text-4xl font-semibold tracking-tight">{plan.price}</span>
-            <span className="text-sm text-muted-foreground">{plan.priceNote}</span>
-          </div>
-          <ul className="mt-7 flex-1 space-y-3">
-            {plan.features.map((f) => (
-              <li key={f} className="flex items-start gap-2.5 text-sm">
-                <Check className="mt-0.5 size-4 shrink-0 text-emerald-400" />
-                <span className="text-muted-foreground">{f}</span>
-              </li>
-            ))}
-          </ul>
-          <Button
-            className={cn("mt-8 w-full", plan.highlighted && "glow-primary")}
-            variant={plan.highlighted ? "default" : "outline"}
-            asChild
+    <div>
+      <p className="mb-8 text-ink-muted">{t.note}</p>
+      <div className="grid gap-5 md:grid-cols-3">
+        {t.cards.map((c) => (
+          <div
+            key={c.label}
+            className={
+              c.dark
+                ? "rounded-2xl bg-background p-7 text-foreground shadow-lg"
+                : "rounded-2xl bg-cream-card p-7 shadow-sm"
+            }
           >
-            <Link href={plan.ctaHref}>{plan.cta}</Link>
-          </Button>
-        </div>
-      ))}
+            <p
+              className={
+                c.dark ? "text-sm font-semibold" : "text-sm font-semibold text-ink-muted"
+              }
+            >
+              {c.label}
+            </p>
+            <p className="mt-4 text-4xl font-bold tracking-tight">{c.price}</p>
+            <p className={c.dark ? "mt-1 text-sm text-muted-foreground" : "mt-1 text-sm text-ink-muted"}>
+              {c.unit}
+            </p>
+            <p
+              className={
+                c.dark
+                  ? "mt-5 text-sm leading-relaxed text-muted-foreground"
+                  : "mt-5 text-sm leading-relaxed text-ink-muted"
+              }
+            >
+              {c.text}
+            </p>
+          </div>
+        ))}
+      </div>
+      <p className="mt-8 text-sm text-ink-muted">{t.foerder}</p>
     </div>
   );
 }

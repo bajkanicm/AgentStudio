@@ -8,7 +8,7 @@ import { AgentCard } from "@/components/dashboard/agent-card";
 import { Button } from "@/components/ui/button";
 import { Bot, Plus } from "lucide-react";
 
-export const metadata = { title: "My Agents" };
+export const metadata = { title: "KI-Mitarbeiter" };
 
 export default async function AgentsPage() {
   const user = await requireDbUser();
@@ -24,17 +24,17 @@ export default async function AgentsPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-8 p-4 sm:p-6 lg:p-10">
       <PageHeader
-        title="My agents"
+        title="Deine KI-Mitarbeiter"
         description={
           plan.limits.agents === -1
-            ? `${agents.length} saved · unlimited on ${plan.name}`
-            : `${agents.length} of ${plan.limits.agents} saved on the ${plan.name} plan`
+            ? `${agents.length} gespeichert · unbegrenzt im Plan ${plan.name}`
+            : `${agents.length} von ${plan.limits.agents} im Plan ${plan.name}`
         }
         actions={
           <Button asChild>
             <Link href="/dashboard/templates">
               <Plus className="size-4" />
-              New Agent
+              Neuer KI-Mitarbeiter
             </Link>
           </Button>
         }
@@ -43,13 +43,12 @@ export default async function AgentsPage() {
       {agents.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-card/50 p-12 text-center">
           <Bot className="mx-auto size-12 text-muted-foreground/50" />
-          <p className="mt-4 text-lg font-medium">No saved agents yet</p>
+          <p className="mt-4 text-lg font-medium">Noch keine KI-Mitarbeiter gespeichert</p>
           <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
-            Start from a template and customize it — your agents will live here,
-            ready to reuse.
+            Starte mit einer Vorlage und pass sie an — deine KI-Mitarbeiter wohnen dann hier, bereit zum Einsatz.
           </p>
           <Button className="mt-6" asChild>
-            <Link href="/dashboard/templates">Browse templates</Link>
+            <Link href="/dashboard/templates">Vorlagen ansehen</Link>
           </Button>
         </div>
       ) : (

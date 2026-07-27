@@ -1,139 +1,135 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BotMark } from "@/components/logo";
-import { ArrowRight, Check, Phone, Sparkles } from "lucide-react";
+import { localeHref, type Locale } from "@/lib/locale";
+import { ArrowRight, Check, PhoneCall, ShieldCheck } from "lucide-react";
 
-export function Hero() {
+const COPY = {
+  de: {
+    badge: "Pilotphase — wir suchen Handwerksbetriebe, die mitgestalten",
+    h1a: "Das digitale Büro",
+    h1b: "für deinen Betrieb.",
+    sub: "KI-Mitarbeiter, die Anrufe annehmen, Rechnungen sortieren und Papierkram erledigen — damit du wieder Zeit für dein Handwerk hast.",
+    ctaPrimary: "Pilotbetrieb werden",
+    ctaSecondary: "Live ausprobieren",
+    trust: ["100 % deine Daten", "100 % in Deutschland", "Einrichtung durch uns"],
+    callHeader: "Eingehender Anruf",
+    callTime: "Di · 09:41",
+    callResult: "Rückrufwunsch angelegt",
+    callUrgent: "Dringend",
+    msg1: "Guten Tag, hier ist der KI-Assistent von Betrieb Berger. Alle sind gerade auf der Baustelle — wie kann ich helfen?",
+    msg2: "Bei uns tropft der Heizkörper. Können Sie diese Woche noch kommen?",
+    msg3: "Ich trage das als dringenden Rückruf ein. Unter welcher Nummer erreichen wir Sie heute Nachmittag?",
+  },
+  en: {
+    badge: "Pilot phase — we're looking for trade businesses to shape hey247",
+    h1a: "The digital office",
+    h1b: "for your trade business.",
+    sub: "AI employees that answer your calls, sort your invoices and handle your paperwork — so you can get back to your craft.",
+    ctaPrimary: "Become a pilot business",
+    ctaSecondary: "Try the live demo",
+    trust: ["100 % your data", "100 % hosted in Germany", "We set everything up"],
+    callHeader: "Incoming call",
+    callTime: "Tue · 09:41",
+    callResult: "Callback note created",
+    callUrgent: "Urgent",
+    msg1: "Hello, this is the AI assistant of Berger's workshop. The whole team is on site — how can I help?",
+    msg2: "Our radiator is leaking. Could you come by this week?",
+    msg3: "I'll log this as an urgent callback. What number can we reach you at this afternoon?",
+  },
+} as const;
+
+export function Hero({ locale = "de" }: { locale?: Locale }) {
+  const t = COPY[locale];
   return (
     <section className="relative overflow-hidden pt-16">
-      {/* Backdrop: grid + aurora blobs */}
       <div className="bg-grid bg-grid-fade absolute inset-0 -z-10" aria-hidden />
       <div className="absolute inset-0 -z-10 overflow-hidden" aria-hidden>
-        <div className="animate-aurora absolute -top-40 left-1/2 h-[480px] w-[720px] -translate-x-1/2 rounded-full bg-violet-600/25 blur-[120px]" />
-        <div className="animate-aurora absolute -top-20 right-[8%] h-[320px] w-[380px] rounded-full bg-fuchsia-600/15 blur-[100px] [animation-delay:-6s]" />
-        <div className="animate-aurora absolute top-40 left-[5%] h-[280px] w-[340px] rounded-full bg-indigo-600/15 blur-[100px] [animation-delay:-12s]" />
+        <div className="animate-aurora absolute -top-40 left-1/2 h-[480px] w-[720px] -translate-x-1/2 rounded-full bg-orange-600/15 blur-[120px]" />
+        <div className="animate-aurora absolute -top-20 right-[8%] h-[320px] w-[380px] rounded-full bg-emerald-700/20 blur-[100px] [animation-delay:-6s]" />
+        <div className="animate-aurora absolute top-40 left-[5%] h-[280px] w-[340px] rounded-full bg-teal-700/15 blur-[100px] [animation-delay:-12s]" />
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 pb-20 pt-16 sm:px-6 sm:pt-24 lg:px-8">
-        <div className="mx-auto max-w-3xl text-center">
-          <Badge
-            variant="outline"
-            className="animate-fade-up gap-1.5 border-primary/40 bg-primary/10 px-3 py-1.5 text-xs text-foreground"
-          >
-            <Sparkles className="size-3.5 text-primary" />
-            Powered by Claude &amp; GPT — with smart model routing
-          </Badge>
-
-          <h1 className="animate-fade-up mt-6 text-4xl font-semibold leading-[1.08] tracking-tight [animation-delay:80ms] sm:text-6xl lg:text-7xl">
-            AI agents that
-            <br />
-            <span className="text-gradient">actually do the work</span>
-          </h1>
-
-          <p className="animate-fade-up mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground [animation-delay:160ms] sm:text-lg">
-            Deploy ready-made agents for sales, support, content and data in
-            minutes. Customize every detail yourself — or have our team build
-            and manage custom agents for you.
-          </p>
-
-          <div className="animate-fade-up mt-9 flex flex-col items-center justify-center gap-3 [animation-delay:240ms] sm:flex-row">
-            <Button size="lg" className="glow-primary h-12 w-full px-7 text-base sm:w-auto" asChild>
-              <Link href="/sign-up">
-                Start Free
-                <ArrowRight className="size-4" />
-              </Link>
-            </Button>
-            <Button
-              size="lg"
+      <div className="mx-auto max-w-7xl px-4 pb-20 pt-14 sm:px-6 sm:pt-20 lg:px-8">
+        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+          {/* Copy */}
+          <div className="text-center lg:text-left">
+            <Badge
               variant="outline"
-              className="h-12 w-full px-7 text-base sm:w-auto"
-              asChild
+              className="animate-fade-up gap-1.5 border-primary/40 bg-primary/10 px-3 py-1.5 text-xs text-foreground"
             >
-              <Link href="/done-for-you">
-                <Phone className="size-4" />
-                Book a Call
-              </Link>
-            </Button>
-          </div>
+              <ShieldCheck className="size-3.5 text-primary" />
+              {t.badge}
+            </Badge>
 
-          <div className="animate-fade-up mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground [animation-delay:320ms]">
-            {["No credit card required", "4 ready-made agents", "Live in under 2 minutes"].map(
-              (t) => (
-                <span key={t} className="inline-flex items-center gap-1.5">
-                  <Check className="size-3.5 text-emerald-400" />
-                  {t}
+            <h1 className="animate-fade-up mt-6 text-4xl font-bold leading-[1.06] tracking-tight [animation-delay:80ms] sm:text-5xl xl:text-6xl">
+              {t.h1a}
+              <br />
+              <span className="text-gradient">{t.h1b}</span>
+            </h1>
+
+            <p className="animate-fade-up mx-auto mt-6 max-w-xl text-base leading-relaxed text-muted-foreground [animation-delay:160ms] sm:text-lg lg:mx-0">
+              {t.sub}
+            </p>
+
+            <div className="animate-fade-up mt-9 flex flex-col items-center gap-3 [animation-delay:240ms] sm:flex-row sm:justify-center lg:justify-start">
+              <Button size="lg" className="glow-primary h-12 w-full px-7 text-base sm:w-auto" asChild>
+                <Link href={localeHref(locale, "/pilot")}>
+                  {t.ctaPrimary}
+                  <ArrowRight className="size-4" />
+                </Link>
+              </Button>
+              <Button size="lg" variant="outline" className="h-12 w-full px-7 text-base sm:w-auto" asChild>
+                <Link href={localeHref(locale, "/#demo")}>{t.ctaSecondary}</Link>
+              </Button>
+            </div>
+
+            <div className="animate-fade-up mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground [animation-delay:320ms] lg:justify-start">
+              {t.trust.map((item) => (
+                <span key={item} className="inline-flex items-center gap-1.5">
+                  <Check className="size-3.5 text-primary" />
+                  {item}
                 </span>
-              )
-            )}
-          </div>
-        </div>
-
-        {/* Product mock */}
-        <div className="animate-fade-up relative mx-auto mt-16 max-w-4xl [animation-delay:400ms]">
-          <div className="glow-primary glass relative overflow-hidden rounded-2xl border border-border/80">
-            {/* Window chrome */}
-            <div className="flex items-center gap-2 border-b border-border/60 px-4 py-3">
-              <span className="size-3 rounded-full bg-red-500/70" />
-              <span className="size-3 rounded-full bg-yellow-500/70" />
-              <span className="size-3 rounded-full bg-green-500/70" />
-              <span className="ml-3 flex items-center gap-2 text-xs text-muted-foreground">
-                <BotMark className="size-3.5 text-primary" />
-                Sales Qualification Agent · Playground
-              </span>
-            </div>
-            {/* Static conversation preview */}
-            <div className="space-y-4 p-5 sm:p-8">
-              <MockBubble side="right">
-                We get ~200 inbound leads a month but my team only calls back a
-                fraction of them. Can this help?
-              </MockBubble>
-              <MockBubble side="left">
-                Absolutely — that&apos;s exactly what I do. I&apos;ll engage every lead
-                within seconds, qualify them on budget, authority, need and
-                timeline, and hand your team a ranked list. Quick question:
-                what&apos;s your average deal size?
-              </MockBubble>
-              <MockBubble side="right">Around $8k ARR.</MockBubble>
-              <MockBubble side="left" typing>
-                Great — at that deal size, even a 10% lift in callbacks pays for
-                itself in week one. Want me to walk you through…
-              </MockBubble>
+              ))}
             </div>
           </div>
 
-          {/* Floating agent chips */}
-          <FloatingChip className="-left-24 top-10 hidden xl:flex" emoji="🛟" label="Support Agent" note="resolving ticket #4821" />
-          <FloatingChip className="-right-28 top-32 hidden xl:flex" emoji="✍️" label="Content Agent" note="drafting launch email" />
-          <FloatingChip className="-left-28 bottom-10 hidden xl:flex" emoji="📊" label="Data Agent" note="churn analysis ready" />
-        </div>
-
-        {/* Stats */}
-        <dl className="mx-auto mt-16 grid max-w-3xl grid-cols-3 gap-4 text-center">
-          {[
-            ["1M+", "messages handled"],
-            ["500+", "teams onboarded"],
-            ["12 hrs", "saved per week, avg"],
-          ].map(([stat, label]) => (
-            <div key={label}>
-              <dt className="sr-only">{label}</dt>
-              <dd className="text-2xl font-semibold tracking-tight sm:text-4xl">{stat}</dd>
-              <dd className="mt-1 text-xs text-muted-foreground sm:text-sm">{label}</dd>
+          {/* Phone-call mock (deck slide) */}
+          <div className="animate-fade-up relative [animation-delay:400ms]">
+            <div className="glow-primary rounded-2xl border border-border/80 bg-cream-card text-ink shadow-2xl shadow-black/40">
+              <div className="flex items-center justify-between border-b border-ink/10 px-5 py-4">
+                <p className="flex items-center gap-2 text-sm font-semibold">
+                  <span className="flex size-7 items-center justify-center rounded-full bg-primary/15 text-primary">
+                    <PhoneCall className="size-3.5" />
+                  </span>
+                  {t.callHeader}
+                </p>
+                <p className="font-mono text-xs text-ink-muted">{t.callTime}</p>
+              </div>
+              <div className="space-y-3 p-5">
+                <CallBubble side="left">{t.msg1}</CallBubble>
+                <CallBubble side="right">{t.msg2}</CallBubble>
+                <CallBubble side="left">{t.msg3}</CallBubble>
+              </div>
+              <div className="flex items-center justify-between border-t border-ink/10 px-5 py-3.5">
+                <p className="text-sm text-ink-muted">{t.callResult}</p>
+                <span className="rounded-full bg-primary/15 px-3 py-1 text-xs font-medium text-primary">
+                  {t.callUrgent}
+                </span>
+              </div>
             </div>
-          ))}
-        </dl>
+          </div>
+        </div>
       </div>
     </section>
   );
 }
 
-function MockBubble({
+function CallBubble({
   side,
-  typing,
   children,
 }: {
   side: "left" | "right";
-  typing?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -141,40 +137,12 @@ function MockBubble({
       <div
         className={
           side === "right"
-            ? "max-w-[80%] rounded-2xl rounded-br-md bg-primary px-4 py-2.5 text-sm text-primary-foreground"
-            : "max-w-[80%] rounded-2xl rounded-bl-md border border-border bg-secondary/60 px-4 py-2.5 text-sm"
+            ? "max-w-[85%] rounded-xl rounded-br-sm bg-background px-4 py-2.5 text-sm text-foreground"
+            : "max-w-[85%] rounded-xl rounded-bl-sm bg-ink/5 px-4 py-2.5 text-sm"
         }
       >
         {children}
-        {typing && <span className="animate-blink ml-1 inline-block h-3.5 w-[2px] translate-y-0.5 bg-primary" />}
       </div>
-    </div>
-  );
-}
-
-function FloatingChip({
-  className,
-  emoji,
-  label,
-  note,
-}: {
-  className?: string;
-  emoji: string;
-  label: string;
-  note: string;
-}) {
-  return (
-    <div
-      className={`absolute items-center gap-2.5 rounded-xl border border-border/80 bg-card px-3.5 py-2.5 shadow-xl shadow-black/30 ${className}`}
-    >
-      <span className="text-lg">{emoji}</span>
-      <span>
-        <span className="block text-xs font-medium">{label}</span>
-        <span className="mt-0.5 flex items-center gap-1.5 text-[10px] text-muted-foreground">
-          <span className="size-1.5 animate-pulse rounded-full bg-emerald-400" />
-          {note}
-        </span>
-      </span>
     </div>
   );
 }

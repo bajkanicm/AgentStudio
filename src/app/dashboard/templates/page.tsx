@@ -4,14 +4,14 @@ import { PageHeader } from "@/components/dashboard/page-header";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check } from "lucide-react";
 
-export const metadata = { title: "Templates" };
+export const metadata = { title: "Vorlagen" };
 
 export default function TemplatesPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-8 p-4 sm:p-6 lg:p-10">
       <PageHeader
-        title="Agent templates"
-        description="Battle-tested starting points. Pick one, customize it, and it's yours."
+        title="Vorlagen"
+        description="Erprobte Startpunkte. Auswählen, anpassen, einsetzen — deine KI-Mitarbeiter."
       />
 
       <div className="grid gap-5 md:grid-cols-2">
@@ -46,7 +46,7 @@ export default function TemplatesPage() {
             <div className="mt-6 flex gap-2">
               <Button className="flex-1" asChild>
                 <Link href={`/dashboard/agents/new?template=${t.slug}`}>
-                  Use this template
+                  Vorlage verwenden
                   <ArrowRight className="size-4" />
                 </Link>
               </Button>

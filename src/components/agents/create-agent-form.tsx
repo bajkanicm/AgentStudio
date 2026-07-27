@@ -26,7 +26,7 @@ export function CreateAgentForm({ template }: { template: AgentTemplate }) {
 
   const save = async () => {
     if (!settings.name.trim() || !settings.systemPrompt.trim()) {
-      toast.error("Give your agent a name and a system prompt.");
+      toast.error("Dein KI-Mitarbeiter braucht einen Namen und einen System-Prompt.");
       return;
     }
     setSaving(true);
@@ -37,8 +37,8 @@ export function CreateAgentForm({ template }: { template: AgentTemplate }) {
         body: JSON.stringify({ ...settings, templateSlug: template.slug }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Failed to create agent");
-      toast.success("Agent created — take it for a spin!");
+      if (!res.ok) throw new Error(data.error ?? "Anlegen fehlgeschlagen");
+      toast.success("KI-Mitarbeiter angelegt — probier ihn gleich aus!");
       router.push(`/dashboard/agents/${data.agent.id}`);
       router.refresh();
     } catch (err) {
@@ -52,7 +52,7 @@ export function CreateAgentForm({ template }: { template: AgentTemplate }) {
       <AgentSettingsForm value={settings} onChange={setSettings} />
       <div className="flex items-center justify-end gap-3 border-t border-border pt-6">
         <Button variant="ghost" onClick={() => router.back()} disabled={saving}>
-          Cancel
+          Abbrechen
         </Button>
         <Button onClick={save} disabled={saving} className="min-w-36">
           {saving ? (
@@ -60,7 +60,7 @@ export function CreateAgentForm({ template }: { template: AgentTemplate }) {
           ) : (
             <Save className="size-4" />
           )}
-          Create agent
+          Anlegen
         </Button>
       </div>
     </div>

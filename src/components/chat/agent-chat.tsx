@@ -31,6 +31,7 @@ interface AgentChatProps {
   /** Compact paddings for embedding in the landing page. */
   compact?: boolean;
   emptyHint?: string;
+  placeholder?: string;
   onAssistantDone?: () => void;
 }
 
@@ -41,6 +42,7 @@ export function AgentChat({
   suggestions = [],
   className,
   compact,
+  placeholder = "Nachricht schreiben…",
   onAssistantDone,
 }: AgentChatProps) {
   const [messages, setMessages] = React.useState<ChatMessage[]>([]);
@@ -212,7 +214,7 @@ export function AgentChat({
               }
             }}
             rows={1}
-            placeholder="Type a message…"
+            placeholder={placeholder}
             className="max-h-32 min-h-9 flex-1 resize-none bg-transparent px-2 py-1.5 text-sm outline-none placeholder:text-muted-foreground"
           />
           {messages.length > 0 && (

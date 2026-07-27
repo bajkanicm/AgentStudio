@@ -27,7 +27,7 @@ export interface AgentSettings {
 }
 
 const MODELS = [
-  { value: "auto", label: "Auto (best available)" },
+  { value: "auto", label: "Auto (bestes verfügbares Modell)" },
   { value: "claude", label: "Claude (Anthropic)" },
   { value: "gpt", label: "GPT (OpenAI)" },
 ];
@@ -49,17 +49,17 @@ export function AgentSettingsForm({
     <div className={compact ? "space-y-5" : "space-y-6"}>
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="agent-name">Agent name</Label>
+          <Label htmlFor="agent-name">Name</Label>
           <Input
             id="agent-name"
             value={value.name}
             onChange={(e) => set("name", e.target.value)}
-            placeholder="e.g. Acme Sales Bot"
+            placeholder="z. B. Telefonassistent Mustermann SHK"
             maxLength={120}
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="agent-model">Model</Label>
+          <Label htmlFor="agent-model">Modell</Label>
           <Select value={value.model} onValueChange={(v) => set("model", v)}>
             <SelectTrigger id="agent-model" className="w-full">
               <SelectValue />
@@ -76,21 +76,21 @@ export function AgentSettingsForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="agent-description">Description</Label>
+        <Label htmlFor="agent-description">Beschreibung</Label>
         <Input
           id="agent-description"
           value={value.description}
           onChange={(e) => set("description", e.target.value)}
-          placeholder="What does this agent do for you?"
+          placeholder="Was übernimmt dieser KI-Mitarbeiter für dich?"
           maxLength={500}
         />
       </div>
 
       <div className="space-y-2">
         <div className="flex items-baseline justify-between">
-          <Label htmlFor="agent-prompt">System prompt</Label>
+          <Label htmlFor="agent-prompt">System-Prompt</Label>
           <span className="text-xs text-muted-foreground">
-            {value.systemPrompt.length.toLocaleString()} chars
+            {value.systemPrompt.length.toLocaleString()} Zeichen
           </span>
         </div>
         <Textarea
@@ -99,13 +99,13 @@ export function AgentSettingsForm({
           onChange={(e) => set("systemPrompt", e.target.value)}
           rows={compact ? 8 : 10}
           className="font-mono text-xs leading-relaxed"
-          placeholder="Define who this agent is, its job, and its guardrails…"
+          placeholder="Wer ist dieser KI-Mitarbeiter, was ist sein Job, wo sind seine Grenzen …"
         />
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="agent-tone">Tone / personality</Label>
+          <Label htmlFor="agent-tone">Ton / Persönlichkeit</Label>
           <Select value={value.tone} onValueChange={(v) => set("tone", v)}>
             <SelectTrigger id="agent-tone" className="w-full">
               <SelectValue />
@@ -121,7 +121,7 @@ export function AgentSettingsForm({
         </div>
         <div className="space-y-2">
           <div className="flex items-baseline justify-between">
-            <Label>Temperature</Label>
+            <Label>Temperatur</Label>
             <span className="text-xs tabular-nums text-muted-foreground">
               {value.temperature.toFixed(2)}
             </span>
@@ -135,17 +135,17 @@ export function AgentSettingsForm({
             className="py-2"
           />
           <p className="flex justify-between text-[10px] text-muted-foreground">
-            <span>Precise</span>
-            <span>Creative</span>
+            <span>Präzise</span>
+            <span>Kreativ</span>
           </p>
         </div>
       </div>
 
       <div className="space-y-2">
         <div className="flex items-baseline justify-between">
-          <Label htmlFor="agent-kb">Knowledge base</Label>
+          <Label htmlFor="agent-kb">Wissensbasis</Label>
           <span className="text-xs text-muted-foreground">
-            {value.knowledgeBase.length.toLocaleString()} chars
+            {value.knowledgeBase.length.toLocaleString()} Zeichen
           </span>
         </div>
         <Textarea
@@ -154,12 +154,12 @@ export function AgentSettingsForm({
           onChange={(e) => set("knowledgeBase", e.target.value)}
           rows={compact ? 6 : 8}
           placeholder={
-            "Paste your docs, FAQs, pricing, policies…\nThe agent grounds its answers in this content."
+            "Preise, Leistungen, Öffnungszeiten, Notfallnummern …\nDer KI-Mitarbeiter stützt seine Antworten auf dieses Wissen."
           }
         />
         <Button type="button" variant="outline" size="sm" disabled className="gap-1.5">
           <FileUp className="size-3.5" />
-          Upload files — coming soon
+          Dateien hochladen — bald verfügbar
         </Button>
       </div>
     </div>
