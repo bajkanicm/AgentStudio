@@ -1,117 +1,98 @@
-# AgentStudio — Product Status & Go-Live Guide
+# hey247 — Product Status & Go-Live Guide
 
-*Last updated: 2026-07-27 (initial production deployment).*
+*Last updated: 2026-07-27 (hey247 pivot deployed to production).*
 
+hey247 (a flexC GmbH product) is the German-first digital office for
+trade businesses, live at <https://agentstudio.tech> (later: hey247.de).
 This document answers three questions: **what is implemented**, **what is
 currently simulated**, and **exactly what to do before putting real,
-paying customers on the platform**.
+paying pilot businesses on the platform**.
 
 ---
 
 ## 1. What is implemented today
 
-Live at <https://agentstudio.tech>:
-
 | Area | Status | Notes |
 | --- | --- | --- |
-| Landing page | ✅ Production-ready | Hero, live interactive demo of all 4 agents, self-serve vs done-for-you paths, features, testimonials, pricing, FAQ, CTAs. Mobile-responsive. |
-| Live demo chat | ✅ Working | Public, streaming, no sign-up needed. Uses the mock model by default so anonymous visitors can't spend your AI budget (`DEMO_USE_REAL_AI` opts in). |
-| Authentication | ⚠️ Demo mode | Clerk fully integrated in code, but keys are not configured — everyone shares one demo workspace. |
-| Dashboard | ✅ Working | Agent overview, usage stats (messages, conversations, tokens vs plan limits), quick actions, upgrade CTAs. |
-| Agent templates | ✅ Working | Sales Qualification, Customer Support, Content & Marketing, Data Analyst — each with an engineered system prompt. |
-| Playground + customization | ✅ Working | Real-time streaming chat; edit name, system prompt, tone, temperature, knowledge base (paste-in), model routing; save/reuse agents; delete with confirm. |
-| AI responses | ⚠️ Mock model | Believable template-aware canned replies. Real Claude/GPT activates the moment API keys are set. |
-| Conversations & usage tracking | ✅ Working | Agent-bound chats persist; token estimates recorded; monthly counters enforce plan limits server-side. |
-| Plan limits | ✅ Enforced | Starter: 200 msgs/mo, 3 agents, 20k-char KB. Growth/Enterprise limits defined in `src/lib/plans.ts`. |
-| Pricing page | ✅ Production-ready | 3 tiers + detailed comparison table. |
-| Done-for-you flow | ✅ Working | Dedicated page + form; requests stored in the database (see §4 for how to read them). **No email notification yet.** |
-| Billing / payments | ❌ Mocked | Billing page shows plans; "Upgrade" opens a mailto to sales@agentstudio.tech. No Stripe. Plan changes are manual (see §4). |
+| Landing page (DE) | ✅ Production-ready | Follows the pitch deck: hero with phone-call mock, Papierkram problem section, live demo, 8 modules with Welle badges, Ablage/KI-Chat features, KI-Mitarbeiter cards + "Mensch entscheidet", Germany data-residency section, deck pricing, pilot section, FAQ. Official design-system tokens (Tannengrün/Signal-Orange, Space Grotesk + IBM Plex). |
+| English fallback | ✅ Working | Full landing, pricing and pilot pages under `/en`, EN/DE switch in the navbar. |
+| Live demo chat | ✅ Working | Public, streaming, no sign-up. All four KI-Mitarbeiter with German replies. Mock model by default so anonymous visitors can't spend your AI budget (`DEMO_USE_REAL_AI` opts in). |
+| KI-Mitarbeiter | ✅ Working | Telefonassistent (killer feature, transparent-AI rules, structured Rückruf-Notizen), Rechnungs-Mitarbeiter (E-Rechnung aware), Buchhaltungs-Mitarbeiter (DATEV-oriented), Angebots-Mitarbeiter (Aufmaß → Angebotsentwurf). German system prompts; legacy AgentStudio agents map automatically. |
+| Playground + customization | ✅ Working | Streaming chat; Name, System-Prompt, Ton, Temperatur, Wissensbasis, model routing; save/reuse/delete. German UI. |
+| Dashboard | ✅ Working | German UI: Übersicht, Vorlagen, KI-Mitarbeiter, Nutzung, Abrechnung. Usage vs plan limits enforced server-side. |
+| Authentication | ⚠️ Demo mode | Clerk fully integrated, keys not configured — shared demo workspace. |
+| AI responses | ⚠️ Mock model | Believable German canned replies. Real Claude/GPT activates when API keys are set. **Note: deck promises German-hosted models — see §3.** |
+| Plans | ✅ Enforced | Pilotbetrieb (default, 1.000 msgs/mo) / Basis / Basis+KI-Mitarbeiter in `src/lib/plans.ts`; legacy plan ids map automatically. |
+| Pilot request flow | ✅ Working | `/pilot` form (Gewerk, Betriebsgröße, Zeitfresser) → database + email notification (needs mail credentials, §3). `/done-for-you` redirects here. |
+| Legal pages | ⚠️ Placeholders | Datenschutz, AGB, Impressum in German for flexC GmbH — **company address/Geschäftsführung are bracketed placeholders** in `src/lib/company.ts`. |
+| Billing / payments | ❌ Manual | Abrechnung page shows plans; changes via mailto to pilot@hey247.de. No Stripe. |
+| Deck modules Welle 2/3 | ❌ Marketing only | Ablage (real OCR), Kalender & Mail, Anfragenboard, Marketing-Modul are shown on the landing page as roadmap but not yet built as product features. |
 | Deployment | ✅ Production | Docker + Postgres + Nginx + HTTPS on the VPS, auto-restart, schema auto-sync. |
 
 ---
 
 ## 2. What is simulated, and what turning it real requires
 
-The app was built so each simulated layer upgrades **via configuration, not
-code changes** — except payments, which needs a Stripe integration.
+Each simulated layer upgrades **via configuration, not code changes** —
+except payments and the Welle-2/3 modules, which need development.
 
 | Simulated today | To make it real | Effort |
 | --- | --- | --- |
 | Shared demo login | Clerk production keys | ~30 min, config only |
-| Mock AI replies | Anthropic/OpenAI API key | ~10 min, config only |
-| Manual plan upgrades | Stripe Checkout + webhook | 1–2 dev days |
-| DFY requests sit in DB | Email notification (SMTP/Resend) | ~half a dev day |
+| Mock AI replies | Anthropic/OpenAI key (or a German-hosted provider, see §3) | ~10 min, config only |
+| Pilot-request emails sit in DB | `RESEND_API_KEY` or SMTP credentials | ~10 min, config only |
+| Legal placeholders | Fill `src/lib/company.ts`, redeploy | ~10 min |
+| Manual plan changes | Stripe Checkout + webhook | 1–2 dev days |
+| Welle 2/3 modules (Ablage-OCR, Kalender & Mail, Anfragenboard) | Product development per deck roadmap | weeks per module |
 
 ---
 
 ## 3. Go-live checklist
 
-### P0 — before announcing to real users
+### P0 — before pitching pilot businesses
 
-1. **Enable real authentication (Clerk)**
-   - Create a production instance at <https://dashboard.clerk.com> for
-     `agentstudio.tech`; add the DNS records Clerk asks for.
-   - On the server, set in `/opt/agentstudio/.env`:
-     `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_…` and `CLERK_SECRET_KEY=sk_live_…`
-   - Rebuild: `cd /opt/agentstudio && docker compose up -d --build`
-     (the publishable key is baked in at build time).
-   - Verify: `/sign-up` shows a real Clerk form; new users get their own
-     empty workspace.
-   - Note: existing demo-mode data stays under the `demo-user` row and
-     simply stops being reachable — no cleanup required.
+1. **Fill in the Impressum** — real flexC GmbH address, Geschäftsführung,
+   Register/USt-Id in `src/lib/company.ts` (single file; bracketed values
+   render on /legal/imprint until you do), then redeploy. Required by § 5
+   TMG. Have Datenschutz/AGB wording reviewed by a lawyer — it's a solid
+   template, not legal advice.
+2. **Create the hey247.de mailboxes** referenced in the UI:
+   `pilot@hey247.de` (CTAs, notifications), `hallo@hey247.de`,
+   `datenschutz@hey247.de`. Until they exist, mailto links go nowhere.
+3. **Enable pilot-request notifications** — set `RESEND_API_KEY` **or**
+   `SMTP_*` in `/opt/agentstudio/.env`, then
+   `docker compose up -d --build`. Otherwise requests only land in the DB (§4).
+4. **Enable real AI** — set `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` and set
+   **billing caps in the provider console**. ⚠️ The deck promises
+   "KI-Modelle laufen in Deutschland": Anthropic/OpenAI do **not** satisfy
+   that claim. Either integrate a German/EU-hosted model provider (e.g.
+   via an EU inference endpoint — the provider router in `src/lib/ai/` is
+   built to be extended) or soften the landing-page claim until that's true.
+5. **Enable real authentication (Clerk)** — production instance for the
+   domain, keys into `.env`, rebuild. Note: Clerk is a US processor; it is
+   named in the Datenschutzerklärung, but for the strict "Daten bleiben in
+   Deutschland" positioning consider an EU-hosted auth alternative later.
+6. **Database backups** — install the nightly pg_dump cron from DEPLOY.md §6.
 
-2. **Enable real AI**
-   - Get an Anthropic key (<https://console.anthropic.com>) and/or OpenAI key.
-   - Set `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` in `.env`, rebuild as above.
-   - Set **billing limits in the provider console** (hard cap + alert) —
-     plan limits protect you per-user, provider caps protect you globally.
-   - Decide whether the public landing demo uses real AI
-     (`DEMO_USE_REAL_AI=true`) — recommended **only after** adding rate
-     limiting (P1), otherwise leave it on the mock.
+### P1 — first weeks of the pilot
 
-3. **Legal pages** *(✅ built 2026-07-27 — needs your company details)*
-   - `/legal/privacy`, `/legal/terms`, `/legal/imprint` exist and are linked
-     in the footer.
-   - **Action required:** fill in the real company name, address,
-     representative, register/VAT entries in `src/lib/company.ts` (single
-     file, bracketed placeholders render on the live pages until you do),
-     then redeploy. Have the wording reviewed by a lawyer — it is a sensible
-     template, not legal advice.
+7. **Rate limiting** on `/api/demo-chat` before pointing real AI at
+   anonymous traffic.
+8. **Analytics** (Plausible/Umami, cookieless — fits the no-tracking
+   promise in the Datenschutzerklärung) and **uptime monitoring**.
+9. **Error monitoring** (Sentry free tier).
+10. **hey247.de domain** — when ready, point DNS at the VPS, add the vhost
+    + certbot, set `NEXT_PUBLIC_APP_URL=https://hey247.de`, rebuild.
 
-4. **Working email addresses**
-   - The UI references `sales@agentstudio.tech`. Create the mailbox (or an
-     alias) so upgrade requests and DFY replies actually reach you.
+### P2 — after pilot validation
 
-5. **Database backups** *(documented but not yet scheduled on the server)*
-   - Install the nightly pg_dump cron from DEPLOY.md §6. Two minutes.
-
-### P1 — first weeks with real users
-
-6. **DFY request notifications** *(✅ built 2026-07-27 — needs credentials)*
-   — every new done-for-you request now emails the team automatically once
-   you set either `RESEND_API_KEY` **or** `SMTP_HOST`/`SMTP_PORT`/
-   `SMTP_USER`/`SMTP_PASS` in `/opt/agentstudio/.env` (recipient:
-   `NOTIFY_EMAIL_TO`, default sales@agentstudio.tech), then
-   `docker compose up -d --build`. Until then requests are stored in the DB
-   only (§4) and the app logs a "email not configured" line.
-7. **Rate limiting** on `/api/demo-chat` (per-IP) before pointing real AI
-   at anonymous traffic.
-8. **Analytics** — Plausible or Umami (self-hostable on the same VPS) for
-   conversion tracking; landing CTAs are already distinct URLs.
-9. **Uptime monitoring** — a free ping service (UptimeRobot etc.) on
-   `https://agentstudio.tech` + `/api/demo-chat`.
-10. **Error monitoring** — Sentry's free tier wires into Next.js in an hour.
-
-### P2 — when revenue justifies it
-
-11. **Stripe self-serve checkout** — replace the mailto upgrade flow with
-    Stripe Checkout + customer portal + webhook that flips `User.plan`.
-    Env slots (`STRIPE_*`) already exist in `.env.example`.
-12. **Knowledge-base file upload** (the button is a disabled placeholder).
-13. **Embeddable chat widget** for customers' own websites (mentioned in FAQ
-    as roadmap).
-14. **Transactional product emails** — welcome, limit-warning at 80%, monthly
-    usage summary.
+11. **Stripe checkout** for Basis/KI-Mitarbeiter (env slots prepared).
+12. **Welle 2 modules**: real Ablage with OCR + Volltextsuche, Kalender &
+    Mail integration (IMAP), then Welle 3 (Anfragenboard, Marketing).
+13. **Real phone integration** for the Telefonassistent (today it's a
+    chat-based demo; production needs telephony, e.g. SIP/Twilio-style
+    voice + STT/TTS with a German provider).
+14. **Knowledge-base file upload** (button is a disabled placeholder).
 
 ---
 
@@ -120,11 +101,11 @@ code changes** — except payments, which needs a Stripe integration.
 All commands run on the VPS (`ssh root@vps47388.alfahosting-vps.de`, then
 `cd /opt/agentstudio`).
 
-**Read new done-for-you requests:**
+**Read new pilot requests:**
 
 ```bash
 docker compose exec db psql -U agentstudio agentstudio -c \
-  "SELECT \"createdAt\", name, email, company, \"agentType\", budget, timeline, left(description,120) AS description, status FROM \"CustomRequest\" ORDER BY \"createdAt\" DESC LIMIT 20;"
+  "SELECT \"createdAt\", name, email, company, \"agentType\" AS gewerk, budget AS groesse, timeline, left(description,120) AS zeitfresser, status FROM \"CustomRequest\" ORDER BY \"createdAt\" DESC LIMIT 20;"
 ```
 
 **Mark a request handled:**
@@ -134,15 +115,14 @@ docker compose exec db psql -U agentstudio agentstudio -c \
   "UPDATE \"CustomRequest\" SET status='contacted' WHERE id='REQUEST_ID';"
 ```
 
-**Upgrade a customer's plan** (after they've paid you by invoice/transfer):
+**Change a workspace's plan** (`pilot`, `basis`, `komplett`):
 
 ```bash
 docker compose exec db psql -U agentstudio agentstudio -c \
-  "UPDATE \"User\" SET plan='growth' WHERE email='customer@example.com';"
+  "UPDATE \"User\" SET plan='basis' WHERE email='kunde@betrieb.de';"
 ```
 
-Valid plans: `starter`, `growth`, `enterprise`. The new limits apply on
-their next page load — no restart needed.
+New limits apply on the customer's next page load — no restart needed.
 
 **Watch logs / restart / update:** see DEPLOY.md §5–6.
 
@@ -154,8 +134,8 @@ their next page load — no restart needed.
 | --- | --- |
 | VPS (already owned, shared with other sites) | €0 extra |
 | Clerk | free to 10k MAU |
-| Anthropic/OpenAI usage | usage-based — with Growth users at 5k msgs/mo, roughly $1–5 per active user with a small model; set provider caps |
-| Domain + TLS | already owned / free (Let's Encrypt) |
+| AI usage | usage-based; with pilot businesses at ≤1.000 msgs/mo, roughly €1–5 per active business on a small model — set provider caps |
+| Domain + TLS | owned / free (Let's Encrypt) |
 | Plausible/Sentry/UptimeRobot | free tiers to start |
 
 The only meaningful variable cost is AI usage — which is why per-plan
