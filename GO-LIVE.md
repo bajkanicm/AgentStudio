@@ -26,14 +26,14 @@ paying pilot businesses on the platform**.
 | Pilot request flow | ✅ Working | `/pilot` form (Gewerk, Betriebsgröße, Zeitfresser) → database + email notification (needs mail credentials, §3). `/done-for-you` redirects here. |
 | Legal pages | ⚠️ Placeholders | Datenschutz, AGB, Impressum in German for flexC GmbH — **company address/Geschäftsführung are bracketed placeholders** in `src/lib/company.ts`. |
 | Billing / payments | ❌ Manual | Abrechnung page shows plans; changes via mailto to pilot@hey247.de. No Stripe. |
-| Ablage (Dokumente) | ✅ Working (v1) | Mockup-faithful document filing: types/status/amounts, search, Freigabe workflow, sample data. Text-based — file upload/OCR still to come. |
+| Ablage (Dokumente) | ✅ Working | Document filing with **real file upload**: PDF text extraction + German OCR for photos (Tesseract, runs on our server — no external service), auto-classification (type + amount), original file preview, search, Freigabe workflow. |
 | KI-Chat über die Ablage | ✅ Working (v1) | "Frag deine Ablage": grounded answers with cited sources, saved Verläufe, mail drafting. Uses mock retrieval until AI keys are set. |
 | App shell | ✅ Redesigned | Matches the mobile mockups: dark frame, pale-green panel, pill navigation, mockup stat cards. |
 | PWA | ✅ Installable | Service worker with offline fallback + static caching, Apple web-app meta. "Add to Home Screen" works on iOS/Android. |
-| Anrufe (Rückruf-Notizen) | ✅ Working (v1) | Mockup-faithful call log: Letzte Anrufe, Zusammenfassung, "Notiert für dich", Rückruf planen (creates a Kalender entry), erledigt workflow. Real telephony still Welle 2. |
+| Anrufe (Rückruf-Notizen) | ✅ Working | Call log per mockup — and **Telefonassistent conversations now create Rückruf-Notizen automatically** (name/phone/urgency extraction; AI-based once keys are set, solid heuristic without). Real telephony (voice line) still Welle 2. |
 | Aufträge & Anfragen | ✅ Working (v1) | Board with Neu / In Arbeit / Wartet auf Kunde / Erledigt, priorities, sources, create dialog, samples. |
 | Kalender | ✅ Working (v1) | Week view (KW navigation, kind-colored entries), local appointments + create dialog. External calendar sync (IMAP/CalDAV) still Welle 2. |
-| Deck modules noch offen | ❌ Roadmap | OCR/file upload, Mail-Postfach-Anbindung, echte Telefonie, Marketing-Modul. |
+| Deck modules noch offen | ❌ Roadmap | Mail-Postfach-Anbindung (IMAP), echte Telefonie (voice line), Marketing-Modul. |
 | Deployment | ✅ Production | Docker + Postgres + Nginx + HTTPS on the VPS, auto-restart, schema auto-sync. |
 
 ---

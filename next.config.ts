@@ -3,6 +3,9 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // Self-contained server bundle for the Docker image (see Dockerfile).
   output: "standalone",
+  // Keep OCR/PDF libs as regular node_modules so their worker files and
+  // WASM assets survive standalone output tracing.
+  serverExternalPackages: ["tesseract.js", "pdf-parse"],
   async redirects() {
     return [
       // Pre-hey247 route, kept for old links

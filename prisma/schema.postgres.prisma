@@ -39,6 +39,7 @@ model CallNote {
   durationSec Int      @default(0)
   urgency     String   @default("normal") // normal | dringend
   status      String   @default("neu") // neu | erledigt
+  conversationId String? @unique // playground/phone conversation that produced this note
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -88,7 +89,10 @@ model Document {
   status    String   @default("abgelegt") // wartet_freigabe | angenommen | abgelegt | ueberfaellig | erledigt
   amount    Float? // EUR, brutto
   content   String   @default("") // extracted / pasted text
-  source    String   @default("manuell") // mail | scan | foto | manuell
+  source    String   @default("manuell") // mail | scan | foto | manuell | upload
+  fileName  String   @default("") // original upload name
+  mimeType  String   @default("")
+  filePath  String   @default("") // relative path under UPLOAD_DIR
   docDate   DateTime @default(now())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

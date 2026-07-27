@@ -49,3 +49,6 @@ prisma/dev.db
 
 # local Claude Code settings
 .claude/settings.local.json
+
+# local document uploads
+/uploads

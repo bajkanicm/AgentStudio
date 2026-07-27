@@ -45,9 +45,13 @@ services:
       SMTP_PASS: ${SMTP_PASS:-}
       NOTIFY_EMAIL_TO: ${NOTIFY_EMAIL_TO:-pilot@hey247.de}
       NOTIFY_EMAIL_FROM: ${NOTIFY_EMAIL_FROM:-hey247 <notifications@hey247.de>}
+      UPLOAD_DIR: /app/uploads
+    volumes:
+      - uploads:/app/uploads
     ports:
       # Only exposed to localhost — Nginx terminates TLS and proxies here.
       - "127.0.0.1:3000:3000"
 
 volumes:
   pgdata:
+  uploads:

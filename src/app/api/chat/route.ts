@@ -5,6 +5,7 @@ import { requireDbUser } from "@/lib/auth";
 import { estimateTokens, generateStream, type GenerateOptions } from "@/lib/ai";
 import { buildSystemPrompt, getTemplate } from "@/lib/agent-templates";
 import { getUsage, overMessageLimit } from "@/lib/usage";
+import { upsertCallNoteFromConversation } from "@/lib/call-extract";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
@@ -154,6 +155,17 @@ export async function POST(req: NextRequest) {
         }
       } catch (err) {
         console.error("[chat] failed to persist conversation:", err);
+      }
+      // Telefonassistent: Gespräch → strukturierte Rückruf-Notiz in "Anrufe"
+      if (template.slug === "telefon" && convId) {
+        try {
+          await upsertCallNoteFromConversation(user.id, convId, [
+            ...messages,
+            { role: "assistant", content: full },
+          ]);
+        } catch (err) {
+          console.error("[chat] call-note extraction failed:", err);
+        }
       }
       controller.close();
     },

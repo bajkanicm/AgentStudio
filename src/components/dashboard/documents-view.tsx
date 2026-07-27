@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { FileText, Loader2, Plus, Search, Sparkles, Trash2 } from "lucide-react";
+import { ExternalLink, FileText, Loader2, Plus, Search, Sparkles, Trash2, Upload } from "lucide-react";
 
 interface Doc {
   id: string;
@@ -34,6 +34,7 @@ interface Doc {
   content: string;
   source: string;
   docDate: string;
+  filePath?: string;
 }
 
 const TONE_CLASSES: Record<string, string> = {
@@ -126,6 +127,36 @@ export function DocumentsView() {
     }
   };
 
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = React.useState(false);
+
+  const upload = async (file: File) => {
+    setUploading(true);
+    const toastId = toast.loading(
+      file.type === "application/pdf"
+        ? "PDF wird gelesen …"
+        : "Foto wird per Texterkennung gelesen — kann bis zu einer Minute dauern …"
+    );
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/documents/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Upload fehlgeschlagen");
+      const { extracted } = data;
+      toast.success(
+        `Abgelegt als ${docTypeLabel(extracted.type)}${extracted.amount ? ` · ${extracted.amount.toLocaleString("de-DE", { minimumFractionDigits: 2 })} €` : ""} (${extracted.chars.toLocaleString("de-DE")} Zeichen ${extracted.via === "ocr" ? "per OCR" : "aus PDF"} erkannt)`,
+        { id: toastId, duration: 6000 }
+      );
+      void load(q, type);
+    } catch (err) {
+      toast.error((err as Error).message, { id: toastId });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   const setStatus = async (id: string, status: string) => {
     setBusy(id);
     try {
@@ -183,7 +214,25 @@ export function DocumentsView() {
             ))}
           </SelectContent>
         </Select>
-        <Button onClick={() => setAddOpen(true)} className="h-11 rounded-full">
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="application/pdf,image/jpeg,image/png,image/webp"
+          className="hidden"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) void upload(f);
+          }}
+        />
+        <Button
+          onClick={() => fileInputRef.current?.click()}
+          disabled={uploading}
+          className="h-11 rounded-full"
+        >
+          {uploading ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
+          Hochladen
+        </Button>
+        <Button variant="outline" onClick={() => setAddOpen(true)} className="h-11 rounded-full bg-card">
           <Plus className="size-4" />
           Dokument anlegen
         </Button>
@@ -199,9 +248,7 @@ export function DocumentsView() {
           <FileText className="mx-auto size-12 text-muted-foreground/40" />
           <p className="mt-4 text-lg font-semibold">Deine Ablage ist noch leer</p>
           <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
-            Lege Rechnungen, Angebote und Lieferscheine als Text an — Foto- und
-            Datei-Upload mit Texterkennung folgt. Oder starte mit Beispielen und
-            probier den KI-Chat darauf aus.
+            Lade PDFs oder Fotos hoch — Text wird automatisch erkannt (deutsche OCR, läuft auf unserem Server). Oder starte mit Beispielen und probier den KI-Chat darauf aus.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Button onClick={loadSamples} disabled={busy === "samples"}>
@@ -212,9 +259,9 @@ export function DocumentsView() {
               )}
               Beispiele laden
             </Button>
-            <Button variant="outline" onClick={() => setAddOpen(true)}>
-              <Plus className="size-4" />
-              Eigenes Dokument
+            <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
+              {uploading ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
+              Datei hochladen
             </Button>
           </div>
         </div>
@@ -280,8 +327,7 @@ export function DocumentsView() {
           <DialogHeader>
             <DialogTitle>Dokument anlegen</DialogTitle>
             <DialogDescription>
-              Text einfügen genügt — der KI-Chat kann das Dokument sofort finden
-              und zitieren. Datei-Upload mit Texterkennung folgt.
+              Für Dateien nutze „Hochladen“ (PDF/Foto mit Texterkennung); hier kannst du Text direkt einfügen.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -382,7 +428,19 @@ function DocRow({
   return (
     <div className="group grid grid-cols-[minmax(0,3fr)_160px_120px_180px_110px] items-center gap-3 border-b border-border px-6 py-3.5 last:border-0 hover:bg-secondary/60">
       <div className="min-w-0">
-        <p className="truncate font-semibold">{doc.title}</p>
+        {doc.filePath ? (
+          <a
+            href={`/api/documents/${doc.id}/file`}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-1.5 truncate font-semibold hover:text-primary"
+          >
+            <span className="truncate">{doc.title}</span>
+            <ExternalLink className="size-3 shrink-0 text-muted-foreground" />
+          </a>
+        ) : (
+          <p className="truncate font-semibold">{doc.title}</p>
+        )}
         <p className="mt-0.5 text-xs text-muted-foreground">
           {new Date(doc.docDate).toLocaleDateString("de-DE")} · {doc.source}
         </p>

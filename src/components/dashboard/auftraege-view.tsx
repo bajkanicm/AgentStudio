@@ -21,7 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
 import { ArrowRight, Inbox, Loader2, Plus, Sparkles, Trash2 } from "lucide-react";
 
 interface Auftrag {
