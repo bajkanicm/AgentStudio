@@ -52,10 +52,11 @@ export async function* generateStream(opts: GenerateOptions): AsyncGenerator<str
 async function* anthropicStream(opts: GenerateOptions): AsyncGenerator<string> {
   const { default: Anthropic } = await import("@anthropic-ai/sdk");
   const client = new Anthropic();
+  // `temperature` is deprecated on Claude 5 models — the agent's
+  // Temperatur setting still applies to GPT and older Claude models.
   const stream = client.messages.stream({
     model: process.env.ANTHROPIC_MODEL ?? "claude-sonnet-5",
     max_tokens: 1024,
-    temperature: Math.min(opts.temperature, 1),
     system: opts.system,
     messages: opts.messages.map((m) => ({ role: m.role, content: m.content })),
   });
