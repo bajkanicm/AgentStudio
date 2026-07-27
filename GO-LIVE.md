@@ -30,6 +30,7 @@ paying pilot businesses on the platform**.
 | KI-Chat über die Ablage | ✅ Working (v1) | "Frag deine Ablage": grounded answers with cited sources, saved Verläufe, mail drafting. Uses mock retrieval until AI keys are set. |
 | App shell | ✅ Redesigned | Matches the mobile mockups: dark frame, pale-green panel, pill navigation, mockup stat cards. |
 | PWA | ✅ Installable | Service worker with offline fallback + static caching, Apple web-app meta. "Add to Home Screen" works on iOS/Android. |
+| Native iOS app | ✅ Built, TestFlight-ready | Capacitor shell (`ios/`, bundle id de.hey247.app) around the production app: native icon/splash, German camera/photo permissions, offline fallback. Runs in the simulator. Upload to TestFlight = owner task in Xcode — see TESTFLIGHT.md. Web deploys update the app content automatically. |
 | Anrufe (Rückruf-Notizen) | ✅ Working | Call log per mockup — and **Telefonassistent conversations now create Rückruf-Notizen automatically** (name/phone/urgency extraction; AI-based once keys are set, solid heuristic without). Real telephony (voice line) still Welle 2. |
 | Aufträge & Anfragen | ✅ Working (v1) | Board with Neu / In Arbeit / Wartet auf Kunde / Erledigt, priorities, sources, create dialog, samples. |
 | Kalender | ✅ Working (v1) | Week view (KW navigation, kind-colored entries), local appointments + create dialog. External calendar sync (IMAP/CalDAV) still Welle 2. |
