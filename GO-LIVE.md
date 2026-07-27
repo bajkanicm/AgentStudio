@@ -1,6 +1,6 @@
 # hey247 — Product Status & Go-Live Guide
 
-*Last updated: 2026-07-27 (hey247 pivot deployed to production).*
+*Last updated: 2026-07-27 (real auth + real AI live in production).*
 
 hey247 (a flexC GmbH product) is the German-first digital office for
 trade businesses, live at <https://agentstudio.tech> (later: hey247.de).
@@ -20,8 +20,8 @@ paying pilot businesses on the platform**.
 | KI-Mitarbeiter | ✅ Working | Telefonassistent (killer feature, transparent-AI rules, structured Rückruf-Notizen), Rechnungs-Mitarbeiter (E-Rechnung aware), Buchhaltungs-Mitarbeiter (DATEV-oriented), Angebots-Mitarbeiter (Aufmaß → Angebotsentwurf). German system prompts; legacy AgentStudio agents map automatically. |
 | Playground + customization | ✅ Working | Streaming chat; Name, System-Prompt, Ton, Temperatur, Wissensbasis, model routing; save/reuse/delete. German UI. |
 | Dashboard | ✅ Working | German UI: Übersicht, Vorlagen, KI-Mitarbeiter, Nutzung, Abrechnung. Usage vs plan limits enforced server-side. |
-| Authentication | ⚠️ Demo mode | Clerk fully integrated, keys not configured — shared demo workspace. |
-| AI responses | ⚠️ Mock model | Believable German canned replies. Real Claude/GPT activates when API keys are set. **Note: deck promises German-hosted models — see §3.** |
+| Authentication | ✅ Live (dev keys) | Clerk active in production: real sign-up/login, per-user workspaces, protected dashboard. Currently pk_test keys — switch to a production instance (DNS) before paying customers. |
+| AI responses | ✅ Live (Claude) | ANTHROPIC_API_KEY configured — agents, KI-Chat and call-note extraction run on real Claude. Public landing demo stays on the mock (DEMO_USE_REAL_AI=false) to protect the budget. **Deck promises German-hosted models — see §3.** |
 | Plans | ✅ Enforced | Pilotbetrieb (default, 1.000 msgs/mo) / Basis / Basis+KI-Mitarbeiter in `src/lib/plans.ts`; legacy plan ids map automatically. |
 | Pilot request flow | ✅ Working | `/pilot` form (Gewerk, Betriebsgröße, Zeitfresser) → database + email notification (needs mail credentials, §3). `/done-for-you` redirects here. |
 | Legal pages | ⚠️ Placeholders | Datenschutz, AGB, Impressum in German for flexC GmbH — **company address/Geschäftsführung are bracketed placeholders** in `src/lib/company.ts`. |
@@ -65,17 +65,16 @@ except payments and the Welle-2/3 modules, which need development.
 2. **Create the hey247.de mailboxes** referenced in the UI:
    `pilot@hey247.de` (CTAs, notifications), `hallo@hey247.de`,
    `datenschutz@hey247.de`. Until they exist, mailto links go nowhere.
-3. **Enable pilot-request notifications** — set `RESEND_API_KEY` **or**
+3. **Enable pilot-request notifications** *(still open)* — set `RESEND_API_KEY` **or**
    `SMTP_*` in `/opt/agentstudio/.env`, then
    `docker compose up -d --build`. Otherwise requests only land in the DB (§4).
-4. **Enable real AI** — set `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` and set
+4. **Enable real AI** *(✅ done 2026-07-27 — Anthropic key active)* — set
    **billing caps in the provider console**. ⚠️ The deck promises
    "KI-Modelle laufen in Deutschland": Anthropic/OpenAI do **not** satisfy
    that claim. Either integrate a German/EU-hosted model provider (e.g.
    via an EU inference endpoint — the provider router in `src/lib/ai/` is
    built to be extended) or soften the landing-page claim until that's true.
-5. **Enable real authentication (Clerk)** — production instance for the
-   domain, keys into `.env`, rebuild. Note: Clerk is a US processor; it is
+5. **Enable real authentication (Clerk)** *(✅ dev keys live 2026-07-27; production instance still open)* — production instance for the domain, keys into `.env`, rebuild. Note: Clerk is a US processor; it is
    named in the Datenschutzerklärung, but for the strict "Daten bleiben in
    Deutschland" positioning consider an EU-hosted auth alternative later.
 6. **Database backups** — install the nightly pg_dump cron from DEPLOY.md §6.
@@ -102,6 +101,13 @@ except payments and the Welle-2/3 modules, which need development.
 14. **Knowledge-base file upload** (button is a disabled placeholder).
 
 ---
+
+## 3b. Customer documentation
+
+German user guide for pilot businesses lives at **/hilfe** on the site
+(linked in the footer): first login, KI-Mitarbeiter, Dokumente upload/OCR,
+KI-Chat, Anrufe, Kalender, Aufträge, and "App aufs Handy" (PWA install).
+Update it when features change — it is part of the product.
 
 ## 4. Operating handbook (until the automation exists)
 

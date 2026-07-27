@@ -21,6 +21,7 @@ const COPY = {
         links: [
           { label: "Pilotbetrieb werden", href: "/pilot" },
           { label: "Gespräch anfragen", href: "/pilot#anfrage" },
+          { label: "Hilfe & Erste Schritte", href: "/hilfe" },
         ],
       },
       {
