@@ -12,6 +12,17 @@ const nextConfig: NextConfig = {
     "/api/documents/upload": [
       "./node_modules/tesseract.js/**/*",
       "./node_modules/tesseract.js-core/**/*",
+      // tesseract worker-thread runtime deps (not seen by static tracing)
+      "./node_modules/bmp-js/**/*",
+      "./node_modules/idb-keyval/**/*",
+      "./node_modules/is-url/**/*",
+      "./node_modules/node-fetch/**/*",
+      "./node_modules/regenerator-runtime/**/*",
+      "./node_modules/wasm-feature-detect/**/*",
+      "./node_modules/zlibjs/**/*",
+      "./node_modules/whatwg-url/**/*",
+      "./node_modules/tr46/**/*",
+      "./node_modules/webidl-conversions/**/*",
       "./node_modules/pdf-parse/**/*",
       "./node_modules/pdfjs-dist/**/*",
       "./node_modules/@napi-rs/canvas/**/*",
