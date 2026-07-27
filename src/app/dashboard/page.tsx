@@ -5,14 +5,13 @@ import { db } from "@/lib/db";
 import { getUsage } from "@/lib/usage";
 import { AGENT_TEMPLATES } from "@/lib/agent-templates";
 import { PageHeader } from "@/components/dashboard/page-header";
-import { StatCard } from "@/components/dashboard/stat-card";
 import { AgentCard } from "@/components/dashboard/agent-card";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
   Bot,
   Coins,
-  MessageSquare,
+  FileText,
   MessagesSquare,
   Plus,
   Handshake,
@@ -24,7 +23,7 @@ export default async function DashboardPage() {
   const user = await requireDbUser();
   if (!user) redirect("/sign-in");
 
-  const [usage, agents] = await Promise.all([
+  const [usage, agents, docCount, docsOpen] = await Promise.all([
     getUsage(user.id, user.plan),
     db.agent.findMany({
       where: { userId: user.id },
@@ -32,6 +31,8 @@ export default async function DashboardPage() {
       take: 6,
       include: { _count: { select: { conversations: true } } },
     }),
+    db.document.count({ where: { userId: user.id } }),
+    db.document.count({ where: { userId: user.id, status: "wartet_freigabe" } }),
   ]);
 
   const firstName = user.name?.split(" ")[0] ?? "Chef";
@@ -39,9 +40,9 @@ export default async function DashboardPage() {
     usage.messagesLimit === -1 ? 0 : usage.messagesUsed / usage.messagesLimit;
 
   return (
-    <div className="mx-auto max-w-6xl space-y-10 p-4 sm:p-6 lg:p-10">
+    <div className="mx-auto max-w-6xl space-y-10 py-2">
       <PageHeader
-        title={`Willkommen zurück, ${firstName}`}
+        title={`Hallo, ${firstName}`}
         description="Das haben deine KI-Mitarbeiter diesen Monat geschafft."
         actions={
           <>
@@ -61,43 +62,39 @@ export default async function DashboardPage() {
         }
       />
 
-      {/* Stats */}
+      {/* Stats (mockup-style cards) */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          label="Nachrichten diesen Monat"
-          value={usage.messagesUsed.toLocaleString()}
-          hint={
-            usage.messagesLimit === -1
-              ? "Unbegrenzt in deinem Plan"
-              : `von ${usage.messagesLimit.toLocaleString()} im Plan ${usage.planName}`
-          }
-          progress={usage.messagesLimit === -1 ? undefined : msgPct}
-          icon={<MessageSquare className="size-4.5" />}
-        />
-        <StatCard
-          label="Gespräche"
-          value={usage.conversations.toLocaleString()}
-          hint="Diesen Monat gestartet"
+        <MockCard
           icon={<MessagesSquare className="size-4.5" />}
+          circle="bg-[#fdeadf] text-[#e8590c]"
+          title="Gespräche"
+          value={usage.conversations.toLocaleString("de-DE")}
+          unit="diesen Monat"
+          sub={`${usage.messagesUsed.toLocaleString("de-DE")} Nachrichten`}
         />
-        <StatCard
-          label="Verbrauchte Tokens"
-          value={formatTokens(usage.tokensUsed)}
-          hint="Geschätzt über alle KI-Mitarbeiter"
+        <MockCard
+          icon={<FileText className="size-4.5" />}
+          circle="bg-[#e1f1e7] text-[#1e7d46]"
+          title="Dokumente sortiert"
+          value={docCount.toLocaleString("de-DE")}
+          unit="in der Ablage"
+          sub={docCount === 0 ? "Leg dein erstes Dokument an" : "Volltext durchsuchbar"}
+        />
+        <MockCard
           icon={<Coins className="size-4.5" />}
+          circle="bg-[#f8eedc] text-[#b7791f]"
+          title="Offene Freigaben"
+          value={String(docsOpen)}
+          unit="Dokumente"
+          sub={docsOpen === 0 ? "Alles freigegeben" : "warten auf dein OK"}
         />
-        <StatCard
-          label="KI-Mitarbeiter"
-          value={String(usage.agentsUsed)}
-          hint={
-            usage.agentsLimit === -1
-              ? "Unbegrenzt in deinem Plan"
-              : `von ${usage.agentsLimit} verfügbar`
-          }
-          progress={
-            usage.agentsLimit === -1 ? undefined : usage.agentsUsed / usage.agentsLimit
-          }
+        <MockCard
           icon={<Bot className="size-4.5" />}
+          circle="bg-[#d8e5e1] text-[#0e3b33]"
+          title="Gesparte Zeit"
+          value={(Math.round(((usage.messagesUsed * 3) / 60) * 10) / 10).toLocaleString("de-DE")}
+          unit="Stunden · geschätzt"
+          sub="ca. 3 Min pro erledigter Nachricht"
         />
       </div>
 
@@ -185,8 +182,32 @@ export default async function DashboardPage() {
   );
 }
 
-function formatTokens(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}k`;
-  return String(n);
+function MockCard({
+  icon,
+  circle,
+  title,
+  value,
+  unit,
+  sub,
+}: {
+  icon: React.ReactNode;
+  circle: string;
+  title: string;
+  value: string;
+  unit: string;
+  sub: string;
+}) {
+  return (
+    <div className="rounded-2xl bg-card p-5 shadow-sm">
+      <span className={`flex size-10 items-center justify-center rounded-full ${circle}`}>
+        {icon}
+      </span>
+      <p className="mt-3 font-semibold">{title}</p>
+      <p className="mt-2 flex items-baseline gap-2">
+        <span className="font-logo text-4xl font-bold tracking-tight">{value}</span>
+        <span className="text-xs text-muted-foreground">{unit}</span>
+      </p>
+      <p className="mt-1.5 text-xs text-muted-foreground">{sub}</p>
+    </div>
+  );
 }

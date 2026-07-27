@@ -15,12 +15,31 @@ model User {
   id             String          @id // Clerk user id (or "demo-user" in demo mode)
   email          String?
   name           String?
-  plan           String          @default("starter") // starter | growth | enterprise
+  plan           String          @default("starter") // legacy ids map to pilot/basis/komplett
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   agents         Agent[]
   conversations  Conversation[]
   customRequests CustomRequest[]
+  documents      Document[]
+}
+
+// Ablage (Welle 1): text-based documents; file upload/OCR comes later.
+model Document {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String // e.g. "RE-2026-0341 · Baustoffe Meyer"
+  type      String   @default("sonstiges") // eingangsrechnung | ausgangsrechnung | angebot | lieferschein | vertrag | sonstiges
+  status    String   @default("abgelegt") // wartet_freigabe | angenommen | abgelegt | ueberfaellig | erledigt
+  amount    Float? // EUR, brutto
+  content   String   @default("") // extracted / pasted text
+  source    String   @default("manuell") // mail | scan | foto | manuell
+  docDate   DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }
 
 model Agent {

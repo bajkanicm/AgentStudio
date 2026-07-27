@@ -32,6 +32,9 @@ interface AgentChatProps {
   compact?: boolean;
   emptyHint?: string;
   placeholder?: string;
+  /** Seed an existing conversation (Verläufe). */
+  initialMessages?: { role: "user" | "assistant"; content: string }[];
+  initialConversationId?: string | null;
   onAssistantDone?: () => void;
 }
 
@@ -43,15 +46,17 @@ export function AgentChat({
   className,
   compact,
   placeholder = "Nachricht schreiben…",
+  initialMessages,
+  initialConversationId = null,
   onAssistantDone,
 }: AgentChatProps) {
-  const [messages, setMessages] = React.useState<ChatMessage[]>([]);
+  const [messages, setMessages] = React.useState<ChatMessage[]>(initialMessages ?? []);
   const [input, setInput] = React.useState("");
   const [streaming, setStreaming] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const abortRef = React.useRef<AbortController | null>(null);
-  const conversationIdRef = React.useRef<string | null>(null);
+  const conversationIdRef = React.useRef<string | null>(initialConversationId);
   const configRef = React.useRef(config);
   configRef.current = config;
 

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans, IBM_Plex_Mono, Space_Grotesk } from "next/font/google";
 import { clerkEnabled } from "@/lib/auth";
 import { Toaster } from "@/components/ui/sonner";
+import { SwRegister } from "@/components/sw-register";
 import "./globals.css";
 
 const plexSans = IBM_Plex_Sans({
@@ -54,6 +55,11 @@ export const metadata: Metadata = {
       "KI-Mitarbeiter für Handwerksbetriebe: Telefon, Rechnungen, Buchhaltung, Angebote. 100 % in Deutschland.",
   },
   manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "hey247",
+  },
 };
 
 export const viewport: Viewport = {
@@ -95,6 +101,7 @@ export default function RootLayout({
       <body className="antialiased">
         <Providers>{children}</Providers>
         <Toaster position="top-center" />
+        <SwRegister />
       </body>
     </html>
   );

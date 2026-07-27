@@ -26,7 +26,11 @@ paying pilot businesses on the platform**.
 | Pilot request flow | ✅ Working | `/pilot` form (Gewerk, Betriebsgröße, Zeitfresser) → database + email notification (needs mail credentials, §3). `/done-for-you` redirects here. |
 | Legal pages | ⚠️ Placeholders | Datenschutz, AGB, Impressum in German for flexC GmbH — **company address/Geschäftsführung are bracketed placeholders** in `src/lib/company.ts`. |
 | Billing / payments | ❌ Manual | Abrechnung page shows plans; changes via mailto to pilot@hey247.de. No Stripe. |
-| Deck modules Welle 2/3 | ❌ Marketing only | Ablage (real OCR), Kalender & Mail, Anfragenboard, Marketing-Modul are shown on the landing page as roadmap but not yet built as product features. |
+| Ablage (Dokumente) | ✅ Working (v1) | Mockup-faithful document filing: types/status/amounts, search, Freigabe workflow, sample data. Text-based — file upload/OCR still to come. |
+| KI-Chat über die Ablage | ✅ Working (v1) | "Frag deine Ablage": grounded answers with cited sources, saved Verläufe, mail drafting. Uses mock retrieval until AI keys are set. |
+| App shell | ✅ Redesigned | Matches the mobile mockups: dark frame, pale-green panel, pill navigation, mockup stat cards. |
+| PWA | ✅ Installable | Service worker with offline fallback + static caching, Apple web-app meta. "Add to Home Screen" works on iOS/Android. |
+| Deck modules Welle 2/3 | ❌ Marketing only | OCR/file upload, Kalender & Mail, Anfragenboard, Marketing-Modul remain roadmap. |
 | Deployment | ✅ Production | Docker + Postgres + Nginx + HTTPS on the VPS, auto-restart, schema auto-sync. |
 
 ---
@@ -86,8 +90,9 @@ except payments and the Welle-2/3 modules, which need development.
 ### P2 — after pilot validation
 
 11. **Stripe checkout** for Basis/KI-Mitarbeiter (env slots prepared).
-12. **Welle 2 modules**: real Ablage with OCR + Volltextsuche, Kalender &
-    Mail integration (IMAP), then Welle 3 (Anfragenboard, Marketing).
+12. **Welle 2 modules**: file upload + OCR for the Ablage (text version is
+    live), Kalender & Mail integration (IMAP), then Welle 3 (Anfragenboard,
+    Marketing).
 13. **Real phone integration** for the Telefonassistent (today it's a
     chat-based demo; production needs telephony, e.g. SIP/Twilio-style
     voice + STT/TTS with a German provider).

@@ -18,7 +18,7 @@ export default async function NewAgentPage({
   if (!template) redirect("/dashboard/templates");
 
   return (
-    <div className="mx-auto max-w-3xl space-y-8 p-4 sm:p-6 lg:p-10">
+    <div className="mx-auto max-w-3xl space-y-8 py-2">
       <Button variant="ghost" size="sm" className="-ml-2 text-muted-foreground" asChild>
         <Link href="/dashboard/templates">
           <ArrowLeft className="size-4" />

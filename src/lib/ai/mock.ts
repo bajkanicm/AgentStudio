@@ -36,6 +36,8 @@ function inferSlug(system: string): string {
 function composeReply(slug: string, userText: string, opts: GenerateOptions): string {
   const t = userText.toLowerCase();
   const kb = extractKb(opts.system);
+
+  if (slug === "ablage") return composeAblageReply(userText, kb);
   const kbNote = kb
     ? `\n\n_(Aus deiner Wissensbasis: "${kb.slice(0, 110)}${kb.length > 110 ? "…" : ""}")_`
     : "";
@@ -83,6 +85,61 @@ function composeReply(slug: string, userText: string, opts: GenerateOptions): st
     default:
       return `Verstanden. Lass uns das in drei Schritten angehen: Was wissen wir, was fehlt noch, und was ist der nächste konkrete Schritt? Erzähl mir kurz mehr über deinen Betrieb und dein Anliegen — dann werde ich konkret.${kbNote}`;
   }
+}
+
+/**
+ * "Frag deine Ablage": naive retrieval over the documents serialized into
+ * the knowledge base (### Title (meta) blocks) with cited sources.
+ */
+function composeAblageReply(userText: string, kb: string | null): string {
+  if (!kb || !kb.includes("### ")) {
+    return `Deine Ablage ist noch leer — ich habe nichts, worauf ich antworten könnte.\n\nLeg unter **Dokumente** deine ersten Rechnungen, Angebote oder Lieferscheine an (oder lade dort die Beispiele) und frag mich dann z. B.:\n- "Was haben wir Familie Yilmaz angeboten?"\n- "Welche Rechnungen warten auf Freigabe?"`;
+  }
+
+  const docs = kb
+    .split(/^### /m)
+    .filter(Boolean)
+    .map((block) => {
+      const [head, ...rest] = block.split("\n");
+      return { head: head.trim(), body: rest.join("\n").trim() };
+    });
+
+  const words = userText
+    .toLowerCase()
+    .replace(/[^\wäöüß€.,-]+/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length > 3);
+
+  const scored = docs
+    .map((d) => {
+      const hay = (d.head + " " + d.body).toLowerCase();
+      const score = words.reduce((acc, w) => acc + (hay.includes(w) ? 1 : 0), 0);
+      return { ...d, score };
+    })
+    .sort((a, b) => b.score - a.score);
+
+  const hits = scored.filter((d) => d.score > 0).slice(0, 2);
+
+  const t = userText.toLowerCase();
+  if (t.includes("mail") || t.includes("schreib") || t.includes("formulier")) {
+    const ctx = hits[0] ? `\n\n_(Kontext aus der Ablage: ${hits[0].head})_` : "";
+    return `Gern, hier ein Entwurf:\n\nGuten Tag,\n\nwie besprochen bestätigen wir Ihnen den Termin. Bitte halten Sie den Zugang zum Arbeitsbereich frei — alles Weitere klären wir vor Ort.\n\nMit freundlichen Grüßen\n[Dein Name]\n\nSag mir Empfänger, Anlass und Termin, dann mache ich die Mail konkret.${ctx}`;
+  }
+
+  if (hits.length === 0) {
+    const list = docs.slice(0, 4).map((d) => `- ${d.head}`).join("\n");
+    return `Dazu habe ich in deiner Ablage nichts Passendes gefunden. Aktuell liegen dort unter anderem:\n\n${list}\n\nFrag mich gern zu einem dieser Dokumente — oder leg das fehlende unter **Dokumente** an.`;
+  }
+
+  const answers = hits
+    .map((h) => {
+      const firstSentence = h.body.split(/(?<=[.!?])\s/)[0] ?? h.body.slice(0, 160);
+      return `**${h.head}**\n${firstSentence}`;
+    })
+    .join("\n\n");
+  const sources = hits.map((h) => `_${h.head.replace(/\s*\(.*$/, "")}_`).join(" · ");
+
+  return `Das sagt deine Ablage:\n\n${answers}\n\n**Quellen:** ${sources}`;
 }
 
 function extractKb(system: string): string | null {

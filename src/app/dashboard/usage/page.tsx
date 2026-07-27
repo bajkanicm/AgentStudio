@@ -45,7 +45,7 @@ export default async function UsagePage() {
   ];
 
   return (
-    <div className="mx-auto max-w-6xl space-y-10 p-4 sm:p-6 lg:p-10">
+    <div className="mx-auto max-w-6xl space-y-10 py-2">
       <PageHeader
         title="Nutzung & Limits"
         description={`Plan ${plan.name} · Zähler starten am ${nextResetLabel()} neu`}

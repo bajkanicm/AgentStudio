@@ -4,27 +4,17 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/logo";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import {
-  Bot,
-  CreditCard,
-  Gauge,
-  LayoutDashboard,
-  Blocks,
-  Handshake,
-  Menu,
-  X,
-  ArrowUpRight,
-} from "lucide-react";
+import { Bell, Search } from "lucide-react";
 
 const NAV = [
-  { href: "/dashboard", label: "Übersicht", icon: LayoutDashboard, exact: true },
-  { href: "/dashboard/templates", label: "Vorlagen", icon: Blocks },
-  { href: "/dashboard/agents", label: "KI-Mitarbeiter", icon: Bot },
-  { href: "/dashboard/usage", label: "Nutzung", icon: Gauge },
-  { href: "/dashboard/billing", label: "Abrechnung", icon: CreditCard },
+  { href: "/dashboard", label: "Übersicht", exact: true },
+  { href: "/dashboard/chat", label: "KI-Chat" },
+  { href: "/dashboard/dokumente", label: "Dokumente" },
+  { href: "/dashboard/agents", label: "KI-Mitarbeiter" },
+  { href: "/dashboard/templates", label: "Vorlagen" },
+  { href: "/dashboard/usage", label: "Nutzung" },
+  { href: "/dashboard/billing", label: "Kosten" },
 ];
 
 export interface ShellUser {
@@ -34,6 +24,11 @@ export interface ShellUser {
   isDemo: boolean;
 }
 
+/**
+ * App shell per the hey247 mobile mockups: dark Tannengrün frame with a
+ * rounded pale-green panel, pill-tab navigation, search/bell chips and an
+ * avatar. The panel is scoped to the light "theme-paper" token set.
+ */
 export function DashboardShell({
   user,
   userButton,
@@ -43,138 +38,79 @@ export function DashboardShell({
   userButton?: React.ReactNode;
   children: React.ReactNode;
 }) {
-  const [mobileOpen, setMobileOpen] = React.useState(false);
   const pathname = usePathname();
-
-  React.useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
+  const initials =
+    (user.name ?? "Demo User")
+      .split(" ")
+      .map((p) => p[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase() || "DU";
 
   return (
-    <div className="flex min-h-screen">
-      {/* Desktop sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-sidebar-border bg-sidebar lg:flex">
-        <SidebarContent user={user} userButton={userButton} />
-      </aside>
+    <div className="min-h-dvh bg-sidebar p-2.5 sm:p-5">
+      <div className="theme-paper flex min-h-[calc(100dvh-1.25rem)] flex-col rounded-[28px] bg-background px-4 pb-6 pt-5 sm:min-h-[calc(100dvh-2.5rem)] sm:rounded-[36px] sm:px-8 sm:pt-7 lg:px-11">
+        {/* Header */}
+        <header className="flex flex-wrap items-center gap-x-6 gap-y-4">
+          <Logo href="/dashboard" className="text-ink" />
 
-      {/* Mobile top bar */}
-      <div className="fixed inset-x-0 top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur-xl lg:hidden">
-        <Logo href="/dashboard" />
-        <button
-          onClick={() => setMobileOpen((v) => !v)}
-          className="rounded-md p-2 text-muted-foreground hover:text-foreground"
-          aria-label="Navigation umschalten"
-          aria-expanded={mobileOpen}
-        >
-          {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-        </button>
-      </div>
+          {/* Pill nav */}
+          <nav className="no-scrollbar order-3 -mx-4 flex w-[calc(100%+2rem)] gap-2 overflow-x-auto px-4 sm:order-none sm:mx-0 sm:w-auto sm:flex-1 sm:flex-wrap sm:overflow-visible sm:px-0">
+            {NAV.map((item) => {
+              const active = item.exact
+                ? pathname === item.href
+                : pathname.startsWith(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "shrink-0 rounded-full px-4 py-2.5 text-sm font-semibold transition-colors",
+                    active
+                      ? "bg-[#0a2c26] text-[#f2f1ec]"
+                      : "bg-card text-foreground hover:bg-card/70"
+                  )}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
 
-      {/* Mobile drawer */}
-      {mobileOpen && (
-        <>
-          <div
-            className="fixed inset-0 z-40 bg-black/60 lg:hidden"
-            onClick={() => setMobileOpen(false)}
-            aria-hidden
-          />
-          <aside className="fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col border-r border-sidebar-border bg-sidebar pt-2 lg:hidden">
-            <div className="flex items-center justify-between px-4 py-2">
-              <Logo href="/dashboard" />
-              <button
-                onClick={() => setMobileOpen(false)}
-                className="rounded-md p-2 text-muted-foreground"
-                aria-label="Navigation schließen"
-              >
-                <X className="size-5" />
-              </button>
-            </div>
-            <SidebarContent user={user} userButton={userButton} />
-          </aside>
-        </>
-      )}
-
-      {/* Main */}
-      <main className="min-w-0 flex-1 pt-14 lg:ml-64 lg:pt-0">{children}</main>
-    </div>
-  );
-}
-
-function SidebarContent({
-  user,
-  userButton,
-}: {
-  user: ShellUser;
-  userButton?: React.ReactNode;
-}) {
-  const pathname = usePathname();
-  return (
-    <>
-      <div className="hidden px-5 py-5 lg:block">
-        <Logo href="/dashboard" />
-      </div>
-      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4 lg:py-0">
-        {NAV.map((item) => {
-          const active = item.exact
-            ? pathname === item.href
-            : pathname.startsWith(item.href);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors",
-                active
-                  ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
-                  : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-foreground"
-              )}
+          {/* Right chips */}
+          <div className="ml-auto flex items-center gap-2 sm:ml-0">
+            <span
+              className="flex size-10 items-center justify-center rounded-full bg-card text-muted-foreground"
+              title="Suche — bald verfügbar"
             >
-              <item.icon className={cn("size-4.5", active && "text-primary")} />
-              {item.label}
-            </Link>
-          );
-        })}
-
-        <div className="pt-4">
-          <Link
-            href="/pilot"
-            className="flex items-center gap-3 rounded-lg border border-fuchsia-500/30 bg-fuchsia-500/5 px-3 py-2.5 text-sm text-fuchsia-300 transition-colors hover:bg-fuchsia-500/10"
-          >
-            <Handshake className="size-4.5" />
-            Pilotprogramm
-            <ArrowUpRight className="ml-auto size-3.5" />
-          </Link>
-        </div>
-      </nav>
-
-      <div className="border-t border-sidebar-border p-4">
-        {user.plan === "pilot" && (
-          <Button size="sm" className="glow-primary mb-4 w-full" asChild>
-            <Link href="/dashboard/billing">Pläne ansehen</Link>
-          </Button>
-        )}
-        <div className="flex items-center gap-3">
-          {userButton ?? (
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-semibold text-primary">
-              {(user.name ?? "Demo").slice(0, 1).toUpperCase()}
+              <Search className="size-4" />
             </span>
-          )}
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium">{user.name ?? "Demo User"}</p>
-            <p className="truncate text-xs text-muted-foreground">
-              {user.email ?? "demo@agentstudio.tech"}
-            </p>
+            <span
+              className="relative flex size-10 items-center justify-center rounded-full bg-card text-muted-foreground"
+              title="Benachrichtigungen — bald verfügbar"
+            >
+              <Bell className="size-4" />
+              <span className="absolute right-2.5 top-2.5 size-1.5 rounded-full bg-primary" />
+            </span>
+            <span title={`${user.name ?? "Demo User"} · Plan: ${user.plan}`}>
+              {userButton ?? (
+                <span className="flex size-10 items-center justify-center rounded-full bg-[#7fa69c] text-xs font-bold text-[#0a2c26]">
+                  {initials}
+                </span>
+              )}
+            </span>
           </div>
-          <Badge variant="outline" className="shrink-0 border-primary/40 text-[10px] uppercase">
-            {user.plan}
-          </Badge>
-        </div>
+        </header>
+
         {user.isDemo && (
-          <p className="mt-3 rounded-md border border-amber-500/30 bg-amber-500/10 px-2.5 py-1.5 text-[11px] leading-snug text-amber-300">
-            Demo-Modus — Clerk-Keys aktivieren echte Konten.
+          <p className="mt-4 rounded-xl border border-amber-600/30 bg-amber-500/10 px-3.5 py-2 text-xs text-amber-800">
+            Demo-Modus — gemeinsamer Demo-Workspace. Clerk-Keys aktivieren echte Konten.
           </p>
         )}
+
+        {/* Content */}
+        <main className="mt-6 min-w-0 flex-1 sm:mt-8">{children}</main>
       </div>
-    </>
+    </div>
   );
 }

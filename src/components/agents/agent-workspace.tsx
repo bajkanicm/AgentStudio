@@ -109,7 +109,7 @@ export function AgentWorkspace({ agent }: { agent: SerializedAgent }) {
   };
 
   return (
-    <div className="flex h-[calc(100dvh-3.5rem)] flex-col lg:h-dvh">
+    <div className="flex h-[calc(100dvh-230px)] min-h-[540px] flex-col overflow-hidden rounded-2xl bg-card">
       {/* Header */}
       <div className="flex items-center gap-3 border-b border-border px-4 py-3 sm:px-6">
         <Button variant="ghost" size="icon" className="shrink-0" asChild>

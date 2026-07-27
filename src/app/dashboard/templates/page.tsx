@@ -8,7 +8,7 @@ export const metadata = { title: "Vorlagen" };
 
 export default function TemplatesPage() {
   return (
-    <div className="mx-auto max-w-6xl space-y-8 p-4 sm:p-6 lg:p-10">
+    <div className="mx-auto max-w-6xl space-y-8 py-2">
       <PageHeader
         title="Vorlagen"
         description="Erprobte Startpunkte. Auswählen, anpassen, einsetzen — deine KI-Mitarbeiter."

@@ -17,7 +17,7 @@ export default async function BillingPage() {
   const current = getPlan(user.plan);
 
   return (
-    <div className="mx-auto max-w-6xl space-y-10 p-4 sm:p-6 lg:p-10">
+    <div className="mx-auto max-w-6xl space-y-10 py-2">
       <PageHeader
         title="Abrechnung & Pläne"
         description="Während der Pilotphase werden Planwechsel persönlich vom Team eingerichtet — eine kurze Mail genügt."

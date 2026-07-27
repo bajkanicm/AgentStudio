@@ -97,6 +97,26 @@
   --ink-muted: #6b7370; /* ink-500 */
 }
 
+/* Light app-panel scope (mobile-mockup design): pale-green panel, white
+   cards, ink text. Re-maps the token vars so every component flips theme. */
+.theme-paper {
+  --background: #d8e5e1; /* brand-100 */
+  --foreground: #1b1f1d; /* ink-900 */
+  --card: #ffffff; /* paper-0 */
+  --card-foreground: #1b1f1d;
+  --popover: #ffffff;
+  --popover-foreground: #1b1f1d;
+  --secondary: #edf3f1; /* brand-50 */
+  --secondary-foreground: #1b1f1d;
+  --muted: #efece4; /* paper-100 */
+  --muted-foreground: #6b7370; /* ink-500 */
+  --accent: #edf3f1;
+  --accent-foreground: #1b1f1d;
+  --border: rgba(27, 31, 29, 0.12);
+  --input: rgba(27, 31, 29, 0.18);
+  color: var(--foreground);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
