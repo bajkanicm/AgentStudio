@@ -7,6 +7,7 @@ import { Logo } from "@/components/logo";
 import { cn } from "@/lib/utils";
 import { Bell, Search } from "lucide-react";
 import { UserMenu } from "@/components/dashboard/user-menu";
+import { TabBar } from "@/components/dashboard/tab-bar";
 import type { Lang } from "@/lib/lang-shared";
 
 const NAV = [
@@ -35,10 +36,12 @@ export interface ShellUser {
 export function DashboardShell({
   user,
   lang = "de",
+  appMode = false,
   children,
 }: {
   user: ShellUser;
   lang?: Lang;
+  appMode?: boolean;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -49,6 +52,33 @@ export function DashboardShell({
       .slice(0, 2)
       .join("")
       .toUpperCase() || "DU";
+
+  if (appMode) {
+    // Nativer App-Modus: Vollbild-Panel, schlanker Header, Bottom-Tab-Bar.
+    return (
+      <div
+        className="theme-paper flex min-h-dvh flex-col bg-background px-4"
+        style={{
+          paddingTop: "max(0.75rem, env(safe-area-inset-top))",
+          paddingBottom: "calc(72px + env(safe-area-inset-bottom))",
+        }}
+      >
+        <header className="flex items-center gap-3">
+          <Logo href="/dashboard" className="text-ink" />
+          <span className="flex-1" />
+          <UserMenu
+            name={user.name ?? "Demo User"}
+            email={user.email ?? "demo@hey247.de"}
+            initials={initials}
+            lang={lang}
+            canSignOut={!user.isDemo}
+          />
+        </header>
+        <main className="mt-4 min-w-0 flex-1">{children}</main>
+        <TabBar lang={lang} />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-dvh bg-sidebar p-2.5 sm:p-5">
