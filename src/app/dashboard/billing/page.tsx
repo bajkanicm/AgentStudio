@@ -4,6 +4,7 @@ import { requireDbUser } from "@/lib/auth";
 import { getPlan, PLANS } from "@/lib/plans";
 import { COMPANY } from "@/lib/company";
 import { PageHeader } from "@/components/dashboard/page-header";
+import { getLang } from "@/lib/lang";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, Sparkles } from "lucide-react";
@@ -12,6 +13,8 @@ import { cn } from "@/lib/utils";
 export const metadata = { title: "Abrechnung" };
 
 export default async function BillingPage() {
+  const lang = await getLang();
+  const en = lang === "en";
   const user = await requireDbUser();
   if (!user) redirect("/sign-in");
   const current = getPlan(user.plan);
@@ -19,14 +22,14 @@ export default async function BillingPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-10 py-2">
       <PageHeader
-        title="Abrechnung & Pläne"
-        description="Während der Pilotphase werden Planwechsel persönlich vom Team eingerichtet — eine kurze Mail genügt."
+        title={en ? "Billing & plans" : "Abrechnung & Pläne"}
+        description={en ? "During the pilot phase, plan changes are set up personally by the team — a short email is enough." : "Während der Pilotphase werden Planwechsel persönlich vom Team eingerichtet — eine kurze Mail genügt."}
       />
 
       {/* Current plan */}
       <div className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-primary/40 bg-primary/5 p-6 sm:flex-row sm:items-center">
         <div>
-          <p className="text-sm text-muted-foreground">Dein Plan</p>
+          <p className="text-sm text-muted-foreground">{en ? "Your plan" : "Dein Plan"}</p>
           <p className="mt-1 flex items-center gap-2 text-2xl font-semibold">
             {current.name}
             <Badge className="bg-primary/20 text-primary">{current.price}</Badge>
@@ -56,7 +59,7 @@ export default async function BillingPage() {
               <div className="flex items-center justify-between">
                 <h2 className="font-semibold">{plan.name}</h2>
                 {isCurrent && (
-                  <Badge className="bg-primary text-primary-foreground">Aktuell</Badge>
+                  <Badge className="bg-primary text-primary-foreground">{en ? "Current" : "Aktuell"}</Badge>
                 )}
               </div>
               <div className="mt-3 flex items-baseline gap-1.5">
@@ -73,14 +76,14 @@ export default async function BillingPage() {
               </ul>
               {isCurrent ? (
                 <Button variant="outline" className="mt-6 w-full" disabled>
-                  Dein aktueller Plan
+                  {en ? "Your current plan" : "Dein aktueller Plan"}
                 </Button>
               ) : (
                 <Button variant={plan.id === "komplett" ? "default" : "outline"} className="mt-6 w-full" asChild>
                   <Link
                     href={`mailto:${COMPANY.pilotEmail}?subject=Planwechsel zu ${plan.name}&body=Hallo! Ich möchte meinen hey247-Workspace auf den Plan „${plan.name}" umstellen.`}
                   >
-                    Zu {plan.name} wechseln
+                    {en ? `Switch to ${plan.name}` : `Zu ${plan.name} wechseln`}
                   </Link>
                 </Button>
               )}

@@ -1,17 +1,20 @@
 import Link from "next/link";
 import { AGENT_TEMPLATES } from "@/lib/agent-templates";
 import { PageHeader } from "@/components/dashboard/page-header";
+import { getLang } from "@/lib/lang";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Check } from "lucide-react";
 
 export const metadata = { title: "Vorlagen" };
 
-export default function TemplatesPage() {
+export default async function TemplatesPage() {
+  const lang = await getLang();
+  const en = lang === "en";
   return (
     <div className="mx-auto max-w-6xl space-y-8 py-2">
       <PageHeader
-        title="Vorlagen"
-        description="Erprobte Startpunkte. Auswählen, anpassen, einsetzen — deine KI-Mitarbeiter."
+        title={en ? "Templates" : "Vorlagen"}
+        description={en ? "Proven starting points. Pick, customize, deploy — your AI employees." : "Erprobte Startpunkte. Auswählen, anpassen, einsetzen — deine KI-Mitarbeiter."}
       />
 
       <div className="grid gap-5 md:grid-cols-2">
@@ -26,11 +29,11 @@ export default function TemplatesPage() {
               </span>
               <div>
                 <h2 className="font-semibold leading-tight">{t.name}</h2>
-                <p className="mt-0.5 text-sm text-primary">{t.headline}</p>
+                <p className="mt-0.5 text-sm text-primary">{en ? t.headlineEn : t.headline}</p>
               </div>
             </div>
             <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
-              {t.description}
+              {en ? t.descriptionEn : t.description}
             </p>
             <ul className="mt-4 grid gap-2 sm:grid-cols-2">
               {t.capabilities.map((c) => (
@@ -46,7 +49,7 @@ export default function TemplatesPage() {
             <div className="mt-6 flex gap-2">
               <Button className="flex-1" asChild>
                 <Link href={`/dashboard/agents/new?template=${t.slug}`}>
-                  Vorlage verwenden
+                  {en ? "Use template" : "Vorlage verwenden"}
                   <ArrowRight className="size-4" />
                 </Link>
               </Button>

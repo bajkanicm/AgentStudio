@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import type { Lang } from "@/lib/lang";
 import { CalendarDays, ChevronLeft, ChevronRight, Loader2, Plus, Sparkles, Trash2 } from "lucide-react";
 
 interface Termin {
@@ -40,10 +41,10 @@ const KIND_STYLES: Record<string, string> = {
 };
 
 const KINDS = [
-  { value: "termin", label: "Kundentermin" },
-  { value: "wartung", label: "Wartung" },
-  { value: "notfall", label: "Notfall" },
-  { value: "intern", label: "Intern" },
+  { value: "termin", label: "Kundentermin", labelEn: "Customer appointment" },
+  { value: "wartung", label: "Wartung", labelEn: "Maintenance" },
+  { value: "notfall", label: "Notfall", labelEn: "Emergency" },
+  { value: "intern", label: "Intern", labelEn: "Internal" },
 ];
 
 function mondayOf(date: Date): Date {
@@ -63,7 +64,8 @@ function isoWeek(date: Date): number {
 
 const EMPTY_FORM = { title: "", location: "", day: "", time: "08:00", durationMin: "60", kind: "termin" };
 
-export function KalenderView() {
+export function KalenderView({ lang = "de" }: { lang?: Lang }) {
+  const en = lang === "en";
   const [monday, setMonday] = React.useState(() => mondayOf(new Date()));
   const [termine, setTermine] = React.useState<Termin[] | null>(null);
   const [busy, setBusy] = React.useState<string | null>(null);
@@ -114,7 +116,7 @@ export function KalenderView() {
 
   const create = async () => {
     if (!form.title.trim() || !form.day) {
-      toast.error("Titel und Tag sind Pflicht.");
+      toast.error(en ? "Title and day are required." : "Titel und Tag sind Pflicht.");
       return;
     }
     setSaving(true);
@@ -134,7 +136,7 @@ export function KalenderView() {
       if (!res.ok) throw new Error((await res.json()).error);
       setAddOpen(false);
       setForm(EMPTY_FORM);
-      toast.success("Termin eingetragen");
+      toast.success(en ? "Appointment added" : "Termin eingetragen");
       await load(monday);
     } catch (err) {
       toast.error((err as Error).message);
@@ -173,7 +175,7 @@ export function KalenderView() {
           <button
             onClick={() => shiftWeek(-1)}
             className="rounded-full p-2 hover:bg-secondary"
-            aria-label="Vorherige Woche"
+            aria-label={en ? "Previous week" : "Vorherige Woche"}
           >
             <ChevronLeft className="size-4" />
           </button>
@@ -181,18 +183,18 @@ export function KalenderView() {
           <button
             onClick={() => shiftWeek(1)}
             className="rounded-full p-2 hover:bg-secondary"
-            aria-label="Nächste Woche"
+            aria-label={en ? "Next week" : "Nächste Woche"}
           >
             <ChevronRight className="size-4" />
           </button>
         </div>
         <Button variant="outline" className="rounded-full" onClick={() => setMonday(mondayOf(new Date()))}>
-          Heute
+          {en ? "Today" : "Heute"}
         </Button>
         <span className="flex-1" />
         <Button onClick={() => setAddOpen(true)} className="rounded-full">
           <Plus className="size-4" />
-          Termin eintragen
+          {en ? "Add appointment" : "Termin eintragen"}
         </Button>
       </div>
 
@@ -203,10 +205,9 @@ export function KalenderView() {
       ) : termine.length === 0 ? (
         <div className="rounded-2xl bg-card p-12 text-center shadow-sm">
           <CalendarDays className="mx-auto size-12 text-muted-foreground/40" />
-          <p className="mt-4 text-lg font-semibold">Keine Termine in dieser Woche</p>
+          <p className="mt-4 text-lg font-semibold">{en ? "No appointments this week" : "Keine Termine in dieser Woche"}</p>
           <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
-            Trag Termine manuell ein — die Anbindung deiner bestehenden
-            Kalender (Google/Outlook/CalDAV) kommt mit Welle 2.
+            {en ? "Add appointments manually — syncing your existing calendars (Google/Outlook/CalDAV) arrives with Wave 2." : "Trag Termine manuell ein — die Anbindung deiner bestehenden Kalender (Google/Outlook/CalDAV) kommt mit Welle 2."}
           </p>
           <Button className="mt-6" onClick={loadSamples} disabled={busy === "samples"}>
             {busy === "samples" ? (
@@ -214,7 +215,7 @@ export function KalenderView() {
             ) : (
               <Sparkles className="size-4" />
             )}
-            Beispielwoche laden
+            {en ? "Load sample week" : "Beispielwoche laden"}
           </Button>
         </div>
       ) : (
@@ -233,9 +234,9 @@ export function KalenderView() {
                 className={cn("rounded-2xl bg-card p-3 shadow-sm", isToday && "ring-2 ring-primary/60")}
               >
                 <p className="px-1 pb-2 text-xs font-semibold text-muted-foreground">
-                  {day.toLocaleDateString("de-DE", { weekday: "short" })}{" "}
+                  {day.toLocaleDateString(en ? "en-GB" : "de-DE", { weekday: "short" })}{" "}
                   <span className="font-mono">{day.getDate()}.</span>
-                  {isToday && <span className="ml-1.5 text-primary">heute</span>}
+                  {isToday && <span className="ml-1.5 text-primary">{en ? "today" : "heute"}</span>}
                 </p>
                 <div className="space-y-2">
                   {dayItems.map((t) => (
@@ -249,7 +250,7 @@ export function KalenderView() {
                           onClick={() => remove(t.id)}
                           disabled={busy === t.id}
                           className="opacity-0 transition-opacity group-hover:opacity-100"
-                          aria-label="Termin löschen"
+                          aria-label={en ? "Delete appointment" : "Termin löschen"}
                         >
                           <Trash2 className="size-3 text-muted-foreground hover:text-destructive" />
                         </button>
@@ -257,7 +258,7 @@ export function KalenderView() {
                       <p className="mt-0.5 font-mono text-[10px] text-muted-foreground">
                         {new Date(t.start).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}
                         {" · "}
-                        {t.durationMin} Min
+                        {t.durationMin} {en ? "min" : "Min"}
                       </p>
                       {t.location && (
                         <p className="mt-0.5 truncate text-[10px] text-muted-foreground">{t.location}</p>
@@ -265,7 +266,7 @@ export function KalenderView() {
                     </div>
                   ))}
                   {dayItems.length === 0 && (
-                    <p className="px-1 py-3 text-center text-[11px] text-muted-foreground/50">frei</p>
+                    <p className="px-1 py-3 text-center text-[11px] text-muted-foreground/50">{en ? "free" : "frei"}</p>
                   )}
                 </div>
               </div>
@@ -277,12 +278,12 @@ export function KalenderView() {
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
         <DialogContent className="theme-paper sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Termin eintragen</DialogTitle>
-            <DialogDescription>Lokaler Termin — Kalender-Sync folgt mit Welle 2.</DialogDescription>
+            <DialogTitle>{en ? "Add appointment" : "Termin eintragen"}</DialogTitle>
+            <DialogDescription>{en ? "Local appointment — calendar sync follows with Wave 2." : "Lokaler Termin — Kalender-Sync folgt mit Welle 2."}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="t-title">Titel *</Label>
+              <Label htmlFor="t-title">{en ? "Title *" : "Titel *"}</Label>
               <Input
                 id="t-title"
                 value={form.title}
@@ -291,7 +292,7 @@ export function KalenderView() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="t-location">Ort / Kunde</Label>
+              <Label htmlFor="t-location">{en ? "Location / customer" : "Ort / Kunde"}</Label>
               <Input
                 id="t-location"
                 value={form.location}
@@ -301,7 +302,7 @@ export function KalenderView() {
             </div>
             <div className="grid grid-cols-3 gap-3">
               <div className="space-y-2">
-                <Label htmlFor="t-day">Tag *</Label>
+                <Label htmlFor="t-day">{en ? "Day *" : "Tag *"}</Label>
                 <Input
                   id="t-day"
                   type="date"
@@ -310,7 +311,7 @@ export function KalenderView() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="t-time">Uhrzeit</Label>
+                <Label htmlFor="t-time">{en ? "Time" : "Uhrzeit"}</Label>
                 <Input
                   id="t-time"
                   type="time"
@@ -319,7 +320,7 @@ export function KalenderView() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="t-dur">Dauer (Min)</Label>
+                <Label htmlFor="t-dur">{en ? "Duration (min)" : "Dauer (Min)"}</Label>
                 <Input
                   id="t-dur"
                   inputMode="numeric"
@@ -329,7 +330,7 @@ export function KalenderView() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label>Art</Label>
+              <Label>{en ? "Kind" : "Art"}</Label>
               <Select value={form.kind} onValueChange={(v) => setForm((f) => ({ ...f, kind: v }))}>
                 <SelectTrigger className="w-full">
                   <SelectValue />
@@ -337,7 +338,7 @@ export function KalenderView() {
                 <SelectContent>
                   {KINDS.map((k) => (
                     <SelectItem key={k.value} value={k.value}>
-                      {k.label}
+                      {en ? k.labelEn : k.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -346,11 +347,11 @@ export function KalenderView() {
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setAddOpen(false)} disabled={saving}>
-              Abbrechen
+              {en ? "Cancel" : "Abbrechen"}
             </Button>
             <Button onClick={create} disabled={saving}>
               {saving && <Loader2 className="size-4 animate-spin" />}
-              Eintragen
+              {en ? "Add" : "Eintragen"}
             </Button>
           </DialogFooter>
         </DialogContent>

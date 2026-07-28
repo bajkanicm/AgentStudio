@@ -6,6 +6,7 @@ import { AgentChat } from "@/components/chat/agent-chat";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Plus, ShieldCheck } from "lucide-react";
+import { getLang } from "@/lib/lang";
 
 export const metadata = { title: "KI-Chat" };
 
@@ -21,6 +22,8 @@ export default async function ChatPage({
   const user = await requireDbUser();
   if (!user) redirect("/sign-in");
   const { c: selectedId } = await searchParams;
+  const lang = await getLang();
+  const en = lang === "en";
 
   const [conversations, docCount] = await Promise.all([
     db.conversation.findMany({
@@ -46,15 +49,23 @@ export default async function ChatPage({
 
   const suggestions =
     docCount > 0
-      ? [
-          "Was haben wir Familie Yilmaz angeboten?",
-          "Welche Rechnungen warten auf Freigabe?",
-          "Formulier mir eine Zahlungserinnerung an Familie Hoffmann.",
-        ]
-      : [
-          "Was kannst du für mich tun?",
-          "Wie bekomme ich meine Dokumente in die Ablage?",
-        ];
+      ? en
+        ? [
+            "What did we quote the Yilmaz family?",
+            "Which invoices are awaiting approval?",
+            "Draft a payment reminder for the Hoffmann family.",
+          ]
+        : [
+            "Was haben wir Familie Yilmaz angeboten?",
+            "Welche Rechnungen warten auf Freigabe?",
+            "Formulier mir eine Zahlungserinnerung an Familie Hoffmann.",
+          ]
+      : en
+        ? ["What can you do for me?", "How do I get my documents into the filing?"]
+        : [
+            "Was kannst du für mich tun?",
+            "Wie bekomme ich meine Dokumente in die Ablage?",
+          ];
 
   return (
     <div className="grid gap-5 lg:grid-cols-[300px_minmax(0,1fr)]">
@@ -63,16 +74,16 @@ export default async function ChatPage({
         <Button className="w-full rounded-full" asChild>
           <Link href="/dashboard/chat">
             <Plus className="size-4" />
-            Neuer Chat
+            {en ? "New chat" : "Neuer Chat"}
           </Link>
         </Button>
         <p className="mt-5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-          Verläufe
+          {en ? "History" : "Verläufe"}
         </p>
         <div className="no-scrollbar mt-2 flex gap-1.5 overflow-x-auto lg:flex-1 lg:flex-col lg:overflow-y-auto lg:overflow-x-visible">
           {conversations.length === 0 && (
             <p className="py-2 text-sm text-muted-foreground">
-              Noch keine Chats — stell unten deine erste Frage.
+              {en ? "No chats yet — ask your first question below." : "Noch keine Chats — stell unten deine erste Frage."}
             </p>
           )}
           {conversations.map((conv) => (
@@ -104,8 +115,7 @@ export default async function ChatPage({
           ))}
         </div>
         <p className="mt-4 hidden border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground lg:block">
-          Antworten basieren auf deiner Ablage. Das Sprachmodell läuft in
-          Deutschland.
+          {en ? "Answers are based on your filing. The language model runs in Germany." : "Antworten basieren auf deiner Ablage. Das Sprachmodell läuft in Deutschland."}
         </p>
       </aside>
 
@@ -113,11 +123,11 @@ export default async function ChatPage({
       <section className="flex min-h-[60dvh] flex-col rounded-3xl bg-card shadow-sm lg:min-h-[calc(100dvh-260px)]">
         <div className="flex flex-wrap items-center gap-3 border-b border-border px-6 py-4">
           <h1 className="font-logo text-xl font-semibold tracking-tight">
-            Frag deine Ablage.
+            {en ? "Ask your filing." : "Frag deine Ablage."}
           </h1>
           <span className="ml-auto hidden items-center gap-1.5 rounded-full bg-background px-3 py-1.5 text-xs font-semibold text-[#0e3b33] sm:inline-flex">
             <ShieldCheck className="size-3.5" />
-            DSGVO-konform · Serverstandort Deutschland
+            {en ? "GDPR-compliant · Hosted in Germany" : "DSGVO-konform · Serverstandort Deutschland"}
           </span>
         </div>
         <div className="min-h-0 flex-1">
@@ -129,13 +139,17 @@ export default async function ChatPage({
               initialMessages?.length
                 ? undefined
                 : docCount > 0
-                  ? `Moin! Deine Ablage enthält ${docCount} Dokument${docCount === 1 ? "" : "e"} — frag mich etwas dazu, oder lass mich Mails und Angebotstexte formulieren.`
+                  ? en
+                  ? `Hi! Your filing holds ${docCount} document${docCount === 1 ? "" : "s"} — ask me about them, or let me draft emails and quote texts.`
+                  : `Moin! Deine Ablage enthält ${docCount} Dokument${docCount === 1 ? "" : "e"} — frag mich etwas dazu, oder lass mich Mails und Angebotstexte formulieren.`
+                  : en
+                  ? "Hi! I answer from your filing — it's still empty. Add something under **Documents** (or load the samples there) and then ask me."
                   : "Moin! Ich antworte auf Basis deiner Ablage — die ist noch leer. Leg unter **Dokumente** etwas an (oder lade dort die Beispiele) und frag mich dann."
             }
             suggestions={initialMessages?.length ? [] : suggestions}
             initialMessages={initialMessages}
             initialConversationId={selected?.id ?? null}
-            placeholder="Frag etwas zu deinen Dokumenten, Angeboten, Kunden …"
+            placeholder={en ? "Ask about your documents, quotes, customers …" : "Frag etwas zu deinen Dokumenten, Angeboten, Kunden …"}
           />
         </div>
       </section>

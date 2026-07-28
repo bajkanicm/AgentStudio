@@ -1,24 +1,26 @@
 export const DOC_TYPES = [
-  { value: "eingangsrechnung", label: "Eingangsrechnung" },
-  { value: "ausgangsrechnung", label: "Ausgangsrechnung" },
-  { value: "angebot", label: "Angebot" },
-  { value: "lieferschein", label: "Lieferschein" },
-  { value: "vertrag", label: "Vertrag" },
-  { value: "sonstiges", label: "Sonstiges" },
+  { value: "eingangsrechnung", label: "Eingangsrechnung", labelEn: "Incoming invoice" },
+  { value: "ausgangsrechnung", label: "Ausgangsrechnung", labelEn: "Outgoing invoice" },
+  { value: "angebot", label: "Angebot", labelEn: "Quote" },
+  { value: "lieferschein", label: "Lieferschein", labelEn: "Delivery note" },
+  { value: "vertrag", label: "Vertrag", labelEn: "Contract" },
+  { value: "sonstiges", label: "Sonstiges", labelEn: "Other" },
 ] as const;
 
 export const DOC_STATUS = [
-  { value: "wartet_freigabe", label: "Wartet auf Freigabe", tone: "warning" },
-  { value: "angenommen", label: "Angenommen", tone: "success" },
-  { value: "abgelegt", label: "Abgelegt", tone: "neutral" },
-  { value: "ueberfaellig", label: "Überfällig", tone: "danger" },
-  { value: "erledigt", label: "Erledigt", tone: "success" },
+  { value: "wartet_freigabe", label: "Wartet auf Freigabe", labelEn: "Awaiting approval", tone: "warning" },
+  { value: "angenommen", label: "Angenommen", labelEn: "Accepted", tone: "success" },
+  { value: "abgelegt", label: "Abgelegt", labelEn: "Filed", tone: "neutral" },
+  { value: "ueberfaellig", label: "Überfällig", labelEn: "Overdue", tone: "danger" },
+  { value: "erledigt", label: "Erledigt", labelEn: "Done", tone: "success" },
 ] as const;
 
 export const DOC_SOURCES = ["mail", "scan", "foto", "manuell"] as const;
 
-export function docTypeLabel(value: string): string {
-  return DOC_TYPES.find((t) => t.value === value)?.label ?? "Sonstiges";
+export function docTypeLabel(value: string, lang: "de" | "en" = "de"): string {
+  const t = DOC_TYPES.find((x) => x.value === value);
+  if (!t) return lang === "en" ? "Other" : "Sonstiges";
+  return lang === "en" ? t.labelEn : t.label;
 }
 
 export function docStatusMeta(value: string) {

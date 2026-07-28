@@ -6,16 +6,18 @@ import { usePathname } from "next/navigation";
 import { Logo } from "@/components/logo";
 import { cn } from "@/lib/utils";
 import { Bell, Search } from "lucide-react";
+import { UserMenu } from "@/components/dashboard/user-menu";
+import type { Lang } from "@/lib/lang";
 
 const NAV = [
-  { href: "/dashboard", label: "Übersicht", exact: true },
-  { href: "/dashboard/anrufe", label: "Anrufe" },
-  { href: "/dashboard/chat", label: "KI-Chat" },
-  { href: "/dashboard/dokumente", label: "Dokumente" },
-  { href: "/dashboard/agents", label: "KI-Mitarbeiter" },
-  { href: "/dashboard/kalender", label: "Kalender" },
-  { href: "/dashboard/auftraege", label: "Aufträge" },
-  { href: "/dashboard/billing", label: "Kosten" },
+  { href: "/dashboard", de: "Übersicht", en: "Overview", exact: true },
+  { href: "/dashboard/anrufe", de: "Anrufe", en: "Calls" },
+  { href: "/dashboard/chat", de: "KI-Chat", en: "AI Chat" },
+  { href: "/dashboard/dokumente", de: "Dokumente", en: "Documents" },
+  { href: "/dashboard/agents", de: "KI-Mitarbeiter", en: "AI Employees" },
+  { href: "/dashboard/kalender", de: "Kalender", en: "Calendar" },
+  { href: "/dashboard/auftraege", de: "Aufträge", en: "Jobs" },
+  { href: "/dashboard/billing", de: "Kosten", en: "Costs" },
 ];
 
 export interface ShellUser {
@@ -32,11 +34,11 @@ export interface ShellUser {
  */
 export function DashboardShell({
   user,
-  userButton,
+  lang = "de",
   children,
 }: {
   user: ShellUser;
-  userButton?: React.ReactNode;
+  lang?: Lang;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -72,7 +74,7 @@ export function DashboardShell({
                       : "bg-card text-foreground hover:bg-card/70"
                   )}
                 >
-                  {item.label}
+                  {item[lang]}
                 </Link>
               );
             })}
@@ -93,19 +95,21 @@ export function DashboardShell({
               <Bell className="size-4" />
               <span className="absolute right-2.5 top-2.5 size-1.5 rounded-full bg-primary" />
             </span>
-            <span title={`${user.name ?? "Demo User"} · Plan: ${user.plan}`}>
-              {userButton ?? (
-                <span className="flex size-10 items-center justify-center rounded-full bg-[#7fa69c] text-xs font-bold text-[#0a2c26]">
-                  {initials}
-                </span>
-              )}
-            </span>
+            <UserMenu
+              name={user.name ?? "Demo User"}
+              email={user.email ?? "demo@hey247.de"}
+              initials={initials}
+              lang={lang}
+              canSignOut={!user.isDemo}
+            />
           </div>
         </header>
 
         {user.isDemo && (
           <p className="mt-4 rounded-xl border border-amber-600/30 bg-amber-500/10 px-3.5 py-2 text-xs text-amber-800">
-            Demo-Modus — gemeinsamer Demo-Workspace. Clerk-Keys aktivieren echte Konten.
+            {lang === "en"
+              ? "Demo mode — shared demo workspace. Auth keys enable real accounts."
+              : "Demo-Modus — gemeinsamer Demo-Workspace. Auth-Keys aktivieren echte Konten."}
           </p>
         )}
 

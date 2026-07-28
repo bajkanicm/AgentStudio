@@ -1,20 +1,15 @@
 import { clerkEnabled } from "@/lib/auth";
+import { getLang } from "@/lib/lang";
 import { AuthShell, DemoModeCard } from "@/components/auth-shell";
+import { SignInForm } from "@/components/auth/auth-forms";
 
 export const metadata = { title: "Anmelden" };
 
 export default async function SignInPage() {
-  if (clerkEnabled) {
-    const { SignIn } = await import("@clerk/nextjs");
-    return (
-      <AuthShell>
-        <SignIn />
-      </AuthShell>
-    );
-  }
+  const lang = await getLang();
   return (
     <AuthShell>
-      <DemoModeCard label="die Anmeldung" />
+      {clerkEnabled ? <SignInForm lang={lang} /> : <DemoModeCard label="die Anmeldung" />}
     </AuthShell>
   );
 }

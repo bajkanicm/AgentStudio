@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import type { Lang } from "@/lib/lang";
 import { ExternalLink, FileText, Loader2, Plus, Search, Sparkles, Trash2, Upload } from "lucide-react";
 
 interface Doc {
@@ -52,7 +53,8 @@ const EMPTY_FORM = {
   content: "",
 };
 
-export function DocumentsView() {
+export function DocumentsView({ lang = "de" }: { lang?: Lang }) {
+  const en = lang === "en";
   const [docs, setDocs] = React.useState<Doc[] | null>(null);
   const [q, setQ] = React.useState("");
   const [type, setType] = React.useState("alle");
@@ -87,7 +89,7 @@ export function DocumentsView() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setDocs(data.documents);
-      toast.success("Beispiel-Dokumente geladen — frag den KI-Chat danach!");
+      toast.success(en ? "Sample documents loaded — ask the AI chat about them!" : "Beispiel-Dokumente geladen — frag den KI-Chat danach!");
     } catch (err) {
       toast.error((err as Error).message);
     } finally {
@@ -97,7 +99,7 @@ export function DocumentsView() {
 
   const create = async () => {
     if (!form.title.trim()) {
-      toast.error("Gib dem Dokument einen Titel.");
+      toast.error(en ? "Give the document a title." : "Gib dem Dokument einen Titel.");
       return;
     }
     setSaving(true);
@@ -118,7 +120,7 @@ export function DocumentsView() {
       if (!res.ok) throw new Error(data.error);
       setAddOpen(false);
       setForm(EMPTY_FORM);
-      toast.success("Dokument abgelegt");
+      toast.success(en ? "Document filed" : "Dokument abgelegt");
       void load(q, type);
     } catch (err) {
       toast.error((err as Error).message);
@@ -134,18 +136,18 @@ export function DocumentsView() {
     setUploading(true);
     const toastId = toast.loading(
       file.type === "application/pdf"
-        ? "PDF wird gelesen …"
-        : "Foto wird per Texterkennung gelesen — kann bis zu einer Minute dauern …"
+        ? en ? "Reading PDF …" : "PDF wird gelesen …"
+        : en ? "Reading photo via OCR — can take up to a minute …" : "Foto wird per Texterkennung gelesen — kann bis zu einer Minute dauern …"
     );
     try {
       const fd = new FormData();
       fd.append("file", file);
       const res = await fetch("/api/documents/upload", { method: "POST", body: fd });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Upload fehlgeschlagen");
+      if (!res.ok) throw new Error(data.error ?? (en ? "Upload failed" : "Upload fehlgeschlagen"));
       const { extracted } = data;
       toast.success(
-        `Abgelegt als ${docTypeLabel(extracted.type)}${extracted.amount ? ` · ${extracted.amount.toLocaleString("de-DE", { minimumFractionDigits: 2 })} €` : ""} (${extracted.chars.toLocaleString("de-DE")} Zeichen ${extracted.via === "ocr" ? "per OCR" : "aus PDF"} erkannt)`,
+        `${en ? "Filed as" : "Abgelegt als"} ${docTypeLabel(extracted.type, lang)}${extracted.amount ? ` · ${extracted.amount.toLocaleString("de-DE", { minimumFractionDigits: 2 })} €` : ""} (${extracted.chars.toLocaleString("de-DE")} ${en ? "chars detected" : "Zeichen erkannt"} ${extracted.via === "ocr" ? (en ? "via OCR" : "per OCR") : (en ? "from PDF" : "aus PDF")})`,
         { id: toastId, duration: 6000 }
       );
       void load(q, type);
@@ -180,7 +182,7 @@ export function DocumentsView() {
       const res = await fetch(`/api/documents/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error((await res.json()).error);
       setDocs((d) => d?.filter((doc) => doc.id !== id) ?? null);
-      toast.success("Dokument gelöscht");
+      toast.success(en ? "Document deleted" : "Dokument gelöscht");
     } catch (err) {
       toast.error((err as Error).message);
     } finally {
@@ -197,7 +199,7 @@ export function DocumentsView() {
           <Input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Dokumente durchsuchen"
+            placeholder={en ? "Search documents" : "Dokumente durchsuchen"}
             className="h-11 rounded-full bg-card pl-11 shadow-sm"
           />
         </div>
@@ -206,10 +208,10 @@ export function DocumentsView() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="alle">Alle Typen</SelectItem>
+            <SelectItem value="alle">{en ? "All types" : "Alle Typen"}</SelectItem>
             {DOC_TYPES.map((t) => (
               <SelectItem key={t.value} value={t.value}>
-                {t.label}
+                {en ? t.labelEn : t.label}
               </SelectItem>
             ))}
           </SelectContent>
@@ -230,11 +232,11 @@ export function DocumentsView() {
           className="h-11 rounded-full"
         >
           {uploading ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
-          Hochladen
+          {en ? "Upload" : "Hochladen"}
         </Button>
         <Button variant="outline" onClick={() => setAddOpen(true)} className="h-11 rounded-full bg-card">
           <Plus className="size-4" />
-          Dokument anlegen
+          {en ? "Add document" : "Dokument anlegen"}
         </Button>
       </div>
 
@@ -246,9 +248,9 @@ export function DocumentsView() {
       ) : docs.length === 0 && !q && type === "alle" ? (
         <div className="rounded-2xl bg-card p-12 text-center shadow-sm">
           <FileText className="mx-auto size-12 text-muted-foreground/40" />
-          <p className="mt-4 text-lg font-semibold">Deine Ablage ist noch leer</p>
+          <p className="mt-4 text-lg font-semibold">{en ? "Your filing is still empty" : "Deine Ablage ist noch leer"}</p>
           <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
-            Lade PDFs oder Fotos hoch — Text wird automatisch erkannt (deutsche OCR, läuft auf unserem Server). Oder starte mit Beispielen und probier den KI-Chat darauf aus.
+            {en ? "Upload PDFs or photos — text is recognized automatically (OCR runs on our server). Or start with samples and try the AI chat on them." : "Lade PDFs oder Fotos hoch — Text wird automatisch erkannt (deutsche OCR, läuft auf unserem Server). Oder starte mit Beispielen und probier den KI-Chat darauf aus."}
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Button onClick={loadSamples} disabled={busy === "samples"}>
@@ -257,26 +259,26 @@ export function DocumentsView() {
               ) : (
                 <Sparkles className="size-4" />
               )}
-              Beispiele laden
+              {en ? "Load samples" : "Beispiele laden"}
             </Button>
             <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
               {uploading ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
-              Datei hochladen
+              {en ? "Upload file" : "Datei hochladen"}
             </Button>
           </div>
         </div>
       ) : docs.length === 0 ? (
         <p className="rounded-2xl bg-card p-10 text-center text-sm text-muted-foreground shadow-sm">
-          Nichts gefunden — andere Suche oder anderen Typ probieren.
+          {en ? "Nothing found — try a different search or type." : "Nichts gefunden — andere Suche oder anderen Typ probieren."}
         </p>
       ) : (
         <div className="overflow-hidden rounded-2xl bg-card shadow-sm">
           {/* Desktop table */}
           <div className="hidden md:block">
             <div className="grid grid-cols-[minmax(0,3fr)_160px_120px_180px_110px] gap-3 border-b border-border px-6 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              <span>Dokument</span>
-              <span>Typ</span>
-              <span className="text-right">Betrag</span>
+              <span>{en ? "Document" : "Dokument"}</span>
+              <span>{en ? "Type" : "Typ"}</span>
+              <span className="text-right">{en ? "Amount" : "Betrag"}</span>
               <span>Status</span>
               <span />
             </div>
@@ -284,6 +286,7 @@ export function DocumentsView() {
               <DocRow
                 key={doc.id}
                 doc={doc}
+                lang={lang}
                 busy={busy === doc.id}
                 onApprove={() => setStatus(doc.id, "angenommen")}
                 onDelete={() => remove(doc.id)}
@@ -301,8 +304,8 @@ export function DocumentsView() {
                   )}
                 </div>
                 <div className="flex flex-wrap items-center gap-2 text-xs">
-                  <span className="text-muted-foreground">{docTypeLabel(doc.type)}</span>
-                  <StatusBadge status={doc.status} />
+                  <span className="text-muted-foreground">{docTypeLabel(doc.type, lang)}</span>
+                  <StatusBadge status={doc.status} lang={lang} />
                   {doc.status === "wartet_freigabe" && (
                     <Button
                       size="sm"
@@ -311,7 +314,7 @@ export function DocumentsView() {
                       disabled={busy === doc.id}
                       onClick={() => setStatus(doc.id, "angenommen")}
                     >
-                      Freigeben
+                      {en ? "Approve" : "Freigeben"}
                     </Button>
                   )}
                 </div>
@@ -325,14 +328,14 @@ export function DocumentsView() {
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
         <DialogContent className="theme-paper max-h-[90dvh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Dokument anlegen</DialogTitle>
+            <DialogTitle>{en ? "Add document" : "Dokument anlegen"}</DialogTitle>
             <DialogDescription>
-              Für Dateien nutze „Hochladen“ (PDF/Foto mit Texterkennung); hier kannst du Text direkt einfügen.
+              {en ? "For files use Upload (PDF/photo with OCR); here you can paste text directly." : "Für Dateien nutze „Hochladen“ (PDF/Foto mit Texterkennung); hier kannst du Text direkt einfügen."}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="doc-title">Titel *</Label>
+              <Label htmlFor="doc-title">{en ? "Title *" : "Titel *"}</Label>
               <Input
                 id="doc-title"
                 value={form.title}
@@ -342,7 +345,7 @@ export function DocumentsView() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Typ</Label>
+                <Label>{en ? "Type" : "Typ"}</Label>
                 <Select
                   value={form.type}
                   onValueChange={(v) => setForm((f) => ({ ...f, type: v }))}
@@ -353,7 +356,7 @@ export function DocumentsView() {
                   <SelectContent>
                     {DOC_TYPES.map((t) => (
                       <SelectItem key={t.value} value={t.value}>
-                        {t.label}
+                        {en ? t.labelEn : t.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -371,7 +374,7 @@ export function DocumentsView() {
                   <SelectContent>
                     {DOC_STATUS.map((s) => (
                       <SelectItem key={s.value} value={s.value}>
-                        {s.label}
+                        {en ? s.labelEn : s.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -379,7 +382,7 @@ export function DocumentsView() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="doc-amount">Betrag (€, optional)</Label>
+              <Label htmlFor="doc-amount">{en ? "Amount (€, optional)" : "Betrag (€, optional)"}</Label>
               <Input
                 id="doc-amount"
                 inputMode="decimal"
@@ -389,23 +392,23 @@ export function DocumentsView() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="doc-content">Inhalt / Text</Label>
+              <Label htmlFor="doc-content">{en ? "Content / text" : "Inhalt / Text"}</Label>
               <Textarea
                 id="doc-content"
                 rows={5}
                 value={form.content}
                 onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
-                placeholder="Rechnungstext, Angebotsinhalt, Notizen …"
+                placeholder={en ? "Invoice text, quote content, notes …" : "Rechnungstext, Angebotsinhalt, Notizen …"}
               />
             </div>
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setAddOpen(false)} disabled={saving}>
-              Abbrechen
+              {en ? "Cancel" : "Abbrechen"}
             </Button>
             <Button onClick={create} disabled={saving}>
               {saving && <Loader2 className="size-4 animate-spin" />}
-              Ablegen
+              {en ? "File it" : "Ablegen"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -416,15 +419,18 @@ export function DocumentsView() {
 
 function DocRow({
   doc,
+  lang = "de",
   busy,
   onApprove,
   onDelete,
 }: {
   doc: Doc;
+  lang?: Lang;
   busy: boolean;
   onApprove: () => void;
   onDelete: () => void;
 }) {
+  const en = lang === "en";
   return (
     <div className="group grid grid-cols-[minmax(0,3fr)_160px_120px_180px_110px] items-center gap-3 border-b border-border px-6 py-3.5 last:border-0 hover:bg-secondary/60">
       <div className="min-w-0">
@@ -445,12 +451,12 @@ function DocRow({
           {new Date(doc.docDate).toLocaleDateString("de-DE")} · {doc.source}
         </p>
       </div>
-      <span className="text-sm text-muted-foreground">{docTypeLabel(doc.type)}</span>
+      <span className="text-sm text-muted-foreground">{docTypeLabel(doc.type, lang)}</span>
       <span className="text-right font-mono text-sm">
         {doc.amount != null ? formatEur(doc.amount) : "—"}
       </span>
       <span>
-        <StatusBadge status={doc.status} />
+        <StatusBadge status={doc.status} lang={lang} />
       </span>
       <span className="flex items-center justify-end gap-1">
         {doc.status === "wartet_freigabe" && (
@@ -461,7 +467,7 @@ function DocRow({
             disabled={busy}
             onClick={onApprove}
           >
-            Freigeben
+            {en ? "Approve" : "Freigeben"}
           </Button>
         )}
         <Button
@@ -479,7 +485,7 @@ function DocRow({
   );
 }
 
-function StatusBadge({ status }: { status: string }) {
+function StatusBadge({ status, lang = "de" }: { status: string; lang?: Lang }) {
   const meta = docStatusMeta(status);
   return (
     <span
@@ -488,7 +494,7 @@ function StatusBadge({ status }: { status: string }) {
         TONE_CLASSES[meta.tone]
       )}
     >
-      {meta.label}
+      {lang === "en" ? meta.labelEn : meta.label}
     </span>
   );
 }

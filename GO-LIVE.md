@@ -15,7 +15,7 @@ paying pilot businesses on the platform**.
 | Area | Status | Notes |
 | --- | --- | --- |
 | Landing page (DE) | ✅ Production-ready | Follows the pitch deck: hero with phone-call mock, Papierkram problem section, live demo, 8 modules with Welle badges, Ablage/KI-Chat features, KI-Mitarbeiter cards + "Mensch entscheidet", Germany data-residency section, deck pricing, pilot section, FAQ. Official design-system tokens (Tannengrün/Signal-Orange, Space Grotesk + IBM Plex). |
-| English fallback | ✅ Working | Full landing, pricing and pilot pages under `/en`, EN/DE switch in the navbar. |
+| English fallback | ✅ Working | Marketing under `/en`; **dashboard + auth are bilingual** (DE/EN switch in the account menu, cookie-persisted). Minor deep strings (agent settings labels, plan feature lists) remain German. |
 | Live demo chat | ✅ Working | Public, streaming, no sign-up. All four KI-Mitarbeiter with German replies. Mock model by default so anonymous visitors can't spend your AI budget (`DEMO_USE_REAL_AI` opts in). |
 | KI-Mitarbeiter | ✅ Working | Telefonassistent (killer feature, transparent-AI rules, structured Rückruf-Notizen), Rechnungs-Mitarbeiter (E-Rechnung aware), Buchhaltungs-Mitarbeiter (DATEV-oriented), Angebots-Mitarbeiter (Aufmaß → Angebotsentwurf). German system prompts; legacy AgentStudio agents map automatically. |
 | Playground + customization | ✅ Working | Streaming chat; Name, System-Prompt, Ton, Temperatur, Wissensbasis, model routing; save/reuse/delete. German UI. |
@@ -75,7 +75,7 @@ except payments and the Welle-2/3 modules, which need development.
    that claim. Either integrate a German/EU-hosted model provider (e.g.
    via an EU inference endpoint — the provider router in `src/lib/ai/` is
    built to be extended) or soften the landing-page claim until that's true.
-5. **Enable real authentication (Clerk)** *(✅ dev keys live 2026-07-27; production instance still open)* — sign-in UI is German (`@clerk/localizations`). ⚠️ Rename the Clerk application to "hey247" (Dashboard → Configure → General), it still shows "My Application" in the login headline.
+5. **Enable real authentication (Clerk)** *(✅ dev keys live 2026-07-27; production instance still open)* — sign-in/sign-up are now **custom hey247 forms** (headless Clerk — no visible Clerk branding, DE/EN, incl. password reset + email verification). ⚠️ Rename the Clerk application to "hey247" (Dashboard → Configure → General), it still shows "My Application" in the login headline.
    Original item: — production instance for the domain, keys into `.env`, rebuild. Note: Clerk is a US processor; it is
    named in the Datenschutzerklärung, but for the strict "Daten bleiben in
    Deutschland" positioning consider an EU-hosted auth alternative later.

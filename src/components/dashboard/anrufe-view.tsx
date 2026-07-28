@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import type { Lang } from "@/lib/lang";
 import {
   CalendarPlus,
   Check,
@@ -27,7 +28,8 @@ interface Call {
   createdAt: string;
 }
 
-export function AnrufeView() {
+export function AnrufeView({ lang = "de" }: { lang?: Lang }) {
+  const en = lang === "en";
   const router = useRouter();
   const [calls, setCalls] = React.useState<Call[] | null>(null);
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
@@ -117,7 +119,7 @@ export function AnrufeView() {
         }),
       });
       if (!res.ok) throw new Error((await res.json()).error);
-      toast.success("Rückruf für morgen 16:00 im Kalender eingeplant");
+      toast.success(en ? "Callback scheduled for tomorrow 16:00 in your calendar" : "Rückruf für morgen 16:00 im Kalender eingeplant");
       router.refresh();
     } catch (err) {
       toast.error((err as Error).message);
@@ -140,12 +142,9 @@ export function AnrufeView() {
     return (
       <div className="rounded-2xl bg-card p-12 text-center shadow-sm">
         <PhoneIncoming className="mx-auto size-12 text-muted-foreground/40" />
-        <p className="mt-4 text-lg font-semibold">Noch keine Anrufe</p>
+        <p className="mt-4 text-lg font-semibold">{en ? "No calls yet" : "Noch keine Anrufe"}</p>
         <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
-          Hier landen die strukturierten Notizen deines Telefonassistenten —
-          eine pro Anruf: Name, Anliegen, Rückrufnummer. Die echte
-          Telefonanbindung kommt mit Welle 2; bis dahin kannst du mit
-          Beispielen arbeiten.
+          {en ? "This is where your phone assistant's structured notes land — one per call: name, request, callback number. The real phone line arrives with Wave 2; until then you can work with samples." : "Hier landen die strukturierten Notizen deines Telefonassistenten — eine pro Anruf: Name, Anliegen, Rückrufnummer. Die echte Telefonanbindung kommt mit Welle 2; bis dahin kannst du mit Beispielen arbeiten."}
         </p>
         <Button className="mt-6" onClick={loadSamples} disabled={busy === "samples"}>
           {busy === "samples" ? (
@@ -153,7 +152,7 @@ export function AnrufeView() {
           ) : (
             <Sparkles className="size-4" />
           )}
-          Beispiele laden
+          {en ? "Load samples" : "Beispiele laden"}
         </Button>
       </div>
     );
@@ -164,7 +163,7 @@ export function AnrufeView() {
       {/* Letzte Anrufe */}
       <aside className="rounded-3xl bg-card p-4 shadow-sm">
         <p className="px-2 pb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-          Letzte Anrufe
+          {en ? "Recent calls" : "Letzte Anrufe"}
         </p>
         <div className="no-scrollbar flex gap-1.5 overflow-x-auto lg:max-h-[calc(100dvh-330px)] lg:flex-col lg:overflow-y-auto lg:overflow-x-visible">
           {calls.map((call) => (
@@ -178,10 +177,10 @@ export function AnrufeView() {
             >
               <span className="flex items-center gap-2">
                 <span className="max-w-40 truncate text-sm font-semibold">{call.callerName}</span>
-                <StatusPill call={call} />
+                <StatusPill call={call} lang={lang} />
               </span>
               <span className="mt-0.5 block font-mono text-[11px] text-muted-foreground">
-                {formatWhen(call.createdAt)} · {formatDuration(call.durationSec)}
+                {formatWhen(call.createdAt, en)} · {formatDuration(call.durationSec)}
               </span>
             </button>
           ))}
@@ -200,15 +199,15 @@ export function AnrufeView() {
                 {selected.callerName}
               </h2>
               <p className="mt-1.5 font-mono text-xs text-muted-foreground">
-                {formatWhen(selected.createdAt)} · {formatDuration(selected.durationSec)}
+                {formatWhen(selected.createdAt, en)} · {formatDuration(selected.durationSec)}
                 {selected.callerPhone && ` · ${selected.callerPhone}`}
               </p>
             </div>
-            <StatusPill call={selected} large />
+            <StatusPill call={selected} lang={lang} large />
           </div>
 
           <p className="mt-5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            Zusammenfassung
+            {en ? "Summary" : "Zusammenfassung"}
           </p>
           <p className="mt-2 max-w-2xl rounded-2xl rounded-tl-md bg-secondary px-5 py-4 text-sm leading-relaxed">
             {selected.summary}
@@ -217,7 +216,7 @@ export function AnrufeView() {
           {selected.noteItems && (
             <>
               <p className="mt-6 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                Notiert für dich
+                {en ? "Noted for you" : "Notiert für dich"}
               </p>
               <ul className="mt-2 space-y-2">
                 {selected.noteItems.split("\n").filter(Boolean).map((item, i) => (
@@ -241,7 +240,7 @@ export function AnrufeView() {
               ) : (
                 <CalendarPlus className="size-4" />
               )}
-              Rückruf planen
+              {en ? "Schedule callback" : "Rückruf planen"}
             </Button>
             {selected.status === "neu" ? (
               <Button
@@ -251,7 +250,7 @@ export function AnrufeView() {
                 onClick={() => setStatus(selected.id, "erledigt")}
               >
                 <Check className="size-4" />
-                Als erledigt markieren
+                {en ? "Mark as done" : "Als erledigt markieren"}
               </Button>
             ) : (
               <Button
@@ -260,7 +259,7 @@ export function AnrufeView() {
                 disabled={busy === selected.id}
                 onClick={() => setStatus(selected.id, "neu")}
               >
-                Wieder öffnen
+                {en ? "Reopen" : "Wieder öffnen"}
               </Button>
             )}
             <Button
@@ -270,13 +269,12 @@ export function AnrufeView() {
               onClick={() => remove(selected.id)}
             >
               <Trash2 className="size-4" />
-              Löschen
+              {en ? "Delete" : "Löschen"}
             </Button>
           </div>
 
           <p className="mt-6 text-xs text-muted-foreground">
-            Aufzeichnungen & echte Telefonanbindung folgen mit Welle 2 — diese
-            Ansicht zeigt schon das Datenmodell des Telefonassistenten.
+            {en ? "Recordings & the real phone line follow with Wave 2 — this view already shows the phone assistant's data model." : "Aufzeichnungen & echte Telefonanbindung folgen mit Welle 2 — diese Ansicht zeigt schon das Datenmodell des Telefonassistenten."}
           </p>
         </section>
       )}
@@ -284,32 +282,33 @@ export function AnrufeView() {
   );
 }
 
-function StatusPill({ call, large }: { call: Call; large?: boolean }) {
+function StatusPill({ call, lang = "de", large }: { call: Call; lang?: Lang; large?: boolean }) {
+  const en = lang === "en";
   const cls = large ? "px-3 py-1 text-xs" : "px-2 py-0.5 text-[10px]";
   if (call.urgency === "dringend" && call.status === "neu") {
     return (
       <span className={cn("rounded-full bg-[#f8e3e0] font-semibold text-[#96291d]", cls)}>
-        Dringend
+        {en ? "Urgent" : "Dringend"}
       </span>
     );
   }
   return call.status === "neu" ? (
-    <span className={cn("rounded-full bg-[#fdeadf] font-semibold text-[#a93e06]", cls)}>Neu</span>
+    <span className={cn("rounded-full bg-[#fdeadf] font-semibold text-[#a93e06]", cls)}>{en ? "New" : "Neu"}</span>
   ) : (
     <span className={cn("rounded-full bg-[#e1f1e7] font-semibold text-[#17603a]", cls)}>
-      Erledigt
+      {en ? "Done" : "Erledigt"}
     </span>
   );
 }
 
-function formatWhen(iso: string): string {
+function formatWhen(iso: string, en = false): string {
   const d = new Date(iso);
   const today = new Date();
   const diffDays = Math.floor((today.setHours(0, 0, 0, 0) - new Date(d).setHours(0, 0, 0, 0)) / 86_400_000);
   const time = d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
-  if (diffDays === 0) return `Heute ${time}`;
-  if (diffDays === 1) return `Gestern ${time}`;
-  return `${d.toLocaleDateString("de-DE", { weekday: "short" })} ${time}`;
+  if (diffDays === 0) return `${en ? "Today" : "Heute"} ${time}`;
+  if (diffDays === 1) return `${en ? "Yesterday" : "Gestern"} ${time}`;
+  return `${d.toLocaleDateString(en ? "en-GB" : "de-DE", { weekday: "short" })} ${time}`;
 }
 
 function formatDuration(sec: number): string {

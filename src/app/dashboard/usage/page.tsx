@@ -6,12 +6,15 @@ import { getUsage } from "@/lib/usage";
 import { getPlan } from "@/lib/plans";
 import { getTemplate } from "@/lib/agent-templates";
 import { PageHeader } from "@/components/dashboard/page-header";
+import { getLang } from "@/lib/lang";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export const metadata = { title: "Nutzung" };
 
 export default async function UsagePage() {
+  const lang = await getLang();
+  const en = lang === "en";
   const user = await requireDbUser();
   if (!user) redirect("/sign-in");
 
@@ -31,13 +34,13 @@ export default async function UsagePage() {
 
   const rows = [
     {
-      label: "Nachrichten",
+      label: en ? "Messages" : "Nachrichten",
       used: usage.messagesUsed,
       limit: usage.messagesLimit,
       note: "Antworten der KI-Mitarbeiter zählen auf dein Monatslimit.",
     },
     {
-      label: "Gespeicherte KI-Mitarbeiter",
+      label: en ? "Saved AI employees" : "Gespeicherte KI-Mitarbeiter",
       used: usage.agentsUsed,
       limit: usage.agentsLimit,
       note: "Aus Vorlagen angepasste und gespeicherte KI-Mitarbeiter.",
@@ -47,12 +50,12 @@ export default async function UsagePage() {
   return (
     <div className="mx-auto max-w-6xl space-y-10 py-2">
       <PageHeader
-        title="Nutzung & Limits"
-        description={`Plan ${plan.name} · Zähler starten am ${nextResetLabel()} neu`}
+        title={en ? "Usage & limits" : "Nutzung & Limits"}
+        description={en ? `Plan ${plan.name} · counters reset on ${nextResetLabel()}` : `Plan ${plan.name} · Zähler starten am ${nextResetLabel()} neu`}
         actions={
           getPlan(user.plan).id !== "komplett" && (
             <Button className="glow-primary" asChild>
-              <Link href="/dashboard/billing">Pläne ansehen</Link>
+              <Link href="/dashboard/billing">{en ? "View plans" : "Pläne ansehen"}</Link>
             </Button>
           )
         }
@@ -68,7 +71,7 @@ export default async function UsagePage() {
                 <h2 className="font-medium">{row.label}</h2>
                 <p className="text-sm text-muted-foreground">
                   {row.used.toLocaleString()}
-                  {row.limit === -1 ? " · unbegrenzt" : ` / ${row.limit.toLocaleString()}`}
+                  {row.limit === -1 ? (en ? " · unlimited" : " · unbegrenzt") : ` / ${row.limit.toLocaleString()}`}
                 </p>
               </div>
               <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-secondary">
@@ -94,7 +97,7 @@ export default async function UsagePage() {
       <div className="rounded-2xl border border-border bg-card p-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h2 className="font-medium">Token-Verbrauch</h2>
+            <h2 className="font-medium">{en ? "Token consumption" : "Token-Verbrauch"}</h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Geschätzte Tokens über alle KI-Mitarbeiter diesen Monat.
             </p>
@@ -107,7 +110,7 @@ export default async function UsagePage() {
 
       {/* Recent conversations */}
       <section>
-        <h2 className="mb-4 text-lg font-semibold">Letzte Gespräche</h2>
+        <h2 className="mb-4 text-lg font-semibold">{en ? "Recent conversations" : "Letzte Gespräche"}</h2>
         {recentConversations.length === 0 ? (
           <p className="rounded-2xl border border-dashed border-border bg-card/50 p-8 text-center text-sm text-muted-foreground">
             Noch keine Gespräche — öffne einen KI-Mitarbeiter und leg los.

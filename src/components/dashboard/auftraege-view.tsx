@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ArrowRight, Inbox, Loader2, Plus, Sparkles, Trash2 } from "lucide-react";
+import type { Lang } from "@/lib/lang";
 
 interface Auftrag {
   id: string;
@@ -35,10 +36,10 @@ interface Auftrag {
 }
 
 const COLUMNS = [
-  { value: "neu", label: "Neu" },
-  { value: "in_arbeit", label: "In Arbeit" },
-  { value: "wartet_kunde", label: "Wartet auf Kunde" },
-  { value: "erledigt", label: "Erledigt" },
+  { value: "neu", label: "Neu", labelEn: "New" },
+  { value: "in_arbeit", label: "In Arbeit", labelEn: "In progress" },
+  { value: "wartet_kunde", label: "Wartet auf Kunde", labelEn: "Waiting on customer" },
+  { value: "erledigt", label: "Erledigt", labelEn: "Done" },
 ] as const;
 
 const SOURCE_LABEL: Record<string, string> = {
@@ -50,7 +51,8 @@ const SOURCE_LABEL: Record<string, string> = {
 
 const EMPTY_FORM = { title: "", customer: "", note: "", priority: "normal" };
 
-export function AuftraegeView() {
+export function AuftraegeView({ lang = "de" }: { lang?: Lang }) {
+  const en = lang === "en";
   const [items, setItems] = React.useState<Auftrag[] | null>(null);
   const [busy, setBusy] = React.useState<string | null>(null);
   const [addOpen, setAddOpen] = React.useState(false);
@@ -88,7 +90,7 @@ export function AuftraegeView() {
 
   const create = async () => {
     if (!form.title.trim()) {
-      toast.error("Gib dem Vorgang einen Titel.");
+      toast.error(en ? "Give the case a title." : "Gib dem Vorgang einen Titel.");
       return;
     }
     setSaving(true);
@@ -103,7 +105,7 @@ export function AuftraegeView() {
       setItems((it) => [data.auftrag, ...(it ?? [])]);
       setAddOpen(false);
       setForm(EMPTY_FORM);
-      toast.success("Vorgang angelegt");
+      toast.success(en ? "Case created" : "Vorgang angelegt");
     } catch (err) {
       toast.error((err as Error).message);
     } finally {
@@ -153,22 +155,20 @@ export function AuftraegeView() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground">
-          Jede Kundenanfrage wird ein Vorgang — aus Telefon, Mail und
-          Webformular. Nichts geht unter.
+          {en ? "Every customer request becomes a case — from phone, mail and web form. Nothing gets lost." : "Jede Kundenanfrage wird ein Vorgang — aus Telefon, Mail und Webformular. Nichts geht unter."}
         </p>
         <Button onClick={() => setAddOpen(true)} className="rounded-full">
           <Plus className="size-4" />
-          Vorgang anlegen
+          {en ? "Create case" : "Vorgang anlegen"}
         </Button>
       </div>
 
       {items.length === 0 ? (
         <div className="rounded-2xl bg-card p-12 text-center shadow-sm">
           <Inbox className="mx-auto size-12 text-muted-foreground/40" />
-          <p className="mt-4 text-lg font-semibold">Noch keine Vorgänge</p>
+          <p className="mt-4 text-lg font-semibold">{en ? "No cases yet" : "Noch keine Vorgänge"}</p>
           <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
-            Lege Anfragen und Aufträge als Vorgänge an und zieh sie durch die
-            Spalten bis „Erledigt“.
+            {en ? "Create requests and jobs as cases and move them across the columns to Done." : "Lege Anfragen und Aufträge als Vorgänge an und zieh sie durch die Spalten bis „Erledigt“."}
           </p>
           <Button className="mt-6" onClick={loadSamples} disabled={busy === "samples"}>
             {busy === "samples" ? (
@@ -176,7 +176,7 @@ export function AuftraegeView() {
             ) : (
               <Sparkles className="size-4" />
             )}
-            Beispiele laden
+            {en ? "Load samples" : "Beispiele laden"}
           </Button>
         </div>
       ) : (
@@ -186,7 +186,7 @@ export function AuftraegeView() {
             return (
               <div key={col.value} className="rounded-2xl bg-card/60 p-3">
                 <p className="flex items-center justify-between px-2 py-1.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                  {col.label}
+                  {en ? col.labelEn : col.label}
                   <span className="rounded-full bg-card px-2 py-0.5 font-mono">
                     {colItems.length}
                   </span>
@@ -198,7 +198,7 @@ export function AuftraegeView() {
                         <p className="text-sm font-semibold leading-snug">{item.title}</p>
                         {item.priority === "dringend" && item.status !== "erledigt" && (
                           <span className="shrink-0 rounded-full bg-[#f8e3e0] px-2 py-0.5 text-[10px] font-semibold text-[#96291d]">
-                            Dringend
+                            {en ? "Urgent" : "Dringend"}
                           </span>
                         )}
                       </div>
@@ -226,7 +226,7 @@ export function AuftraegeView() {
                           <SelectContent>
                             {COLUMNS.map((c) => (
                               <SelectItem key={c.value} value={c.value}>
-                                {c.label}
+                                {en ? c.labelEn : c.label}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -235,7 +235,7 @@ export function AuftraegeView() {
                           onClick={() => remove(item.id)}
                           disabled={busy === item.id}
                           className="rounded-full p-1.5 text-muted-foreground opacity-0 transition-opacity hover:text-destructive group-hover:opacity-100"
-                          aria-label="Vorgang löschen"
+                          aria-label={en ? "Delete case" : "Vorgang löschen"}
                         >
                           <Trash2 className="size-3.5" />
                         </button>
@@ -244,7 +244,7 @@ export function AuftraegeView() {
                   ))}
                   {colItems.length === 0 && (
                     <p className="px-2 py-4 text-center text-xs text-muted-foreground/60">
-                      Keine Vorgänge
+                      {en ? "No cases" : "Keine Vorgänge"}
                     </p>
                   )}
                 </div>
@@ -257,14 +257,14 @@ export function AuftraegeView() {
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
         <DialogContent className="theme-paper sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Vorgang anlegen</DialogTitle>
+            <DialogTitle>{en ? "Create case" : "Vorgang anlegen"}</DialogTitle>
             <DialogDescription>
-              Anfrage, Auftrag oder To-do — landet in der Spalte „Neu“.
+              {en ? "Request, job or to-do — lands in the New column." : "Anfrage, Auftrag oder To-do — landet in der Spalte „Neu“."}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="a-title">Titel *</Label>
+              <Label htmlFor="a-title">{en ? "Title *" : "Titel *"}</Label>
               <Input
                 id="a-title"
                 value={form.title}
@@ -274,7 +274,7 @@ export function AuftraegeView() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="a-customer">Kunde</Label>
+                <Label htmlFor="a-customer">{en ? "Customer" : "Kunde"}</Label>
                 <Input
                   id="a-customer"
                   value={form.customer}
@@ -283,7 +283,7 @@ export function AuftraegeView() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Priorität</Label>
+                <Label>{en ? "Priority" : "Priorität"}</Label>
                 <Select
                   value={form.priority}
                   onValueChange={(v) => setForm((f) => ({ ...f, priority: v }))}
@@ -293,29 +293,29 @@ export function AuftraegeView() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="normal">Normal</SelectItem>
-                    <SelectItem value="dringend">Dringend</SelectItem>
+                    <SelectItem value="dringend">{en ? "Urgent" : "Dringend"}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="a-note">Notiz</Label>
+              <Label htmlFor="a-note">{en ? "Note" : "Notiz"}</Label>
               <Textarea
                 id="a-note"
                 rows={3}
                 value={form.note}
                 onChange={(e) => setForm((f) => ({ ...f, note: e.target.value }))}
-                placeholder="Details, nächste Schritte …"
+                placeholder={en ? "Details, next steps …" : "Details, nächste Schritte …"}
               />
             </div>
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setAddOpen(false)} disabled={saving}>
-              Abbrechen
+              {en ? "Cancel" : "Abbrechen"}
             </Button>
             <Button onClick={create} disabled={saving}>
               {saving && <Loader2 className="size-4 animate-spin" />}
-              Anlegen
+              {en ? "Create" : "Anlegen"}
             </Button>
           </DialogFooter>
         </DialogContent>

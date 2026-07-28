@@ -4,6 +4,7 @@ import { requireDbUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getPlan } from "@/lib/plans";
 import { PageHeader } from "@/components/dashboard/page-header";
+import { getLang } from "@/lib/lang";
 import { AgentCard } from "@/components/dashboard/agent-card";
 import { Button } from "@/components/ui/button";
 import { Bot, Plus } from "lucide-react";
@@ -11,6 +12,8 @@ import { Bot, Plus } from "lucide-react";
 export const metadata = { title: "KI-Mitarbeiter" };
 
 export default async function AgentsPage() {
+  const lang = await getLang();
+  const en = lang === "en";
   const user = await requireDbUser();
   if (!user) redirect("/sign-in");
 
@@ -24,17 +27,17 @@ export default async function AgentsPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-8 py-2">
       <PageHeader
-        title="Deine KI-Mitarbeiter"
+        title={en ? "Your AI employees" : "Deine KI-Mitarbeiter"}
         description={
           plan.limits.agents === -1
-            ? `${agents.length} gespeichert · unbegrenzt im Plan ${plan.name}`
-            : `${agents.length} von ${plan.limits.agents} im Plan ${plan.name}`
+            ? en ? `${agents.length} saved · unlimited on plan ${plan.name}` : `${agents.length} gespeichert · unbegrenzt im Plan ${plan.name}`
+            : en ? `${agents.length} of ${plan.limits.agents} on plan ${plan.name}` : `${agents.length} von ${plan.limits.agents} im Plan ${plan.name}`
         }
         actions={
           <Button asChild>
             <Link href="/dashboard/templates">
               <Plus className="size-4" />
-              Neuer KI-Mitarbeiter
+              {en ? "New AI employee" : "Neuer KI-Mitarbeiter"}
             </Link>
           </Button>
         }
@@ -43,12 +46,12 @@ export default async function AgentsPage() {
       {agents.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-card/50 p-12 text-center">
           <Bot className="mx-auto size-12 text-muted-foreground/50" />
-          <p className="mt-4 text-lg font-medium">Noch keine KI-Mitarbeiter gespeichert</p>
+          <p className="mt-4 text-lg font-medium">{en ? "No AI employees saved yet" : "Noch keine KI-Mitarbeiter gespeichert"}</p>
           <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
-            Starte mit einer Vorlage und pass sie an — deine KI-Mitarbeiter wohnen dann hier, bereit zum Einsatz.
+            {en ? "Start from a template and customize it — your AI employees will live here, ready to work." : "Starte mit einer Vorlage und pass sie an — deine KI-Mitarbeiter wohnen dann hier, bereit zum Einsatz."}
           </p>
           <Button className="mt-6" asChild>
-            <Link href="/dashboard/templates">Vorlagen ansehen</Link>
+            <Link href="/dashboard/templates">{en ? "Browse templates" : "Vorlagen ansehen"}</Link>
           </Button>
         </div>
       ) : (

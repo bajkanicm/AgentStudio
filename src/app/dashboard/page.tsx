@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { requireDbUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getUsage } from "@/lib/usage";
+import { getLang } from "@/lib/lang";
 import { AGENT_TEMPLATES } from "@/lib/agent-templates";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { AgentCard } from "@/components/dashboard/agent-card";
@@ -22,6 +23,8 @@ export const metadata = { title: "Übersicht" };
 export default async function DashboardPage() {
   const user = await requireDbUser();
   if (!user) redirect("/sign-in");
+  const lang = await getLang();
+  const en = lang === "en";
 
   const [usage, agents, docCount, docsOpen, callCount, callsNew] = await Promise.all([
     getUsage(user.id, user.plan),
@@ -44,20 +47,20 @@ export default async function DashboardPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-10 py-2">
       <PageHeader
-        title={`Hallo, ${firstName}`}
-        description="Das haben deine KI-Mitarbeiter diesen Monat geschafft."
+        title={`${en ? "Hello" : "Hallo"}, ${firstName}`}
+        description={en ? "What your AI employees got done this month." : "Das haben deine KI-Mitarbeiter diesen Monat geschafft."}
         actions={
           <>
             <Button variant="outline" asChild>
               <Link href="/pilot">
                 <Handshake className="size-4" />
-                Pilotprogramm
+                {en ? "Pilot program" : "Pilotprogramm"}
               </Link>
             </Button>
             <Button asChild>
               <Link href="/dashboard/templates">
                 <Plus className="size-4" />
-                Neuer KI-Mitarbeiter
+                {en ? "New AI employee" : "Neuer KI-Mitarbeiter"}
               </Link>
             </Button>
           </>
@@ -69,34 +72,34 @@ export default async function DashboardPage() {
         <MockCard
           icon={<PhoneIncoming className="size-4.5" />}
           circle="bg-[#fdeadf] text-[#e8590c]"
-          title="Angenommene Anrufe"
+          title={en ? "Calls answered" : "Angenommene Anrufe"}
           value={callCount.toLocaleString("de-DE")}
-          unit="notiert"
-          sub={callsNew === 0 ? "Keine offenen Rückrufe" : `${callsNew} offene${callsNew === 1 ? "r" : ""} Rückruf${callsNew === 1 ? "" : "e"}`}
+          unit={en ? "logged" : "notiert"}
+          sub={callsNew === 0 ? (en ? "No open callbacks" : "Keine offenen Rückrufe") : en ? `${callsNew} open callback${callsNew === 1 ? "" : "s"}` : `${callsNew} offene${callsNew === 1 ? "r" : ""} Rückruf${callsNew === 1 ? "" : "e"}`}
         />
         <MockCard
           icon={<FileText className="size-4.5" />}
           circle="bg-[#e1f1e7] text-[#1e7d46]"
-          title="Dokumente sortiert"
+          title={en ? "Documents filed" : "Dokumente sortiert"}
           value={docCount.toLocaleString("de-DE")}
-          unit="in der Ablage"
-          sub={docCount === 0 ? "Leg dein erstes Dokument an" : "Volltext durchsuchbar"}
+          unit={en ? "in your filing" : "in der Ablage"}
+          sub={docCount === 0 ? (en ? "Add your first document" : "Leg dein erstes Dokument an") : en ? "Full-text searchable" : "Volltext durchsuchbar"}
         />
         <MockCard
           icon={<Coins className="size-4.5" />}
           circle="bg-[#f8eedc] text-[#b7791f]"
-          title="Offene Freigaben"
+          title={en ? "Pending approvals" : "Offene Freigaben"}
           value={String(docsOpen)}
-          unit="Dokumente"
-          sub={docsOpen === 0 ? "Alles freigegeben" : "warten auf dein OK"}
+          unit={en ? "documents" : "Dokumente"}
+          sub={docsOpen === 0 ? (en ? "All approved" : "Alles freigegeben") : en ? "waiting for your OK" : "warten auf dein OK"}
         />
         <MockCard
           icon={<Bot className="size-4.5" />}
           circle="bg-[#d8e5e1] text-[#0e3b33]"
-          title="Gesparte Zeit"
+          title={en ? "Time saved" : "Gesparte Zeit"}
           value={(Math.round(((usage.messagesUsed * 3) / 60) * 10) / 10).toLocaleString("de-DE")}
-          unit="Stunden · geschätzt"
-          sub="ca. 3 Min pro erledigter Nachricht"
+          unit={en ? "hours · estimated" : "Stunden · geschätzt"}
+          sub={en ? "~3 min per handled message" : "ca. 3 Min pro erledigter Nachricht"}
         />
       </div>
 
@@ -105,14 +108,14 @@ export default async function DashboardPage() {
         <div className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-primary/40 bg-primary/10 p-5 sm:flex-row sm:items-center">
           <div>
             <p className="font-medium">
-              Du hast {Math.round(msgPct * 100)} % deiner Nachrichten verbraucht
+              {en ? `You've used ${Math.round(msgPct * 100)}% of your messages` : `Du hast ${Math.round(msgPct * 100)} % deiner Nachrichten verbraucht`}
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Sprich mit uns über den passenden Plan für deinen Betrieb.
+              {en ? "Talk to us about the right plan for your business." : "Sprich mit uns über den passenden Plan für deinen Betrieb."}
             </p>
           </div>
           <Button className="glow-primary shrink-0" asChild>
-            <Link href="/dashboard/billing">Pläne ansehen</Link>
+            <Link href="/dashboard/billing">{en ? "View plans" : "Pläne ansehen"}</Link>
           </Button>
         </div>
       )}
@@ -120,11 +123,11 @@ export default async function DashboardPage() {
       {/* My agents */}
       <section>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Deine KI-Mitarbeiter</h2>
+          <h2 className="text-lg font-semibold">{en ? "Your AI employees" : "Deine KI-Mitarbeiter"}</h2>
           {agents.length > 0 && (
             <Button variant="ghost" size="sm" asChild>
               <Link href="/dashboard/agents">
-                Alle ansehen
+                {en ? "View all" : "Alle ansehen"}
                 <ArrowRight className="size-3.5" />
               </Link>
             </Button>
@@ -133,9 +136,9 @@ export default async function DashboardPage() {
         {agents.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border bg-card/50 p-10 text-center">
             <Bot className="mx-auto size-10 text-muted-foreground/50" />
-            <p className="mt-4 font-medium">Noch keine KI-Mitarbeiter</p>
+            <p className="mt-4 font-medium">{en ? "No AI employees yet" : "Noch keine KI-Mitarbeiter"}</p>
             <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
-              Wähle unten eine Vorlage und pass sie an — dein erster KI-Mitarbeiter ist in unter zwei Minuten startklar.
+              {en ? "Pick a template below and customize it — your first AI employee is ready in under two minutes." : "Wähle unten eine Vorlage und pass sie an — dein erster KI-Mitarbeiter ist in unter zwei Minuten startklar."}
             </p>
           </div>
         ) : (
@@ -154,10 +157,10 @@ export default async function DashboardPage() {
       {/* Quick-start templates */}
       <section>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Mit einer Vorlage starten</h2>
+          <h2 className="text-lg font-semibold">{en ? "Start from a template" : "Mit einer Vorlage starten"}</h2>
           <Button variant="ghost" size="sm" asChild>
             <Link href="/dashboard/templates">
-              Alle Vorlagen
+              {en ? "All templates" : "Alle Vorlagen"}
               <ArrowRight className="size-3.5" />
             </Link>
           </Button>
@@ -174,7 +177,7 @@ export default async function DashboardPage() {
                 {t.name}
               </h3>
               <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
-                {t.headline}
+                {en ? t.headlineEn : t.headline}
               </p>
             </Link>
           ))}
