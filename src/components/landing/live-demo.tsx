@@ -40,7 +40,7 @@ export function LiveDemo({ locale = "de" }: { locale?: Locale }) {
             )}
           >
             <span>{tpl.emoji}</span>
-            {tpl.name}
+            {locale === "en" ? tpl.nameEn : tpl.name}
           </button>
         ))}
       </div>
@@ -52,7 +52,7 @@ export function LiveDemo({ locale = "de" }: { locale?: Locale }) {
               {template.emoji}
             </span>
             <div>
-              <p className="text-sm font-medium leading-none">{template.name}</p>
+              <p className="text-sm font-medium leading-none">{locale === "en" ? template.nameEn : template.name}</p>
               <p className="mt-1 flex items-center gap-1.5 text-[11px] text-muted-foreground">
                 <span className="size-1.5 rounded-full bg-emerald-400" />
                 {t.online}

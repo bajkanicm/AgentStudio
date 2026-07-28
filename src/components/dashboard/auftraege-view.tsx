@@ -63,7 +63,7 @@ export function AuftraegeView({ lang = "de" }: { lang?: Lang }) {
     const res = await fetch("/api/auftraege");
     const data = await res.json();
     if (res.ok) setItems(data.auftraege);
-    else toast.error(data.error ?? "Laden fehlgeschlagen");
+    else toast.error(data.error ?? (en ? "Loading failed" : "Laden fehlgeschlagen"));
   }, []);
 
   React.useEffect(() => {

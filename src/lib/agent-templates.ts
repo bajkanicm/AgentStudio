@@ -3,7 +3,9 @@ export type TemplateSlug = "telefon" | "rechnung" | "buchhaltung" | "angebot";
 export interface AgentTemplate {
   slug: TemplateSlug;
   name: string;
+  nameEn: string;
   shortName: string;
+  shortNameEn: string;
   emoji: string;
   badge: "killer" | "aktiv" | "neu";
   headline: string;
@@ -31,7 +33,9 @@ export const AGENT_TEMPLATES: AgentTemplate[] = [
   {
     slug: "telefon",
     name: "Telefonassistent",
+    nameEn: "Phone Assistant",
     shortName: "Telefon",
+    shortNameEn: "Phone",
     emoji: "📞",
     badge: "killer",
     headline: "Kein Anruf geht mehr verloren",
@@ -79,7 +83,9 @@ Regeln:
   {
     slug: "rechnung",
     name: "Rechnungs-Mitarbeiter",
+    nameEn: "Invoice Employee",
     shortName: "Rechnungen",
+    shortNameEn: "Invoices",
     emoji: "🧾",
     badge: "aktiv",
     headline: "Rechnungen erfassen sich selbst",
@@ -126,7 +132,9 @@ Regeln:
   {
     slug: "buchhaltung",
     name: "Buchhaltungs-Mitarbeiter",
+    nameEn: "Bookkeeping Employee",
     shortName: "Buchhaltung",
+    shortNameEn: "Bookkeeping",
     emoji: "📒",
     badge: "aktiv",
     headline: "Buchhaltung ohne Abendschicht",
@@ -173,7 +181,9 @@ Regeln:
   {
     slug: "angebot",
     name: "Angebots-Mitarbeiter",
+    nameEn: "Quote Employee",
     shortName: "Angebote",
+    shortNameEn: "Quotes",
     emoji: "📐",
     badge: "neu",
     headline: "Vom Aufmaß zum Angebot",

@@ -89,7 +89,7 @@ export function KalenderView({ lang = "de" }: { lang?: Lang }) {
     const res = await fetch(`/api/termine?from=${mon.toISOString()}&to=${to.toISOString()}`);
     const data = await res.json();
     if (res.ok) setTermine(data.termine);
-    else toast.error(data.error ?? "Laden fehlgeschlagen");
+    else toast.error(data.error ?? (en ? "Loading failed" : "Laden fehlgeschlagen"));
   }, []);
 
   React.useEffect(() => {

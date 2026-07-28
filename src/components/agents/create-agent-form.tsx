@@ -17,8 +17,8 @@ export function CreateAgentForm({ template, lang = "de" }: { template: AgentTemp
   const router = useRouter();
   const [saving, setSaving] = React.useState(false);
   const [settings, setSettings] = React.useState<AgentSettings>({
-    name: template.name,
-    description: template.description,
+    name: en ? template.nameEn : template.name,
+    description: en ? template.descriptionEn : template.description,
     systemPrompt: template.systemPrompt,
     tone: "professional",
     temperature: 0.7,

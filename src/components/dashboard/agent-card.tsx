@@ -3,14 +3,18 @@ import type { Agent } from "@prisma/client";
 import { getTemplate } from "@/lib/agent-templates";
 import { Badge } from "@/components/ui/badge";
 import { MessageSquare, Thermometer } from "lucide-react";
+import type { Lang } from "@/lib/lang-shared";
 
 export function AgentCard({
   agent,
   conversationCount,
+  lang = "de",
 }: {
   agent: Agent;
   conversationCount?: number;
+  lang?: Lang;
 }) {
+  const en = lang === "en";
   const template = getTemplate(agent.templateSlug);
   return (
     <Link
@@ -22,14 +26,14 @@ export function AgentCard({
           {template?.emoji ?? "🤖"}
         </span>
         <Badge variant="outline" className="text-[10px] uppercase tracking-wide text-muted-foreground">
-          {template?.shortName ?? agent.templateSlug}
+          {(en ? template?.shortNameEn : template?.shortName) ?? agent.templateSlug}
         </Badge>
       </div>
       <h3 className="mt-3 font-medium leading-tight group-hover:text-primary">
         {agent.name}
       </h3>
       <p className="mt-1 line-clamp-2 flex-1 text-xs leading-relaxed text-muted-foreground">
-        {agent.description || template?.description}
+        {agent.description || (en ? template?.descriptionEn : template?.description)}
       </p>
       <div className="mt-4 flex items-center gap-4 text-xs text-muted-foreground">
         <span className="inline-flex items-center gap-1">
@@ -39,7 +43,7 @@ export function AgentCard({
         {typeof conversationCount === "number" && (
           <span className="inline-flex items-center gap-1">
             <MessageSquare className="size-3.5" />
-            {conversationCount} Gespräch{conversationCount === 1 ? "" : "e"}
+            {conversationCount} {en ? `chat${conversationCount === 1 ? "" : "s"}` : `Gespräch${conversationCount === 1 ? "" : "e"}`}
           </span>
         )}
         <span className="ml-auto capitalize">{agent.tone}</span>

@@ -125,7 +125,7 @@ export function AgentWorkspace({ agent, lang = "de" }: { agent: SerializedAgent;
         <div className="min-w-0 flex-1">
           <h1 className="truncate font-medium leading-tight">{settings.name}</h1>
           <p className="hidden truncate text-xs text-muted-foreground sm:block">
-            {template?.name ?? agent.templateSlug}
+            {(en ? template?.nameEn : template?.name) ?? agent.templateSlug}
             {dirty && (en ? " · unsaved changes" : " · ungespeicherte Änderungen")}
           </p>
         </div>

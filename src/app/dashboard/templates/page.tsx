@@ -28,7 +28,7 @@ export default async function TemplatesPage() {
                 {t.emoji}
               </span>
               <div>
-                <h2 className="font-semibold leading-tight">{t.name}</h2>
+                <h2 className="font-semibold leading-tight">{en ? t.nameEn : t.name}</h2>
                 <p className="mt-0.5 text-sm text-primary">{en ? t.headlineEn : t.headline}</p>
               </div>
             </div>

@@ -29,7 +29,7 @@ export default async function NewAgentPage({
         </Link>
       </Button>
       <PageHeader
-        title={en ? `New ${template.name}` : `Neuer ${template.name}`}
+        title={en ? `New ${template.nameEn}` : `Neuer ${template.name}`}
         description={en ? "Configure everything now or save with the defaults — the playground opens next." : "Stell jetzt alles ein oder speichere mit den Voreinstellungen — danach öffnet sich der Playground."}
       />
       <CreateAgentForm template={template} lang={lang} />

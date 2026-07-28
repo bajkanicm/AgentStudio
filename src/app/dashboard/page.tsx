@@ -147,6 +147,7 @@ export default async function DashboardPage() {
               <AgentCard
                 key={agent.id}
                 agent={agent}
+                lang={lang}
                 conversationCount={agent._count.conversations}
               />
             ))}
@@ -174,7 +175,7 @@ export default async function DashboardPage() {
             >
               <span className="text-2xl">{t.emoji}</span>
               <h3 className="mt-3 text-sm font-medium group-hover:text-primary">
-                {t.name}
+                {en ? t.nameEn : t.name}
               </h3>
               <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
                 {en ? t.headlineEn : t.headline}

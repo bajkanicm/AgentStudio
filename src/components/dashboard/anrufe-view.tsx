@@ -41,7 +41,7 @@ export function AnrufeView({ lang = "de" }: { lang?: Lang }) {
     if (res.ok) {
       setCalls(data.calls);
       setSelectedId((cur) => cur ?? data.calls[0]?.id ?? null);
-    } else toast.error(data.error ?? "Laden fehlgeschlagen");
+    } else toast.error(data.error ?? (en ? "Loading failed" : "Laden fehlgeschlagen"));
   }, []);
 
   React.useEffect(() => {
