@@ -71,8 +71,10 @@ export const viewport: Viewport = {
 async function Providers({ children }: { children: React.ReactNode }) {
   if (!clerkEnabled) return <>{children}</>;
   const { ClerkProvider } = await import("@clerk/nextjs");
+  const { deDE } = await import("@clerk/localizations");
   return (
     <ClerkProvider
+      localization={deDE}
       appearance={{
         variables: {
           colorPrimary: "#e8590c",
