@@ -45,22 +45,22 @@ export async function POST(req: NextRequest) {
 
   const d = parsed.data;
   await notifyTeam(
-    `New custom agent request — ${d.name}${d.company ? ` (${d.company})` : ""}`,
+    `Neue Pilotanfrage — ${d.name}${d.company ? ` (${d.company})` : ""}`,
     [
-      `A new done-for-you request just arrived:`,
+      `Eine neue Pilotanfrage ist eingegangen:`,
       ``,
-      `Name:       ${d.name}`,
-      `Email:      ${d.email}`,
-      `Company:    ${d.company || "—"}`,
-      `Agent type: ${d.agentType || "—"}`,
-      `Budget:     ${d.budget || "—"}`,
-      `Timeline:   ${d.timeline || "—"}`,
+      `Name:           ${d.name}`,
+      `E-Mail:         ${d.email}`,
+      `Betrieb:        ${d.company || "—"}`,
+      `Gewerk:         ${d.agentType || "—"}`,
+      `Betriebsgröße:  ${d.budget || "—"}`,
+      `Startwunsch:    ${d.timeline || "—"}`,
       ``,
-      `Description:`,
+      `Größte Zeitfresser:`,
       d.description,
       ``,
-      `Request ID: ${request.id}`,
-      `Reply to the requester within one business day.`,
+      `Anfrage-ID: ${request.id}`,
+      `Bitte innerhalb eines Werktags antworten.`,
     ].join("\n")
   );
 
