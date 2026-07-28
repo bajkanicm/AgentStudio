@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ArrowRight, Inbox, Loader2, Plus, Sparkles, Trash2 } from "lucide-react";
-import type { Lang } from "@/lib/lang";
+import type { Lang } from "@/lib/lang-shared";
 
 interface Auftrag {
   id: string;

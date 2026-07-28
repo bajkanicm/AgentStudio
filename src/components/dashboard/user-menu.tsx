@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LANG_COOKIE, type Lang } from "@/lib/lang";
+import { LANG_COOKIE, type Lang } from "@/lib/lang-shared";
 import { Check, Globe, LogOut } from "lucide-react";
 
 /**

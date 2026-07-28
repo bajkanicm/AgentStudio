@@ -7,7 +7,7 @@ import { Logo } from "@/components/logo";
 import { cn } from "@/lib/utils";
 import { Bell, Search } from "lucide-react";
 import { UserMenu } from "@/components/dashboard/user-menu";
-import type { Lang } from "@/lib/lang";
+import type { Lang } from "@/lib/lang-shared";
 
 const NAV = [
   { href: "/dashboard", de: "Übersicht", en: "Overview", exact: true },

@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import type { Lang } from "@/lib/lang";
+import type { Lang } from "@/lib/lang-shared";
 import { ExternalLink, FileText, Loader2, Plus, Search, Sparkles, Trash2, Upload } from "lucide-react";
 
 interface Doc {
