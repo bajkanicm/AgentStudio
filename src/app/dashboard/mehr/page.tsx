@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { getLang } from "@/lib/lang";
+import { LangToggle } from "@/components/lang-toggle";
+import { Globe } from "lucide-react";
 import {
   Bot,
   Blocks,
@@ -29,6 +31,13 @@ export default async function MehrPage() {
   return (
     <div className="mx-auto max-w-lg space-y-4 py-2">
       <h1 className="px-1 text-2xl font-bold tracking-tight">{en ? "More" : "Mehr"}</h1>
+      <div className="flex items-center gap-3.5 rounded-2xl bg-card px-4 py-3.5 shadow-sm">
+        <span className="flex size-8 items-center justify-center rounded-lg bg-secondary text-primary">
+          <Globe className="size-4" />
+        </span>
+        <span className="flex-1 text-sm font-semibold">{en ? "Language" : "Sprache"}</span>
+        <LangToggle lang={lang} />
+      </div>
       <div className="overflow-hidden rounded-2xl bg-card shadow-sm">
         {items.map((item, i) => (
           <Link

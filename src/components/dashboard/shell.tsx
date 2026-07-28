@@ -59,22 +59,28 @@ export function DashboardShell({
       <div
         className="theme-paper flex min-h-dvh flex-col bg-background px-4"
         style={{
-          paddingTop: "max(0.75rem, env(safe-area-inset-top))",
+          paddingTop: "calc(60px + env(safe-area-inset-top))",
           paddingBottom: "calc(72px + env(safe-area-inset-bottom))",
         }}
       >
-        <header className="flex items-center gap-3">
-          <Logo href="/dashboard" className="text-ink" />
-          <span className="flex-1" />
-          <UserMenu
-            name={user.name ?? "Demo User"}
-            email={user.email ?? "demo@hey247.de"}
-            initials={initials}
-            lang={lang}
-            canSignOut={!user.isDemo}
-          />
+        {/* Fixe Kopfzeile wie eine native Navigation Bar */}
+        <header
+          className="theme-paper fixed inset-x-0 top-0 z-40 border-b border-border bg-background/95 backdrop-blur"
+          style={{ paddingTop: "env(safe-area-inset-top)" }}
+        >
+          <div className="flex h-[52px] items-center gap-3 px-4">
+            <Logo href="/dashboard" className="text-ink" />
+            <span className="flex-1" />
+            <UserMenu
+              name={user.name ?? "Demo User"}
+              email={user.email ?? "demo@hey247.de"}
+              initials={initials}
+              lang={lang}
+              canSignOut={!user.isDemo}
+            />
+          </div>
         </header>
-        <main className="mt-4 min-w-0 flex-1">{children}</main>
+        <main className="min-w-0 flex-1">{children}</main>
         <TabBar lang={lang} />
       </div>
     );
