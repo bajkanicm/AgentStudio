@@ -25,6 +25,9 @@ const config: CapacitorConfig = {
     contentInset: "automatic",
     backgroundColor: "#0a2c26",
   },
+  // Server erkennt die App am User-Agent und blendet Marketing-Seiten aus
+  // (App startet direkt in Login/Dashboard, siehe src/middleware.ts).
+  appendUserAgent: "hey247App",
 };
 
 export default config;
