@@ -14,5 +14,5 @@ until prisma db push --schema=./prisma/schema.prisma --skip-generate --accept-da
   sleep 3
 done
 
-echo "→ Starting AgentStudio on :${PORT:-3000}"
+echo "→ Starting hey247 on :${PORT:-3000}"
 exec node server.js

@@ -53,6 +53,11 @@ npx cap open ios   # Version/Build-Nr. im Target hochzählen, dann Archive
 
 ## Hinweise
 
+- Die App hängt `hey247App` an den User-Agent; der Server blendet dafür
+  alle Marketing-Seiten aus — die App startet direkt im Login.
+  Nach Änderungen an `capacitor.config.ts`: `npx cap sync ios` und neues
+  Archive (Build-Nummer erhöhen).
+
 - Kamera/Fotos-Berechtigungen (Lieferschein-Fotos) sind mit deutschen
   Begründungstexten in `ios/App/App/Info.plist` hinterlegt.
 - Icon & Splash (Tannengrün/Orange) liegen in `assets/` und werden mit

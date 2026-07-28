@@ -1,13 +1,23 @@
-# AgentStudio
+# hey247
 
-**AI agents that actually do the work.** A hybrid AI-agent platform for
-[agentstudio.tech](https://agentstudio.tech):
+**Das digitale Büro für deinen Betrieb.** hey247 (ein Produkt der flexC
+GmbH) gibt Handwerksbetrieben KI-Mitarbeiter, die Anrufe annehmen,
+Rechnungen sortieren und Papierkram erledigen — 100 % in Deutschland
+gehostet. Live: <https://agentstudio.tech> (später hey247.de).
 
-- **Self-serve** — pick a ready-made agent (Sales, Support, Content, Data),
-  customize everything (prompt, tone, temperature, knowledge base), and chat
-  with it in a real-time streaming playground.
-- **Done-for-you** — request custom agents designed, built and managed by our
-  team.
+## Product
+
+- **KI-Mitarbeiter**: Telefonassistent (Killerfeature), Rechnungs-,
+  Buchhaltungs- und Angebots-Mitarbeiter — anpassbar (Prompt, Ton,
+  Temperatur, Wissensbasis), mit Streaming-Playground.
+- **Digitales Büro** (Welle 1, live): Ablage mit echtem Datei-Upload
+  (PDF-Text + deutsche OCR), KI-Chat über die eigene Ablage mit
+  Quellenangabe, Anrufe (automatische Rückruf-Notizen aus
+  Telefonassistent-Gesprächen), Kalender, Aufträge-Board.
+- **Zwei Sprachen**: Deutsch (root) + Englisch (`/en`).
+- **Mobile**: installierbare PWA **und** native iOS-App
+  (Capacitor-Shell in `ios/`, TestFlight-ready — startet direkt im
+  Login, ohne Marketing-Seiten).
 
 ## Quick start (local)
 
@@ -18,23 +28,31 @@ npx prisma db push        # creates the SQLite dev database
 npm run dev               # → http://localhost:3000
 ```
 
-Works with **zero keys**: without Clerk keys the dashboard runs in a shared
-demo workspace, and without AI keys agents use a built-in mock model that
-streams believable replies. Add keys in `.env` to upgrade each layer:
+Works with **zero keys**: without Clerk keys the dashboard runs in a
+shared demo workspace, without AI keys a German mock model streams
+believable replies. Each layer upgrades via env vars alone:
 
 | Keys | Unlocks |
 | --- | --- |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` + `CLERK_SECRET_KEY` | real authentication & per-user workspaces |
-| `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` | real Claude / GPT responses |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` + `CLERK_SECRET_KEY` | real auth & per-user workspaces (build-time — rebuild required) |
+| `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` | real Claude / GPT everywhere |
+| `RESEND_API_KEY` or `SMTP_*` | pilot-request email notifications |
 
 ## Stack
 
-Next.js 15 (App Router) · TypeScript · Tailwind v4 + shadcn/ui · Clerk ·
-Prisma (SQLite dev / PostgreSQL prod) · Anthropic + OpenAI SDKs · Docker +
-Nginx.
+Next.js 15 (App Router) · TypeScript · Tailwind v4 + shadcn/ui (hey247
+design tokens: Tannengrün/Signal-Orange, Space Grotesk + IBM Plex) ·
+Clerk (deutsch lokalisiert) · Prisma (SQLite dev / PostgreSQL prod) ·
+Anthropic + OpenAI SDKs mit Mock-Fallback · tesseract.js/pdf-parse ·
+Capacitor (iOS) · Docker + Nginx.
 
-- [ARCHITECTURE.md](./ARCHITECTURE.md) — folder structure & design decisions
-- [DEPLOY.md](./DEPLOY.md) — step-by-step VPS deployment for agentstudio.tech
+## Docs
+
+- [ARCHITECTURE.md](./ARCHITECTURE.md) — Struktur & Design-Entscheidungen
+- [DEPLOY.md](./DEPLOY.md) — VPS-Deployment (Docker + Nginx)
+- [GO-LIVE.md](./GO-LIVE.md) — Produktstatus, Pilot-Checkliste, Ops-Handbuch
+- [TESTFLIGHT.md](./TESTFLIGHT.md) — iOS-App signieren & zu TestFlight hochladen
+- **/hilfe** auf der Website — Kundendokumentation (deutsch)
 
 ## Scripts
 
@@ -42,6 +60,6 @@ Nginx.
 | --- | --- |
 | `npm run dev` | dev server (Turbopack) |
 | `npm run build` / `npm start` | production build / serve |
-| `npm run lint` | ESLint |
 | `npx prisma studio` | browse the local database |
 | `./scripts/sync-schemas.sh` | sync SQLite → PostgreSQL schema after model changes |
+| `npx cap sync ios && npx cap open ios` | update & open the iOS project |

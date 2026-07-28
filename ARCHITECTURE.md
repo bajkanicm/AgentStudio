@@ -1,100 +1,102 @@
-# AgentStudio — Architecture
+# hey247 — Architecture
 
-A hybrid AI-agent platform: **self-serve** (ready-made, customizable agents) and
-**done-for-you** (custom agents built by our team). Built to fully replace the
-site at **agentstudio.tech**.
+Das digitale Büro für Handwerksbetriebe (flexC GmbH), live auf
+**agentstudio.tech** (später hey247.de). Deutsch-first mit englischem
+Fallback; Design nach dem offiziellen hey247-Design-System
+(Tannengrün `#0E3B33`, Signal-Orange `#E8590C`, Paper-Neutrals,
+Space Grotesk + IBM Plex).
 
 ## Stack
 
-| Layer      | Choice                                            |
-| ---------- | ------------------------------------------------- |
-| Framework  | Next.js 15 (App Router, Turbopack) + TypeScript   |
-| UI         | Tailwind CSS v4 + shadcn/ui (Radix), dark-first   |
-| Auth       | Clerk (graceful **demo mode** when keys unset)    |
-| Database   | Prisma — SQLite (dev) / PostgreSQL (prod, Docker) |
-| AI         | Anthropic Claude + OpenAI, with built-in mock     |
-| Deploy     | Docker + docker-compose + Nginx on a VPS          |
+| Layer      | Choice                                                     |
+| ---------- | ---------------------------------------------------------- |
+| Framework  | Next.js 15 (App Router, Turbopack) + TypeScript             |
+| UI         | Tailwind CSS v4 + shadcn/ui; dark-green marketing, light "paper panel" app |
+| Auth       | Clerk (deutsch via `@clerk/localizations`; Demo-Modus ohne Keys) |
+| Database   | Prisma — SQLite (dev) / PostgreSQL (prod, Docker)           |
+| AI         | Anthropic Claude (aktiv) + OpenAI, Router mit Mock-Fallback |
+| Extraction | pdf-parse (PDF-Text) + tesseract.js (deutsche OCR, lokal)   |
+| Mobile     | PWA (Service Worker) + Capacitor-iOS-Shell (`ios/`)         |
+| Deploy     | Docker Compose (app + postgres + uploads-Volume) hinter Host-Nginx |
 
 ## Folder structure
 
 ```
-AgentStudio/
-├── prisma/
-│   ├── schema.prisma            # dev schema (SQLite)
-│   └── schema.postgres.prisma   # prod schema (copied in Docker build)
-├── scripts/
-│   └── sync-schemas.sh          # keeps the two schemas in sync
-├── nginx/                       # reverse-proxy config for the VPS
-├── public/                      # static assets, PWA manifest
+├── prisma/schema.prisma            # dev (SQLite); schema.postgres.prisma = prod twin
+├── scripts/sync-schemas.sh         # hält beide Schemas synchron
+├── capacitor.config.ts             # iOS-Shell: lädt Produktion, UA "hey247App"
+├── ios/                            # natives Xcode-Projekt (TestFlight, s. TESTFLIGHT.md)
+├── capacitor-www/                  # Offline-Fallback der iOS-App
+├── assets/                         # App-Icon-Quelle (icon.png 1024)
+├── public/sw.js                    # PWA: Offline-Fallback + Static-Cache
+├── nginx/agentstudio.conf          # Reverse-Proxy (deployte Fassung)
 ├── src/
-│   ├── middleware.ts            # Clerk route protection (/dashboard/*)
+│   ├── middleware.ts               # Clerk-Schutz /dashboard/* + App-UA-Redirect
 │   ├── app/
-│   │   ├── layout.tsx           # root: fonts, metadata, ClerkProvider, dark theme
-│   │   ├── (marketing)/         # public site — navbar + footer layout
-│   │   │   ├── page.tsx         # landing page
-│   │   │   ├── pricing/
-│   │   │   └── done-for-you/    # custom-agent request flow
-│   │   ├── sign-in/ sign-up/    # Clerk auth pages
-│   │   ├── dashboard/           # protected app — sidebar layout
-│   │   │   ├── page.tsx         # overview: agents, usage, quick actions
-│   │   │   ├── templates/       # template gallery
-│   │   │   ├── agents/          # saved agents list
-│   │   │   │   ├── new/        # create from template
-│   │   │   │   └── [id]/       # playground + customization panel
-│   │   │   ├── usage/           # usage & limits
-│   │   │   └── billing/         # plan management (Stripe-ready, mocked)
+│   │   ├── (marketing)/(de)/       # deutsche Website: Landing, pricing, pilot,
+│   │   │                           #   hilfe (Kundendoku), legal/* (flexC)
+│   │   ├── (marketing)/en/         # englischer Fallback (Landing, pricing, pilot)
+│   │   ├── sign-in|sign-up/        # Clerk (deutsch); Demo-Karte ohne Keys
+│   │   ├── offline/                # PWA-Fallback-Seite
+│   │   ├── dashboard/              # App-Panel (theme-paper):
+│   │   │   ├── page.tsx            #   Übersicht (Mockup-Statkarten)
+│   │   │   ├── anrufe|chat|dokumente|kalender|auftraege/
+│   │   │   ├── agents/ (+new, [id])#   KI-Mitarbeiter + Playground
+│   │   │   └── templates|usage|billing/
 │   │   └── api/
-│   │       ├── chat/            # streaming chat (auth’d, persists + tracks usage)
-│   │       ├── demo-chat/       # public landing-page demo (mock by default)
-│   │       ├── agents/          # CRUD for saved agents
-│   │       └── custom-requests/ # done-for-you form submissions
+│   │       ├── chat/               # Agent-Chat (streaming, Limits, CallNote-Hook)
+│   │       ├── ablage-chat/        # KI-Chat über Dokumente (Quellen, Verläufe)
+│   │       ├── demo-chat/          # öffentliche Landing-Demo (Mock by default)
+│   │       ├── documents/ (+upload, [id]/file)  # CRUD + OCR-Upload + Datei-Serving
+│   │       ├── anrufe|auftraege|termine/        # Module-CRUD (+loadSamples)
+│   │       ├── agents/             # KI-Mitarbeiter CRUD
+│   │       └── custom-requests/    # Pilotanfragen (+ E-Mail-Notification)
 │   ├── components/
-│   │   ├── ui/                  # shadcn/ui primitives
-│   │   ├── landing/             # hero, live demo, features, pricing, faq…
-│   │   ├── chat/                # shared streaming chat UI (demo + playground)
-│   │   ├── dashboard/           # sidebar, stat cards, agent cards
-│   │   └── agents/              # customization panel
+│   │   ├── landing/                # Deck-Sektionen (Problem, Module, Trust …)
+│   │   ├── dashboard/              # Shell (Pill-Nav), Modul-Views
+│   │   ├── agents/                 # Playground + Einstellungs-Panel
+│   │   └── chat/                   # gemeinsamer Streaming-Chat + Mini-Markdown
 │   └── lib/
-│       ├── db.ts                # Prisma singleton
-│       ├── auth.ts              # Clerk helpers + demo-mode fallback
-│       ├── plans.ts             # pricing tiers + limits (single source of truth)
-│       ├── usage.ts             # per-month usage aggregation + limit checks
-│       ├── agent-templates.ts   # the 4 templates: prompts, tones, demo content
-│       └── ai/
-│           ├── index.ts         # provider router: Claude → GPT → mock, streaming
-│           └── mock.ts          # believable keyless demo model
-├── Dockerfile                   # multi-stage, standalone output
-├── docker-compose.yml           # app + PostgreSQL
-├── DEPLOY.md                    # step-by-step VPS deployment
-└── .env.example
+│       ├── agent-templates.ts      # 4 KI-Mitarbeiter (Legacy-Slug-Mapping)
+│       ├── ai/                     # Provider-Router (Claude→GPT→Mock) + Mock
+│       ├── extract.ts              # PDF-Text/OCR + Typ-/Betrags-Heuristik
+│       ├── call-extract.ts         # Gespräch → Rückruf-Notiz (AI/Heuristik)
+│       ├── documents|plans|usage|locale|company|notify|auth|db.ts
+├── Dockerfile · docker-compose.yml · docker-entrypoint.sh
+└── DEPLOY.md · GO-LIVE.md · TESTFLIGHT.md
 ```
 
 ## Key design decisions
 
-**Demo mode.** Every environment works with zero secrets: without Clerk keys the
-dashboard runs under a shared `demo-user`; without AI keys a template-aware mock
-model streams believable replies. Adding keys upgrades each layer independently
-— real auth, real models — with no code changes. This keeps local dev, CI, and
-the first production deploy friction-free.
+**Demo-Modus überall.** Ohne Clerk-Keys läuft ein geteilter
+`demo-user`-Workspace, ohne AI-Keys ein deutsches Mock-Modell, ohne
+Mail-Keys wird Benachrichtigung geloggt statt gesendet. Jede Schicht
+wird per Env-Var real — deshalb war derselbe Code vom ersten Tag an
+deploybar und ist heute mit echten Keys „scharf".
 
-**One chat pipeline.** The landing-page demo and the dashboard playground share
-the same streaming chat component and the same provider router
-(`lib/ai/index.ts`). The public `/api/demo-chat` endpoint is stateless and
-mock-only by default (`DEMO_USE_REAL_AI` opts in); the authenticated
-`/api/chat` persists conversations and enforces plan limits.
+**Ein Chat-Pfad, drei Endpunkte.** `AgentChat` (Client) streamt gegen
+`/api/demo-chat` (öffentlich, mock-only), `/api/chat` (Agent-gebunden,
+persistiert, Limits, erzeugt CallNotes bei Telefon-Template) und
+`/api/ablage-chat` (Dokumente als `### Titel (Meta)`-Wissensbasis,
+Antworten mit Quellen, Verläufe = Conversations mit `agentId null`).
 
-**Prompt assembly.** A saved agent = template + overrides (name, system prompt,
-tone, temperature, knowledge base). `buildSystemPrompt()` composes these into
-the final system prompt at request time, so template improvements flow to
-existing agents.
+**theme-paper.** Die App nutzt das helle Mockup-Design, das Marketing
+das dunkle Deck-Design — eine CSS-Klasse (`.theme-paper`) remappt die
+shadcn-Token-Variablen, statt Komponenten zu doppeln.
 
-**Plan limits as data.** `lib/plans.ts` defines tiers and limits once; the
-pricing page, dashboard usage bars, and API enforcement all read from it.
+**Extraction lokal.** pdf-parse + tesseract.js laufen im Container
+(Standalone-Tracing braucht `outputFileTracingIncludes` für die
+Worker-Deps und `@napi-rs/canvas` für DOMMatrix auf Alpine). Kein
+externer OCR-Dienst — passt zur „Daten bleiben in Deutschland"-Zusage.
 
-**Two Prisma schemas.** Prisma pins the provider in the schema file, so we keep
-an SQLite schema for dev and a PostgreSQL twin for prod (synced via
-`scripts/sync-schemas.sh`, applied with `prisma db push` on container start).
+**Native App = Shell, Web = Produkt.** Die iOS-App lädt die Produktion
+(`server.url`), hängt `hey247App` an den User-Agent, und die Middleware
+blendet Marketing-Routen aus (App startet im Login). Web-Deploys
+aktualisieren die App ohne neues TestFlight-Build.
 
-**Mobile/PWA-ready.** Responsive layouts throughout, `manifest.webmanifest`,
-and an API surface (`/api/*`) that a future React Native client can consume
-directly.
+**Pläne & Limits als Daten.** `lib/plans.ts` (pilot/basis/komplett,
+Legacy-IDs gemappt) speist Preisseite, Usage-Bars und API-Enforcement.
+
+**Zwei Prisma-Schemas.** Provider ist im Schema fixiert → SQLite-Schema
+für dev, PostgreSQL-Twin für prod (Docker-Build kopiert um, Entrypoint
+macht `prisma db push`).

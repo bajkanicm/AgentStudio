@@ -1,8 +1,8 @@
-# Deploying AgentStudio to agentstudio.tech
+# Deploying hey247 to agentstudio.tech
 
 > ## ✅ Production deployment record (2026-07-27)
 >
-> This app **is deployed and live** at <https://agentstudio.tech>.
+> hey247 **is deployed and live** at <https://agentstudio.tech>.
 >
 > - **Server**: `root@vps47388.alfahosting-vps.de` (89.22.120.213, Debian 12) —
 >   note it hosts several other nginx sites; only touch the
@@ -12,8 +12,8 @@
 > - **Stack**: Docker Compose (app on `127.0.0.1:3000` + PostgreSQL 16
 >   volume `pgdata`), host nginx 1.22 as reverse proxy, existing Let's
 >   Encrypt cert (webroot renewal at `/var/www/agentstudio/acme`).
-> - **Mode**: demo mode (no Clerk / AI keys configured yet) — see §2 to
->   enable real auth and models.
+> - **Mode**: fully live — Clerk auth (dev keys) and Anthropic AI are
+>   configured in the server's `.env` (2026-07-27).
 > - **Previous site**: nginx vhost backed up at
 >   `/root/agentstudio.tech.nginx.backup-2026-07-27`; old files remain in
 >   `/var/www/agentstudio/`. Its ops backend (`/api/` → :8788) is no longer
@@ -22,10 +22,16 @@
 >
 > ```bash
 > rsync -az --delete --exclude node_modules --exclude .next --exclude .git \
->   --exclude .env --exclude 'prisma/dev.db*' --exclude .claude \
+>   --exclude .env --exclude 'prisma/dev.db*' --exclude uploads --exclude .claude \
 >   . root@vps47388.alfahosting-vps.de:/opt/agentstudio/
 > ssh root@vps47388.alfahosting-vps.de 'cd /opt/agentstudio && docker compose up -d --build'
 > ```
+>
+> Builds take 10+ minutes (OCR deps) — run detached when scripting:
+> `nohup docker compose up -d --build > /tmp/hey247-build.log 2>&1 &`.
+> Uploaded documents live in the named Docker volume `uploads`
+> (`UPLOAD_DIR=/app/uploads`) and survive rebuilds; back it up alongside
+> the database if documents become critical.
 
 The guide below is the generic path this deployment followed.
 
@@ -106,7 +112,7 @@ First build takes a few minutes. Check health:
 
 ```bash
 docker compose ps                      # both services "running"
-docker compose logs -f app             # look for "Starting AgentStudio on :3000"
+docker compose logs -f app             # look for "Starting hey247 on :3000"
 curl -I http://127.0.0.1:3000          # HTTP/1.1 200 OK
 ```
 
