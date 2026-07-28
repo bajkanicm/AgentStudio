@@ -80,10 +80,20 @@ function clerkError(err: unknown, fallback: string): string {
 
 function Card({ children }: { children: React.ReactNode }) {
   return (
-    <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 shadow-2xl shadow-black/30">
+    <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-2xl shadow-black/30 sm:p-8">
       {children}
     </div>
   );
+}
+
+/** Google blockiert OAuth in eingebetteten WebViews (disallowed_useragent) —
+    in der nativen App den Button ausblenden, E-Mail+Passwort nutzen. */
+function useIsNativeApp(): boolean {
+  const [isApp, setIsApp] = React.useState(false);
+  React.useEffect(() => {
+    if (navigator.userAgent.includes("hey247App")) setIsApp(true);
+  }, []);
+  return isApp;
 }
 
 function GoogleButton({ label, onClick, disabled }: { label: string; onClick: () => void; disabled: boolean }) {
@@ -104,6 +114,7 @@ export function SignInForm({ lang }: { lang: Lang }) {
   const t = L[lang];
   const router = useRouter();
   const { isLoaded, signIn, setActive } = useSignIn();
+  const isApp = useIsNativeApp();
   const [mode, setMode] = React.useState<"form" | "reset-request" | "reset-code">("form");
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -167,20 +178,21 @@ export function SignInForm({ lang }: { lang: Lang }) {
         {mode === "form" ? t.signInSub : mode === "reset-request" ? t.resetSub : `${t.codeSentTo} ${email}`}
       </p>
 
-      {mode === "form" && (
+      {mode === "form" && !isApp && (
         <>
-          <div className="mt-6">
+          <div className="mt-5">
             <GoogleButton label={t.google} onClick={google} disabled={busy || !isLoaded} />
           </div>
-          <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground">
+          <div className="my-4 flex items-center gap-3 text-xs text-muted-foreground">
             <span className="h-px flex-1 bg-border" />
             {t.or}
             <span className="h-px flex-1 bg-border" />
           </div>
         </>
       )}
+      {mode === "form" && isApp && <div className="mt-5" />}
 
-      <form onSubmit={submit} className="space-y-4">
+      <form onSubmit={submit} className="space-y-3.5">
         {(mode === "form" || mode === "reset-request") && (
           <div className="space-y-1.5">
             <Label htmlFor="si-email">{t.email}</Label>
@@ -213,7 +225,7 @@ export function SignInForm({ lang }: { lang: Lang }) {
         </Button>
       </form>
 
-      <p className="mt-5 text-center text-sm text-muted-foreground">
+      <p className="mt-4 text-center text-sm text-muted-foreground">
         {mode === "form" ? (
           <>
             {t.noAccount}{" "}
@@ -235,6 +247,7 @@ export function SignUpForm({ lang }: { lang: Lang }) {
   const t = L[lang];
   const router = useRouter();
   const { isLoaded, signUp, setActive } = useSignUp();
+  const isApp = useIsNativeApp();
   const [mode, setMode] = React.useState<"form" | "verify">("form");
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -287,20 +300,21 @@ export function SignUpForm({ lang }: { lang: Lang }) {
         {mode === "form" ? t.signUpSub : `${t.verifySub} ${email}`}
       </p>
 
-      {mode === "form" && (
+      {mode === "form" && !isApp && (
         <>
-          <div className="mt-6">
+          <div className="mt-5">
             <GoogleButton label={t.google} onClick={google} disabled={busy || !isLoaded} />
           </div>
-          <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground">
+          <div className="my-4 flex items-center gap-3 text-xs text-muted-foreground">
             <span className="h-px flex-1 bg-border" />
             {t.or}
             <span className="h-px flex-1 bg-border" />
           </div>
         </>
       )}
+      {mode === "form" && isApp && <div className="mt-5" />}
 
-      <form onSubmit={submit} className="space-y-4">
+      <form onSubmit={submit} className="space-y-3.5">
         {mode === "form" ? (
           <>
             <div className="space-y-1.5">
@@ -327,7 +341,7 @@ export function SignUpForm({ lang }: { lang: Lang }) {
         </Button>
       </form>
 
-      <p className="mt-5 text-center text-sm text-muted-foreground">
+      <p className="mt-4 text-center text-sm text-muted-foreground">
         {mode === "form" ? (
           <>
             {t.hasAccount}{" "}

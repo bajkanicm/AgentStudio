@@ -37,8 +37,12 @@ export async function requireDbUser() {
   const existing = await db.user.findUnique({ where: { id: userId } });
   if (existing) return existing;
   const clerkUser = await currentUser();
-  return db.user.create({
-    data: {
+  // Upsert: Layout und Page rufen dies parallel auf — create würde beim
+  // ersten Login an der Unique-Constraint scheitern (P2002-Race).
+  return db.user.upsert({
+    where: { id: userId },
+    update: {},
+    create: {
       id: userId,
       email: clerkUser?.primaryEmailAddress?.emailAddress ?? null,
       name:
