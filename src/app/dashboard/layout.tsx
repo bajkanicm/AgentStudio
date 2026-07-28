@@ -18,6 +18,12 @@ export default async function DashboardLayout({
   const appMode = ((await headers()).get("user-agent") ?? "").includes("hey247App");
 
   return (
+    <>
+      {appMode && (
+        // App-Modus: Seitenhintergrund = Panelfarbe, damit beim nativen
+        // Bounce kein dunkelgrüner Rand aufblitzt.
+        <style>{`html,body{background:#d8e5e1 !important}`}</style>
+      )}
     <DashboardShell
       lang={lang}
       appMode={appMode}
@@ -30,5 +36,6 @@ export default async function DashboardLayout({
     >
       {children}
     </DashboardShell>
+    </>
   );
 }
