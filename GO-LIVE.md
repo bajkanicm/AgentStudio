@@ -23,7 +23,7 @@ paying pilot businesses on the platform**.
 | Authentication | ✅ Live (dev keys) | Clerk active in production: real sign-up/login, per-user workspaces, protected dashboard. Currently pk_test keys — switch to a production instance (DNS) before paying customers. |
 | AI responses | ✅ Live (Claude) | ANTHROPIC_API_KEY configured — agents, KI-Chat and call-note extraction run on real Claude. Public landing demo stays on the mock (DEMO_USE_REAL_AI=false) to protect the budget. **Deck promises German-hosted models — see §3.** |
 | Plans | ✅ Enforced | Pilotbetrieb (default, 1.000 msgs/mo) / Basis / Basis+KI-Mitarbeiter in `src/lib/plans.ts`; legacy plan ids map automatically. |
-| Pilot request flow | ✅ Working | `/pilot` form (Gewerk, Betriebsgröße, Zeitfresser) → database + email notification (needs mail credentials, §3). `/done-for-you` redirects here. |
+| Pilot request flow | ✅ Working | `/pilot` form (Gewerk, Betriebsgröße, Zeitfresser) → database + **live email notification to pilot@hey247.de** (German summary, via M365 SMTP). `/done-for-you` redirects here. |
 | Legal pages | ⚠️ Placeholders | Datenschutz, AGB, Impressum in German for flexC GmbH — **company address/Geschäftsführung are bracketed placeholders** in `src/lib/company.ts`. |
 | Billing / payments | ❌ Manual | Abrechnung page shows plans; changes via mailto to pilot@hey247.de. No Stripe. |
 | Ablage (Dokumente) | ✅ Working | Document filing with **real file upload**: PDF text extraction + German OCR for photos (Tesseract, runs on our server — no external service), auto-classification (type + amount), original file preview, search, Freigabe workflow. |
@@ -66,9 +66,11 @@ except payments and the Welle-2/3 modules, which need development.
 2. **Create the hey247.de mailboxes** referenced in the UI:
    `pilot@hey247.de` (CTAs, notifications), `hallo@hey247.de`,
    `datenschutz@hey247.de`. Until they exist, mailto links go nowhere.
-3. **Enable pilot-request notifications** *(still open)* — set `RESEND_API_KEY` **or**
-   `SMTP_*` in `/opt/agentstudio/.env`, then
-   `docker compose up -d --build`. Otherwise requests only land in the DB (§4).
+3. **Pilot-request notifications** *(✅ done 2026-07-28)* — SMTP via
+   Microsoft 365 (smtp.office365.com, mailbox pilot@hey247.de) is live;
+   every pilot request emails a German summary to pilot@hey247.de.
+   Note: SMTP creds live only in `/opt/agentstudio/.env`; "Authenticated
+   SMTP" must stay enabled for the mailbox in the M365 admin center.
 4. **Enable real AI** *(✅ done 2026-07-27 — Anthropic key active)* — set
    **billing caps in the provider console**. ⚠️ The deck promises
    "KI-Modelle laufen in Deutschland": Anthropic/OpenAI do **not** satisfy
