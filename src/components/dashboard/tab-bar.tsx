@@ -36,11 +36,11 @@ export function TabBar({ lang }: { lang: Lang }) {
               key={tab.href}
               href={tab.href}
               className={cn(
-                "flex min-w-16 flex-col items-center gap-0.5 px-2 pb-1.5 pt-2 text-[10px] font-semibold transition-colors active:opacity-60",
+                "flex min-w-16 flex-col items-center gap-1 px-2 pb-2 pt-2.5 text-[11px] font-semibold transition-colors active:opacity-60",
                 active ? "text-primary" : "text-muted-foreground"
               )}
             >
-              <tab.icon className="size-5" strokeWidth={active ? 2.4 : 2} />
+              <tab.icon className="size-[26px]" strokeWidth={active ? 2.3 : 1.9} />
               {tab[lang]}
             </Link>
           );
