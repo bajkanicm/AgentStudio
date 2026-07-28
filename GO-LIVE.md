@@ -15,7 +15,7 @@ paying pilot businesses on the platform**.
 | Area | Status | Notes |
 | --- | --- | --- |
 | Landing page (DE) | ✅ Production-ready | Follows the pitch deck: hero with phone-call mock, Papierkram problem section, live demo, 8 modules with Welle badges, Ablage/KI-Chat features, KI-Mitarbeiter cards + "Mensch entscheidet", Germany data-residency section, deck pricing, pilot section, FAQ. Official design-system tokens (Tannengrün/Signal-Orange, Space Grotesk + IBM Plex). |
-| English fallback | ✅ Working | Marketing under `/en`; **dashboard + auth are bilingual** (DE/EN switch in the account menu, cookie-persisted). Minor deep strings (agent settings labels, plan feature lists) remain German. |
+| English fallback | ✅ Working | Marketing under `/en`; **dashboard + auth are bilingual** (DE/EN switch in the account menu, cookie-persisted). Dashboard is 100% bilingual incl. agent settings, tones, plan features and workspace. |
 | Live demo chat | ✅ Working | Public, streaming, no sign-up. All four KI-Mitarbeiter with German replies. Mock model by default so anonymous visitors can't spend your AI budget (`DEMO_USE_REAL_AI` opts in). |
 | KI-Mitarbeiter | ✅ Working | Telefonassistent (killer feature, transparent-AI rules, structured Rückruf-Notizen), Rechnungs-Mitarbeiter (E-Rechnung aware), Buchhaltungs-Mitarbeiter (DATEV-oriented), Angebots-Mitarbeiter (Aufmaß → Angebotsentwurf). German system prompts; legacy AgentStudio agents map automatically. |
 | Playground + customization | ✅ Working | Streaming chat; Name, System-Prompt, Ton, Temperatur, Wissensbasis, model routing; save/reuse/delete. German UI. |
