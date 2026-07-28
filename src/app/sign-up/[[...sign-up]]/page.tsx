@@ -8,7 +8,7 @@ export const metadata = { title: "Registrieren" };
 export default async function SignUpPage() {
   const lang = await getLang();
   return (
-    <AuthShell>
+    <AuthShell lang={lang}>
       {clerkEnabled ? <SignUpForm lang={lang} /> : <DemoModeCard label="die Registrierung" />}
     </AuthShell>
   );

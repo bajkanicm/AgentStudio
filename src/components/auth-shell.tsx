@@ -1,16 +1,30 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
+import { LangToggle } from "@/components/lang-toggle";
+import type { Lang } from "@/lib/lang-shared";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
-export function AuthShell({ children }: { children: React.ReactNode }) {
+export function AuthShell({
+  children,
+  lang = "de",
+}: {
+  children: React.ReactNode;
+  lang?: Lang;
+}) {
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center gap-8 px-4 py-10">
+    <div className="relative flex min-h-dvh flex-col items-center justify-center gap-6 overflow-hidden px-4 py-6 sm:gap-8 sm:py-10">
       <div className="bg-grid bg-grid-fade absolute inset-0 -z-10" aria-hidden />
       <div
-        className="animate-aurora absolute -top-32 left-1/2 -z-10 h-[360px] w-[560px] -translate-x-1/2 rounded-full bg-violet-600/20 blur-[110px]"
+        className="animate-aurora absolute -top-32 left-1/2 -z-10 h-[360px] w-[560px] -translate-x-1/2 rounded-full bg-orange-600/15 blur-[110px]"
         aria-hidden
       />
+      <div
+        className="absolute right-4"
+        style={{ top: "max(1rem, env(safe-area-inset-top))" }}
+      >
+        <LangToggle lang={lang} />
+      </div>
       <Logo />
       {children}
     </div>

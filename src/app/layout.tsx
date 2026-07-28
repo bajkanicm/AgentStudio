@@ -66,6 +66,9 @@ export const viewport: Viewport = {
   themeColor: "#0a2c26",
   width: "device-width",
   initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
 };
 
 async function Providers({ children }: { children: React.ReactNode }) {

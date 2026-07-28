@@ -8,7 +8,7 @@ export const metadata = { title: "Anmelden" };
 export default async function SignInPage() {
   const lang = await getLang();
   return (
-    <AuthShell>
+    <AuthShell lang={lang}>
       {clerkEnabled ? <SignInForm lang={lang} /> : <DemoModeCard label="die Anmeldung" />}
     </AuthShell>
   );

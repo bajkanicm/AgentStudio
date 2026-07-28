@@ -123,9 +123,15 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
+    overscroll-behavior-y: none; /* kein Gummiband-Effekt in der App */
+    overflow-x: hidden; /* nie horizontal scrollen */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation; /* kein Doppeltipp-Zoom */
   }
   html {
     @apply font-sans scroll-smooth;
+    overscroll-behavior-y: none;
+    overflow-x: hidden;
   }
   /* Display font (Space Grotesk) for headings, per hey247 design system */
   h1,
