@@ -36,7 +36,7 @@ export default async function TemplatesPage() {
               {en ? t.descriptionEn : t.description}
             </p>
             <ul className="mt-4 grid gap-2 sm:grid-cols-2">
-              {t.capabilities.map((c) => (
+              {(en ? t.capabilitiesEn : t.capabilities).map((c) => (
                 <li
                   key={c}
                   className="flex items-start gap-2 text-xs text-muted-foreground"

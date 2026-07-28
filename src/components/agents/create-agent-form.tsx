@@ -10,8 +10,10 @@ import {
 } from "@/components/agents/agent-settings-form";
 import { Button } from "@/components/ui/button";
 import { Loader2, Save } from "lucide-react";
+import type { Lang } from "@/lib/lang-shared";
 
-export function CreateAgentForm({ template }: { template: AgentTemplate }) {
+export function CreateAgentForm({ template, lang = "de" }: { template: AgentTemplate; lang?: Lang }) {
+  const en = lang === "en";
   const router = useRouter();
   const [saving, setSaving] = React.useState(false);
   const [settings, setSettings] = React.useState<AgentSettings>({
@@ -26,7 +28,7 @@ export function CreateAgentForm({ template }: { template: AgentTemplate }) {
 
   const save = async () => {
     if (!settings.name.trim() || !settings.systemPrompt.trim()) {
-      toast.error("Dein KI-Mitarbeiter braucht einen Namen und einen System-Prompt.");
+      toast.error(en ? "Your AI employee needs a name and a system prompt." : "Dein KI-Mitarbeiter braucht einen Namen und einen System-Prompt.");
       return;
     }
     setSaving(true);
@@ -37,8 +39,8 @@ export function CreateAgentForm({ template }: { template: AgentTemplate }) {
         body: JSON.stringify({ ...settings, templateSlug: template.slug }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Anlegen fehlgeschlagen");
-      toast.success("KI-Mitarbeiter angelegt — probier ihn gleich aus!");
+      if (!res.ok) throw new Error(data.error ?? (en ? "Creation failed" : "Anlegen fehlgeschlagen"));
+      toast.success(en ? "AI employee created — try it right away!" : "KI-Mitarbeiter angelegt — probier ihn gleich aus!");
       router.push(`/dashboard/agents/${data.agent.id}`);
       router.refresh();
     } catch (err) {
@@ -49,10 +51,10 @@ export function CreateAgentForm({ template }: { template: AgentTemplate }) {
 
   return (
     <div className="space-y-8">
-      <AgentSettingsForm value={settings} onChange={setSettings} />
+      <AgentSettingsForm value={settings} onChange={setSettings} lang={lang} />
       <div className="flex items-center justify-end gap-3 border-t border-border pt-6">
         <Button variant="ghost" onClick={() => router.back()} disabled={saving}>
-          Abbrechen
+          {en ? "Cancel" : "Abbrechen"}
         </Button>
         <Button onClick={save} disabled={saving} className="min-w-36">
           {saving ? (
@@ -60,7 +62,7 @@ export function CreateAgentForm({ template }: { template: AgentTemplate }) {
           ) : (
             <Save className="size-4" />
           )}
-          Anlegen
+          {en ? "Create" : "Anlegen"}
         </Button>
       </div>
     </div>

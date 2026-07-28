@@ -11,6 +11,7 @@ export interface AgentTemplate {
   description: string;
   descriptionEn: string;
   capabilities: string[];
+  capabilitiesEn: string[];
   systemPrompt: string;
   suggestedQuestions: string[];
   suggestedQuestionsEn: string[];
@@ -19,11 +20,11 @@ export interface AgentTemplate {
 }
 
 export const TONES = [
-  { value: "professional", label: "Sachlich & professionell" },
-  { value: "friendly", label: "Freundlich & nahbar" },
-  { value: "concise", label: "Kurz & direkt" },
-  { value: "regional", label: "Herzlich & bodenständig" },
-  { value: "empathetic", label: "Einfühlsam" },
+  { value: "professional", label: "Sachlich & professionell", labelEn: "Professional & factual" },
+  { value: "friendly", label: "Freundlich & nahbar", labelEn: "Friendly & approachable" },
+  { value: "concise", label: "Kurz & direkt", labelEn: "Short & direct" },
+  { value: "regional", label: "Herzlich & bodenständig", labelEn: "Warm & down-to-earth" },
+  { value: "empathetic", label: "Einfühlsam", labelEn: "Empathetic" },
 ] as const;
 
 export const AGENT_TEMPLATES: AgentTemplate[] = [
@@ -44,6 +45,12 @@ export const AGENT_TEMPLATES: AgentTemplate[] = [
       "100 % transparent: Anrufer wissen, dass eine KI spricht",
       "Eine Notiz pro Anruf: Name, Anliegen, Rückrufnummer",
       "Dringende Fälle werden als solche markiert",
+    ],
+    capabilitiesEn: [
+      "Available 24/7 — even Saturdays at seven",
+      "100% transparent: callers know it's an AI",
+      "One note per call: name, request, callback number",
+      "Urgent cases are flagged as such",
     ],
     systemPrompt: `Du bist der KI-Telefonassistent eines Handwerksbetriebs. Du nimmst Anrufe entgegen, wenn das Team auf der Baustelle ist.
 
@@ -87,6 +94,12 @@ Regeln:
       "E-Rechnung (XRechnung/ZUGFeRD) im Blick",
       "Strukturierte Ablage, ausgerichtet an GoBD",
     ],
+    capabilitiesEn: [
+      "Recognizes invoices from mail, scan and photo",
+      "Extracts supplier, amount, date, due date",
+      "E-invoice (XRechnung/ZUGFeRD) aware",
+      "Structured filing, aligned with GoBD",
+    ],
     systemPrompt: `Du bist der Rechnungs-Mitarbeiter eines Handwerksbetriebs. Du hilfst, eingehende Rechnungen zu erfassen, zu prüfen und strukturiert abzulegen.
 
 Regeln:
@@ -128,6 +141,12 @@ Regeln:
       "DATEV-Export im Blick",
       "Offene-Posten-Überblick",
     ],
+    capabilitiesEn: [
+      "Match receipts ↔ bank transactions",
+      "Monthly closing prepared for the tax advisor",
+      "DATEV export in mind",
+      "Open-items overview",
+    ],
     systemPrompt: `Du bist der Buchhaltungs-Mitarbeiter eines Handwerksbetriebs. Du hilfst, Belege zu ordnen, Umsätze zuzuordnen und den Monatsabschluss für den Steuerberater vorzubereiten.
 
 Regeln:
@@ -168,6 +187,12 @@ Regeln:
       "Angebotstexte in deinem Ton",
       "Nachtrags- und Alternativpositionen",
       "Du prüfst und entscheidest — immer",
+    ],
+    capabilitiesEn: [
+      "Site notes → structured positions",
+      "Quote texts in your voice",
+      "Add-on and alternative positions",
+      "You review and decide — always",
     ],
     systemPrompt: `Du bist der Angebots-Mitarbeiter eines Handwerksbetriebs. Du machst aus Aufmaß-Notizen, Stichpunkten und Beschreibungen saubere Angebotsentwürfe.
 

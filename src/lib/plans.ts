@@ -6,6 +6,8 @@ export interface Plan {
   price: string;
   priceNote: string;
   tagline: string;
+  taglineEn: string;
+  featuresEn: string[];
   limits: {
     messagesPerMonth: number; // -1 = unbegrenzt
     agents: number; // -1 = unbegrenzt
@@ -26,6 +28,7 @@ export const PLANS: Plan[] = [
     price: "0 €",
     priceNote: "während der Pilotphase",
     tagline: "Voller Funktionsumfang — dein Feedback ist der Preis.",
+    taglineEn: "Full feature set — your feedback is the price.",
     limits: { messagesPerMonth: 1000, agents: 5, knowledgeBaseChars: 200_000 },
     features: [
       "Alle 4 KI-Mitarbeiter",
@@ -34,6 +37,13 @@ export const PLANS: Plan[] = [
       "Einrichtung und Datenübernahme durch uns",
       "Direkter Draht zum Gründerteam",
     ],
+    featuresEn: [
+      "All 4 AI employees",
+      "1,000 messages / month",
+      "Up to 5 saved AI employees",
+      "Setup and data migration by us",
+      "Direct line to the founding team",
+    ],
   },
   {
     id: "basis",
@@ -41,6 +51,7 @@ export const PLANS: Plan[] = [
     price: "99 €",
     priceNote: "pro Betrieb / Monat",
     tagline: "Dashboard, Ablage und KI-Chat — das digitale Büro im Kern.",
+    taglineEn: "Dashboard, filing and AI chat — the digital office at its core.",
     limits: { messagesPerMonth: 2000, agents: 5, knowledgeBaseChars: 500_000 },
     features: [
       "Alle 4 KI-Mitarbeiter",
@@ -49,6 +60,13 @@ export const PLANS: Plan[] = [
       "Claude + GPT Modell-Routing",
       "E-Mail-Support",
     ],
+    featuresEn: [
+      "All 4 AI employees",
+      "2,000 messages / month",
+      "Up to 5 saved AI employees",
+      "Claude + GPT model routing",
+      "Email support",
+    ],
   },
   {
     id: "komplett",
@@ -56,6 +74,7 @@ export const PLANS: Plan[] = [
     price: "ab 128 €",
     priceNote: "pro Betrieb / Monat",
     tagline: "Basis plus aktivierte KI-Mitarbeiter nach Bedarf.",
+    taglineEn: "Base plus activated AI employees as needed.",
     limits: { messagesPerMonth: -1, agents: -1, knowledgeBaseChars: -1 },
     features: [
       "Unbegrenzte Nachrichten & KI-Mitarbeiter",
@@ -63,6 +82,13 @@ export const PLANS: Plan[] = [
       "Buchhaltungs-Mitarbeiter (ab 29 €)",
       "DATEV-Übergabe an den Steuerberater",
       "Bevorzugter Support",
+    ],
+    featuresEn: [
+      "Unlimited messages & AI employees",
+      "Phone assistant (€79–149)",
+      "Bookkeeping employee (from €29)",
+      "DATEV handover to your tax advisor",
+      "Priority support",
     ],
   },
 ];

@@ -37,13 +37,13 @@ export default async function UsagePage() {
       label: en ? "Messages" : "Nachrichten",
       used: usage.messagesUsed,
       limit: usage.messagesLimit,
-      note: "Antworten der KI-Mitarbeiter zählen auf dein Monatslimit.",
+      note: en ? "AI employee replies count toward your monthly limit." : "Antworten der KI-Mitarbeiter zählen auf dein Monatslimit.",
     },
     {
       label: en ? "Saved AI employees" : "Gespeicherte KI-Mitarbeiter",
       used: usage.agentsUsed,
       limit: usage.agentsLimit,
-      note: "Aus Vorlagen angepasste und gespeicherte KI-Mitarbeiter.",
+      note: en ? "AI employees customized from templates and saved." : "Aus Vorlagen angepasste und gespeicherte KI-Mitarbeiter.",
     },
   ];
 
@@ -99,7 +99,7 @@ export default async function UsagePage() {
           <div>
             <h2 className="font-medium">{en ? "Token consumption" : "Token-Verbrauch"}</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Geschätzte Tokens über alle KI-Mitarbeiter diesen Monat.
+              {en ? "Estimated tokens across all AI employees this month." : "Geschätzte Tokens über alle KI-Mitarbeiter diesen Monat."}
             </p>
           </div>
           <p className="text-3xl font-semibold tracking-tight">
@@ -113,16 +113,16 @@ export default async function UsagePage() {
         <h2 className="mb-4 text-lg font-semibold">{en ? "Recent conversations" : "Letzte Gespräche"}</h2>
         {recentConversations.length === 0 ? (
           <p className="rounded-2xl border border-dashed border-border bg-card/50 p-8 text-center text-sm text-muted-foreground">
-            Noch keine Gespräche — öffne einen KI-Mitarbeiter und leg los.
+            {en ? "No conversations yet — open an AI employee and get going." : "Noch keine Gespräche — öffne einen KI-Mitarbeiter und leg los."}
           </p>
         ) : (
           <div className="overflow-hidden rounded-2xl border border-border">
             <table className="w-full text-sm">
               <thead className="bg-secondary/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
                 <tr>
-                  <th className="px-4 py-3 font-medium">Gespräch</th>
-                  <th className="hidden px-4 py-3 font-medium sm:table-cell">KI-Mitarbeiter</th>
-                  <th className="px-4 py-3 text-right font-medium">Nachrichten</th>
+                  <th className="px-4 py-3 font-medium">{en ? "Conversation" : "Gespräch"}</th>
+                  <th className="hidden px-4 py-3 font-medium sm:table-cell">{en ? "AI employee" : "KI-Mitarbeiter"}</th>
+                  <th className="px-4 py-3 text-right font-medium">{en ? "Messages" : "Nachrichten"}</th>
                   <th className="hidden px-4 py-3 text-right font-medium sm:table-cell">
                     Tokens
                   </th>

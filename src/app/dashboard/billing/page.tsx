@@ -34,12 +34,12 @@ export default async function BillingPage() {
             {current.name}
             <Badge className="bg-primary/20 text-primary">{current.price}</Badge>
           </p>
-          <p className="mt-1 text-sm text-muted-foreground">{current.tagline}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{en ? current.taglineEn : current.tagline}</p>
         </div>
         {current.id === "pilot" && (
           <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
             <Sparkles className="size-4 text-primary" />
-            Kostenlos während der Pilotphase — danach dauerhafter Vorzugspreis.
+            {en ? "Free during the pilot phase — then a permanent preferred price." : "Kostenlos während der Pilotphase — danach dauerhafter Vorzugspreis."}
           </p>
         )}
       </div>
@@ -64,10 +64,10 @@ export default async function BillingPage() {
               </div>
               <div className="mt-3 flex items-baseline gap-1.5">
                 <span className="text-3xl font-semibold">{plan.price}</span>
-                <span className="text-xs text-muted-foreground">{plan.priceNote}</span>
+                <span className="text-xs text-muted-foreground">{en ? (plan.id === "pilot" ? "during the pilot phase" : "per business / month") : plan.priceNote}</span>
               </div>
               <ul className="mt-5 flex-1 space-y-2.5">
-                {plan.features.map((f) => (
+                {(en ? plan.featuresEn : plan.features).map((f) => (
                   <li key={f} className="flex items-start gap-2 text-sm">
                     <Check className="mt-0.5 size-4 shrink-0 text-emerald-400" />
                     <span className="text-muted-foreground">{f}</span>
@@ -93,12 +93,11 @@ export default async function BillingPage() {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        Selbstbedienung per Stripe ist in Vorbereitung. Bis dahin richtet das
-        Team Planwechsel innerhalb weniger Stunden ein:{" "}
+        {en ? "Self-service via Stripe is in preparation. Until then the team sets up plan changes within a few hours:" : "Selbstbedienung per Stripe ist in Vorbereitung. Bis dahin richtet das Team Planwechsel innerhalb weniger Stunden ein:"}{" "}
         <a href={`mailto:${COMPANY.pilotEmail}`} className="text-primary hover:underline">
           {COMPANY.pilotEmail}
         </a>
-        . Digitalisierungsförderungen können die Kosten senken — wir helfen beim Antrag.
+        {en ? ". Digitalization grants can lower the cost — we help with the application." : ". Digitalisierungsförderungen können die Kosten senken — wir helfen beim Antrag."}
       </p>
     </div>
   );

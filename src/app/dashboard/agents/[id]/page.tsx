@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { requireDbUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { AgentWorkspace } from "@/components/agents/agent-workspace";
+import { getLang } from "@/lib/lang";
 
 export const metadata = { title: "Agent playground" };
 
@@ -14,6 +15,7 @@ export default async function AgentPage({
   if (!user) redirect("/sign-in");
 
   const { id } = await params;
+  const lang = await getLang();
   const agent = await db.agent.findFirst({
     where: { id, userId: user.id },
   });
@@ -21,6 +23,7 @@ export default async function AgentPage({
 
   return (
     <AgentWorkspace
+      lang={lang}
       agent={{
         id: agent.id,
         templateSlug: agent.templateSlug,

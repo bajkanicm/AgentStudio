@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getTemplate } from "@/lib/agent-templates";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { CreateAgentForm } from "@/components/agents/create-agent-form";
+import { getLang } from "@/lib/lang";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
@@ -15,6 +16,8 @@ export default async function NewAgentPage({
 }) {
   const { template: slug } = await searchParams;
   const template = getTemplate(slug ?? "");
+  const lang = await getLang();
+  const en = lang === "en";
   if (!template) redirect("/dashboard/templates");
 
   return (
@@ -22,14 +25,14 @@ export default async function NewAgentPage({
       <Button variant="ghost" size="sm" className="-ml-2 text-muted-foreground" asChild>
         <Link href="/dashboard/templates">
           <ArrowLeft className="size-4" />
-          Zurück zu den Vorlagen
+          {en ? "Back to templates" : "Zurück zu den Vorlagen"}
         </Link>
       </Button>
       <PageHeader
-        title={`Neuer ${template.name}`}
-        description="Stell jetzt alles ein oder speichere mit den Voreinstellungen — danach öffnet sich der Playground."
+        title={en ? `New ${template.name}` : `Neuer ${template.name}`}
+        description={en ? "Configure everything now or save with the defaults — the playground opens next." : "Stell jetzt alles ein oder speichere mit den Voreinstellungen — danach öffnet sich der Playground."}
       />
-      <CreateAgentForm template={template} />
+      <CreateAgentForm template={template} lang={lang} />
     </div>
   );
 }
