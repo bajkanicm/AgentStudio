@@ -54,18 +54,12 @@ export function DashboardShell({
       .toUpperCase() || "DU";
 
   if (appMode) {
-    // Nativer App-Modus: Vollbild-Panel, schlanker Header, Bottom-Tab-Bar.
+    // Nativer App-Modus: Dokument scrollt NICHT — nur der Inhalt scrollt.
+    // Header und Tab-Bar sind statische Flex-Zeilen und können nie springen.
     return (
-      <div
-        className="theme-paper flex min-h-dvh flex-col bg-background px-4"
-        style={{
-          paddingTop: "calc(60px + env(safe-area-inset-top))",
-          paddingBottom: "calc(72px + env(safe-area-inset-bottom))",
-        }}
-      >
-        {/* Fixe Kopfzeile wie eine native Navigation Bar */}
+      <div className="theme-paper flex h-dvh flex-col overflow-hidden bg-background">
         <header
-          className="theme-paper fixed inset-x-0 top-0 z-40 border-b border-border bg-background/95 backdrop-blur"
+          className="shrink-0 border-b border-border bg-background"
           style={{ paddingTop: "env(safe-area-inset-top)" }}
         >
           <div className="flex h-[52px] items-center gap-3 px-4">
@@ -80,7 +74,9 @@ export function DashboardShell({
             />
           </div>
         </header>
-        <main className="min-w-0 flex-1">{children}</main>
+        <main className="min-w-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-6 pt-4">
+          {children}
+        </main>
         <TabBar lang={lang} />
       </div>
     );

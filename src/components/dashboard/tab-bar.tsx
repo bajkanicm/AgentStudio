@@ -25,7 +25,7 @@ export function TabBar({ lang }: { lang: Lang }) {
   const pathname = usePathname();
   return (
     <nav
-      className="theme-paper fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card/95 backdrop-blur"
+      className="shrink-0 border-t border-border bg-card"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <div className="mx-auto flex max-w-lg items-stretch justify-around">
